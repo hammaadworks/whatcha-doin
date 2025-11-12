@@ -1,13 +1,13 @@
 # whatcha-doin UX Design Specification
 
-_Created on 2025-11-11 by hammaadworks_
+_Created on 2025-11-12 by hammaadworks_
 _Generated using BMad Method - Create UX Design Workflow v1.0_
 
 ---
 
 ## Executive Summary
 
-{{project_vision}}
+"whatcha-doin" is an identity-building toolkit focused on helping "The Ambitious Underachiever" build consistent habits. The core experience is about building identity through consistent actions, with a philosophy of "no friction, no stress, only pure productivity." It's the app where users build their identity with consistent habits one by one.
 
 ---
 
@@ -15,15 +15,12 @@ _Generated using BMad Method - Create UX Design Workflow v1.0_
 
 ### 1.1 Design System Choice
 
-**Primary Design System:** `shadcn/ui` will be used for the foundational component library (buttons, forms, cards, etc.).
+The primary design system will be `shadcn/ui` for foundational components, complemented by `Aceternity UI` for animations and "wow" moments.
 
-- **Rationale:** It is highly customizable, accessible, and aligns with the modern, tech-savvy aesthetic. Its philosophy is a perfect match for a Next.js and Tailwind CSS stack.
-
-**Secondary Animation Library:** `Aceternity UI` will be used for specific, high-impact "wow" moments and complex animated components.
-
-- **Rationale:** This provides the unique, "artsy," and fluid interactions requested, setting the app apart from standard designs.
-
-This hybrid approach provides a professional, accessible base while enabling the unique visual flair required by the product vision.
+A dual-theme strategy will be implemented:
+- **Light Mode:** "Zenith" theme (clean, energetic, pastel gradients).
+- **Dark Mode:** "Monolith" theme (sharp, focused, bold accent).
+A prominent Light/Dark Mode switcher will be a key feature.
 
 ---
 
@@ -31,55 +28,22 @@ This hybrid approach provides a professional, accessible base while enabling the
 
 ### 2.1 Defining Experience
 
-The core experience of the application is captured in the following sentence:
-
-> **"It's the app where you build your identity with consistent habits one by one."**
+The core experience of "whatcha-doin" is defined by the principle that "It's the app where you build your identity with consistent habits one by one." It functions as an "identity-building toolkit," emphasizing "no friction, no stress, only pure productivity." The primary focus is on empowering users to build and maintain consistent habits as a foundation for their identity.
 
 ### 2.2 Novel UX Patterns
 
-The primary interface of the application is a novel UX pattern named the **"Identity Momentum Board"**. It is not a standard Kanban board or to-do list; it is a state machine that visually represents the user's consistency and momentum.
+Two key novel UX patterns have been identified to enhance user engagement and provide unique feedback:
 
-#### Core Components
+1.  **"Positive Urgency" UI:**
+    *   **Concept:** An "Ambient Animated Background" for the `Yesterday` column.
+    *   **Visuals:** A slow, shifting gradient (cool colors transitioning to warm colors) will be used in the column's background.
+    *   **Interaction:** A tooltip on hover will display the time remaining until the daily cut-off.
+    *   **Rationale:** This provides a high-end, non-distracting "wow" factor that subtly encourages users to complete pending habits without creating undue stress.
 
-- **Today Column:** Contains habits completed on the current day.
-- **Yesterday Column:** Contains habits completed on the previous day. This column is **read-only**.
-- **The Pile Column:** Contains all inactive or "missed" habits.
-
-#### Core Logic & Rules
-
-1.  **State Change Cycle (12:00 AM User's Local Time):**
-    - Habits in `Today` automatically move to `Yesterday`.
-    - Habits in `Yesterday` (that were not moved to `Today` again) automatically move to `The Pile`. The streak count is preserved as a "ghost" streak to show what was lost.
-2.  **Interaction Logic:**
-    - **Continue Streak:** Drag a habit from `Yesterday` to `Today`.
-    - **Revive Habit:** Drag a habit from `The Pile` to `Today`.
-    - **Undo:** A long-press on a habit in `Today` moves it back to its original column (`Yesterday` or `The Pile`) and reverts the streak count.
-3.  **Sorting Logic for `The Pile`:** This column has a specific three-level sorting order:
-    1.  **Public** habits appear first.
-    2.  Then, sort by **Streak Count** (descending).
-    3.  Finally, sort by **Habit Name** (ascending).
-
-#### The "Grace Period" Feature
-
-To balance discipline with real-world flexibility, a "Grace Period" is granted to users who may have forgotten to log an activity before midnight.
-
-- **Trigger:** A user opens the app for the first time on a new day (e.g., Wednesday morning) and has pending habits from the previous day (Tuesday).
-- **Experience:** The user is presented with a dedicated "End of Day Summary" screen for the previous day.
-  - **Content:** This screen is focused and scalable, showing only the **pending habits** from the previous day in a compact grid.
-  - **Action:** The user can tap each pending habit they completed to mark it as done.
-  - **Edge Case:** The screen includes a `+ Add another habit...` button. This opens an overlay showing `The Pile` AND a `+ Create New Habit` button, allowing the user to add a previously unlisted or new habit to the previous day's record.
-- **Confirmation:** After resolving their pending habits, the user clicks a single `Finish & Start [New Day]` button, which runs the nightly cycle with the corrected data and transitions them to the fresh board for the current day.
-
-#### Positive Urgency UI: The "Ambient Animated Background"
-
-To create a sense of "positive urgency" without being distracting, the `Yesterday` column itself will become a living, ambient visual cue as the daily deadline approaches.
-
--   **Visual Concept:** The background of the entire `Yesterday` column will feature a beautiful, slowly shifting, **animated gradient**. This is not a repetitive pulse on individual chips, but a subtle, mesmerizing effect like an aurora borealis or a slowly shifting nebula.
--   **Progression:**
-    -   **Warning State (e.g., after 6 PM):** The animated gradient subtly fades into the background of the column, using cooler, calmer colors (e.g., blues and purples from the "Supernova" theme).
-    -   **Urgent State (e.g., after 10 PM):** As the deadline approaches, the animated gradient slowly shifts to warmer, more vibrant colors (e.g., pinks and oranges from the "Zenith" theme). The animation might become a fraction faster, subtly increasing the sense of urgency.
--   **Interaction:** When the user hovers over any habit chip within the `Yesterday` column, a tooltip will appear, clearly stating the time remaining until the deadline (e.g., "Streak ends in 3 hours").
--   **Rationale:** This approach delivers a high-end, "wow" visual effect that is ambient and non-distracting. It creates a powerful mood and sense of urgency through subtle, artistic means, making the application feel alive and premium.
+2.  **"Teleport-to-Journal" Animation for Action Completion:**
+    *   **Concept:** A unique animation sequence for completing "Actions" (Todos).
+    *   **Interaction:** When an Action is marked complete, it will visually fade out from the "Actions" section. Simultaneously, it will fade in and "pop" into the "Completed Todos" section within the Journal.
+    *   **Rationale:** This intuitive animation provides clear, delightful feedback, reinforcing the connection between completing tasks and building a journal of accomplishments, requiring no explicit teaching.
 
 ---
 
@@ -87,11 +51,17 @@ To create a sense of "positive urgency" without being distracting, the `Yesterda
 
 ### 3.1 Color System
 
-A sophisticated dual-theme strategy will be implemented to allow users to choose the experience that best suits their mood and work style.
+The application will feature a dual-theme color strategy to cater to user preferences and provide distinct visual experiences:
 
-- **Light Mode:** The **"Zenith"** theme will be used. It features a clean, bright interface with soft, motivational pastel gradients, creating an energetic and inspirational feel.
-- **Dark Mode:** The **"Monolith"** theme will be used. It features a sharp, focused, near-monochromatic interface with a single bold accent color, creating a disciplined and professional feel.
-- **Feature:** The application will feature a prominent **Light/Dark Mode switcher**, allowing users to toggle between the two themes at any time.
+*   **Light Mode: "Zenith" Theme**
+    *   **Aesthetic:** Clean, energetic, utilizing pastel gradients.
+    *   **Purpose:** To provide a bright and uplifting user interface.
+
+*   **Dark Mode: "Monolith" Theme**
+    *   **Aesthetic:** Sharp, focused, with bold accents.
+    *   **Purpose:** To offer a concentrated and visually striking user interface, reducing eye strain in low-light conditions.
+
+A prominent Light/Dark Mode switcher will be available for users to easily toggle between these themes. The specific color palettes for each theme will be detailed in the interactive Color Theme Explorer.
 
 **Interactive Visualizations:**
 
@@ -103,22 +73,17 @@ A sophisticated dual-theme strategy will be implemented to allow users to choose
 
 ### 4.1 Chosen Design Approach
 
-A hybrid, platform-aware design direction has been chosen to ensure the best possible user experience on both desktop and mobile devices.
+The overall design aesthetic will be "Professional, tech-savvy, out-of-the-box wow design," incorporating gradients, artsy looks, and fluid animations. Inspiration is drawn from platforms like Framer, Motion, and `supermemory.ai`.
 
-### Desktop Design Direction
+**Main Board Layout & Interaction:**
 
-- **Layout:** A two-row structure.
-  - **Top Row:** Contains two columns of equal prominence: `Today` and `Yesterday`.
-  - **Bottom Row:** Contains a single, full-width column for `The Pile`.
-- **Rationale:** This layout gives primary focus to the active and recently-active habits, while providing ample space for the potentially large list of inactive habits in `The Pile`. It allows for easy and ergonomic upward dragging from `The Pile` to the `Today` column.
-- **Core Interaction:** `Drag-and-Drop`. The larger screen real estate and mouse pointer make dragging a fast and intuitive primary interaction.
+*   **Desktop Layout:**
+    *   **Structure:** A two-row layout. The top row will feature `Today` and `Yesterday` columns side-by-side. The bottom row will be a full-width `The Pile` column.
+    *   **Interaction:** `Drag-and-Drop` functionality will be supported for moving habits between columns.
 
-### Mobile Design Direction
-
-- **Layout:** A single-column, vertically stacked layout.
-  - The order is `Today` at the top, followed by `Yesterday`, and finally `The Pile`.
-- **Rationale:** This provides a clean, scannable, and thumb-friendly layout that is natural for mobile devices. It respects the "Today in focus" principle.
-- **Core Interaction:** `Tap-to-Move`. To solve the clumsiness of dragging on a small screen, a tap-based system will be used. A user taps a habit in `Yesterday` or `The Pile`, which selects it, and then taps the `Today` area to move it. This is faster, more precise, and more accessible.
+*   **Mobile Layout:**
+    *   **Structure:** A single-column, stacked layout. Habits will appear in the order: `Today`, then `Yesterday`, then `The Pile`.
+    *   **Interaction:** `Tap-to-Move` will be implemented, where users tap a habit chip and then tap the destination column to move it.
 
 **Interactive Mockups:**
 
@@ -128,52 +93,34 @@ A hybrid, platform-aware design direction has been chosen to ensure the best pos
 
 ## 5. User Journey Flows
 
-### 5.1 Journey: Creating a New Habit
+### 5.1 Critical User Paths
 
-This journey is designed for speed and efficiency, adhering to the "keyboard-first" principle. It allows users to add new habits without leaving the context of their main board.
+The application's core functionality revolves around several critical user journeys:
 
-**Trigger:** The user either clicks the `+ Create New Habit` button located within `The Pile` column, or uses the keyboard shortcut `a`.
+1.  **Habit Management (Identity Momentum Board):**
+    *   **Core Logic:** Habits are single entities that move between three columns: `Today`, `Yesterday`, and `The Pile`. Habits are not copied.
+    *   **State Change Cycle:** At 12 AM daily, habits transition from `Today` -> `Yesterday` -> `The Pile` (if not completed).
+    *   **Streak Logic:** Streaks are preserved as "ghost" streaks in `The Pile` if a day is missed.
+    *   **Undo:** A long-press on a `Today` chip allows users to revert to the previous state/streak.
+    *   **Sorting (`The Pile`):** Habits are sorted by Public first, then Streak Count (DESC), then Name (ASC).
+    *   **Habit Chip:** Displays name, streak badge, and `🌐 Public` / `🔒 Private` icon.
 
-**Experience: The "Inline Input" Flow**
+2.  **Grace Period Feature:**
+    *   **Purpose:** To provide an empathetic "gentle reminder" for missed habits.
+    *   **Screen:** An "End of Day Summary" screen appears if the user opens the app after 12 AM with pending habits from the previous day.
+    *   **Interaction:** Users can tap to mark pending habits complete, or use a "+ Add another habit you completed" button to add from `The Pile` or create new for the previous day.
+    *   **Confirmation:** A single `Finish & Start [New Day]` button concludes the grace period.
 
-1.  **Animation:** Upon trigger, a new input row smoothly appears at the top of `The Pile`'s list. The text input field is immediately focused, allowing the user to start typing without any extra clicks.
-2.  **Interface Content:**
-    - **Name Input:** A clean text field for the habit name.
-    - **Public/Private Toggle:** Directly next to the input field is a simple toggle showing the `🌐 Public` and `🔒 Private` icons. The default is `Private`. The user can `Tab` to it and press `Space` or `Enter` to switch.
-3.  **Confirmation:** The user hits `Enter` to confirm the new habit. Pressing `Escape` cancels the creation.
-4.  **Feedback:** Upon confirmation, the input row disappears, and the newly created Habit Chip animates gracefully into its correctly sorted position within `The Pile` list. The new chip starts with a streak of `0`.
+3.  **Actions (Todos) System:**
+    *   **Location:** A separate section positioned above the Habits board.
+    *   **Creation/Editing:** Utilizes an "Intelligent Notepad" concept with an inline input field at the bottom of the list. `Tab` allows for 2-level deep sub-todos. A `🌐/🔒` privacy toggle is available on hover.
+    *   **Sorting:** Public first, then Creation Time (ASC).
+    *   **Completion:** Features a "Teleport-to-Journal" animation, where the todo fades out from "Actions" and fades in/pops into "Completed Todos" in the Journal.
 
-### 5.2 Journey: Recording a Completed Habit
-
-This journey is the core positive feedback loop of the application. It is designed to be a moment of celebration and reflection, not a chore.
-
-**Trigger:** The user successfully moves a Habit Chip into the `Today` column via either "Drag-and-Drop" (Desktop) or "Tap-to-Move" (Mobile).
-
-**Desktop Experience: The "Morphing Card"**
-
-1.  **Animation:** Upon drop, the Habit Chip does not just disappear. It smoothly and fluidly expands in place, morphing into a larger card-like interface. The background of the app dims slightly to bring this card into focus.
-2.  **Interface Content:**
-    - **Dynamic Headline:** A personalized title reads, "How was your [Habit Name]?"
-    - **Streak Context:** Directly below the headline, a subtle text element builds anticipation: "This will be day #[Number] in a row."
-    - **"Gradient Arc" Intensity Slider:** A large, visually engaging semi-circle slider allows the user to set their effort. The arc is rendered with the theme's primary gradient, which becomes brighter and more intense as the value increases. The slider has 5 distinct, labeled snap-points:
-      - **20:** 😮‍💨 (Phew, just made it)
-      - **40:** ✨ (Good vibes)
-      - **60:** 💪 (Solid effort)
-      - **80:** 🔥 (On fire)
-      - **100:** 🤯 (Crushed it!)
-        _Design Note: These labels, emojis, and values should be easily configurable in the code._
-    - **Inputs:** Clean, simple text fields for `Duration` and `Notes`. The Notes field will have a ✍️ icon to reinforce its connection to the journal.
-    - **Primary Action:** A prominent button with the encouraging label **"Lock it in"**.
-3.  **Completion:**
-    - Upon clicking "Lock it in", the card fluidly morphs back down into the small Habit Chip.
-    - As it settles into place in the `Today` column, the streak number on its badge animates with a "spin" or "flip" to the new number (e.g., 12 -> 13), providing clear, celebratory feedback.
-4.  **Quick Exit:** For power users, pressing `Enter` immediately after the card appears will bypass the detail entry, log the habit with a default intensity, and complete the animation.
-
-**Mobile Experience: The "Immersive Screen"**
-
-1.  **Animation:** After the user completes the "Tap-to-Move" action, the application transitions (e.g., with a slide or zoom effect) to a dedicated, full-screen "Recording" view.
-2.  **Interface Content:** This screen contains the exact same elements as the desktop card (Dynamic Headline, Streak Context, Gradient Arc Slider, Inputs, and "Lock it in" button), but optimized for a vertical, full-screen layout.
-3.  **Completion:** Upon tapping "Lock it in", the screen transitions smoothly back to the main board view, where the user can see their updated chip in the `Today` column.
+4.  **Journal System:**
+    *   **Structure:** A "Two-Sided Journal" with distinct `[ 🌐 Public Journal ]` and `[ 🔒 Private Journal ]` tabs.
+    *   **Content:** Each daily entry includes user-typed notes (Markdown editor), Completed Todos, and Habit Notes.
+    *   **Privacy Logic:** The privacy of completed Habits/Todos notes is determined by their original status. Free-form notes' privacy is determined by the active tab. Absolute separation ensures public profiles only see `🌐 Public Journal` content.
 
 ---
 
@@ -181,24 +128,12 @@ This journey is the core positive feedback loop of the application. It is design
 
 ### 6.1 Component Strategy
 
-The component strategy will leverage the foundational components from `shadcn/ui` and supplement them with custom-designed components for the app's unique features.
+The component strategy will leverage established UI libraries to ensure consistency, accessibility, and rapid development, while incorporating a specialized animation library for enhanced user experience.
 
-### 6.1 Critical Custom Component: The "Habit Chip"
+*   **Foundational Components:** `shadcn/ui` will serve as the primary design system for core UI components (buttons, forms, modals, etc.). This choice provides a robust, accessible, and customizable foundation.
+*   **Animation and Micro-interactions:** `Aceternity UI` will be integrated to deliver "wow" moments and fluid animations, enhancing the overall aesthetic and user delight. This library will be used for subtle transitions, visual feedback, and dynamic elements that contribute to the app's "out-of-the-box wow design" aesthetic.
 
-The **Habit Chip** is the most important and interactive component in the application. It is the visual representation of a single habit and must convey its status at a glance.
-
-**Anatomy:**
-
-- **Habit Name:** The primary text label of the chip (e.g., "Workout").
-- **Streak Badge:** A visually prominent badge that displays the current streak count for the habit. This will be a key element for animation during the "Recording" journey.
-- **Status Icon:** A small, subtle icon on the right-hand side of the chip to indicate its privacy status.
-  - `🌐` **(Globe):** Indicates a **Public** habit, visible on the user's public profile.
-  - `🔒` **(Lock):** Indicates a **Private** habit, visible only to the user.
-
-**Behavior:**
-
-- The chip is the primary element for all core interactions: Drag-and-Drop (Desktop), Tap-to-Move (Mobile), and Long-Press (to undo).
-- Its visual appearance (color, border, etc.) will change based on its location (`Today`, `Yesterday`, `The Pile`) and state (e.g., the "Urgency" state before a streak is lost).
+This dual-library approach allows for efficient development of standard UI elements while providing the flexibility to implement unique and engaging visual interactions. Custom components will be developed only when specific UI/UX requirements cannot be met by these libraries.
 
 ---
 
@@ -206,7 +141,17 @@ The **Habit Chip** is the most important and interactive component in the applic
 
 ### 7.1 Consistency Rules
 
-{{ux_pattern_decisions}}
+To ensure a cohesive and efficient user experience, the following UX pattern decisions will guide the application's design:
+
+*   **Keyboard-First Interaction:**
+    *   The application will adhere to a "keyboard-first" design philosophy, prioritizing robust navigation and interaction via `Tab`, `Space`, and `Enter` keys.
+    *   Custom keyboard shortcuts will be implemented sparingly, reserved only for high-frequency actions to avoid cognitive overload.
+    *   This ensures speed and efficiency for power users and enhances accessibility.
+
+*   **Micro-interactions and Subtle Cues:**
+    *   The interface will be rich with micro-interactions and subtle visual cues. These small, contextual animations and feedback mechanisms are paramount for conveying a blend of empowerment, pride, focus, and positive urgency.
+    *   Examples include visual state changes when habits move between columns, and the "Teleport-to-Journal" animation for action completion.
+    *   These elements provide clear feedback, make the experience feel alive, and contribute to the overall "wow" design aesthetic without being distracting.
 
 ---
 
@@ -214,7 +159,19 @@ The **Habit Chip** is the most important and interactive component in the applic
 
 ### 8.1 Responsive Strategy
 
-{{responsive_accessibility_strategy}}
+The application will be designed to provide an optimal viewing and interaction experience across a wide range of devices, from desktop to mobile.
+
+*   **Desktop Layout:**
+    *   **Structure:** A two-row layout will be utilized. The top row will present `Today` and `Yesterday` columns side-by-side, while the bottom row will feature a full-width `The Pile` column.
+    *   **Interaction:** `Drag-and-Drop` functionality will be the primary interaction method for moving habits.
+
+*   **Mobile Layout:**
+    *   **Structure:** A single-column, stacked layout will be implemented. Content will be ordered as `Today`, followed by `Yesterday`, and then `The Pile`.
+    *   **Interaction:** `Tap-to-Move` will be the primary interaction for habit manipulation on mobile devices.
+
+**Accessibility:**
+
+The application will adhere to the **Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standard**. This commitment ensures that the application is usable by individuals with a wide range of disabilities, covering aspects such as perceivability, operability, understandability, and robustness. Key considerations will include keyboard navigation, screen reader compatibility, color contrast, and touch target sizes.
 
 ---
 
@@ -222,7 +179,19 @@ The **Habit Chip** is the most important and interactive component in the applic
 
 ### 9.1 Completion Summary
 
-{{completion_summary}}
+This UX Design Specification outlines the foundational design decisions for the "whatcha-doin" application. Key aspects covered include:
+
+*   **Project Vision & Core Philosophy:** Defined the project's purpose as an "identity-building toolkit" for "The Ambitious Underachiever," emphasizing "no friction, no stress, only pure productivity."
+*   **Design System Foundation:** Established `shadcn/ui` as the primary design system and `Aceternity UI` for animations, alongside a dual-theme strategy ("Zenith" for light mode, "Monolith" for dark mode).
+*   **Core User Experience:** Articulated the defining experience as building identity through consistent habits and identified novel UX patterns such as the "Positive Urgency" UI and "Teleport-to-Journal" animation.
+*   **Visual Foundation:** Detailed the dual-theme color system, providing distinct aesthetic experiences for light and dark modes.
+*   **Design Direction:** Outlined the "Professional, tech-savvy, out-of-the-box wow design" aesthetic and specified responsive layouts for desktop (two-row, drag-and-drop) and mobile (single-column, tap-to-move).
+*   **User Journey Flows:** Summarized critical user paths for Habit Management, Grace Period, Actions System, and Journal System, including core logic, state changes, and interactions.
+*   **Component Strategy:** Confirmed the use of `shadcn/ui` for foundational components and `Aceternity UI` for animations.
+*   **UX Pattern Decisions:** Emphasized a "keyboard-first" interaction philosophy and the importance of micro-interactions and subtle cues for feedback and emotional engagement.
+*   **Responsive Design & Accessibility:** Defined responsive layouts for desktop and mobile, and committed to WCAG 2.1 Level AA accessibility compliance.
+
+These decisions provide a comprehensive guide for the subsequent design and development phases, ensuring a consistent, intuitive, and engaging user experience.
 
 ---
 
@@ -230,21 +199,19 @@ The **Habit Chip** is the most important and interactive component in the applic
 
 ### Related Documents
 
-- Product Requirements: `{{prd_file}}`
-- Product Brief: `{{brief_file}}`
-- Brainstorming: `{{brainstorm_file}}`
+- Product Requirements: `PRD.md`
+- Brainstorming: `brainstorming-session-results-2025-11-10.md`
 
 ### Core Interactive Deliverables
 
 This UX Design Specification was created through visual collaboration:
 
-- **Color Theme Visualizer**: ux-color-themes.html
-
+- **Color Theme Visualizer**: /Users/alhamdulillah/codespace/whatcha-doin/docs/ux-color-themes.html
   - Interactive HTML showing all color theme options explored
   - Live UI component examples in each theme
   - Side-by-side comparison and semantic color usage
 
-- **Design Direction Mockups**: ux-design-directions.html
+- **Design Direction Mockups**: /Users/alhamdulillah/codespace/whatcha-doin/docs/ux-design-directions.html
   - Interactive HTML with 6-8 complete design approaches
   - Full-screen mockups of key screens
   - Design philosophy and rationale for each direction
@@ -268,9 +235,9 @@ This UX Design Specification can serve as input to:
 
 ### Version History
 
-| Date       | Version | Changes                         | Author       |
-| ---------- | ------- | ------------------------------- | ------------ |
-| 2025-11-11 | 1.0     | Initial UX Design Specification | hammaadworks |
+| Date     | Version | Changes                         | Author        |
+| -------- | ------- | ------------------------------- | ------------- |
+| 2025-11-12 | 1.0     | Initial UX Design Specification | hammaadworks |
 
 ---
 

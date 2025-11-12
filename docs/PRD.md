@@ -1,49 +1,40 @@
-# {{project_name}} - Product Requirements Document
+# whatcha-doin - Product Requirements Document
 
-**Author:** {{user_name}}
-**Date:** {{date}}
+**Author:** hammaadworks
+**Date:** Wednesday, 12 November 2025
 **Version:** 1.3
 
 ---
 
 ## Executive Summary
 
-{{vision_alignment}}
+This PRD outlines the development of "whatcha-doin," a habit and todo tracking application designed to foster personal growth and consistency. The vision is to create an intuitive, keyboard-first experience that empowers users to build positive routines and reflect on their progress, ultimately leading to a more organized and fulfilling life.
 
 ### What Makes This Special
 
-{{product_magic_essence}}
+"whatcha-doin" stands out by combining robust habit/todo management with a unique journaling system and novel UX patterns. Its "keyboard-first" design prioritizes efficiency, while features like the "Two-Day Rule," "Grace Period," "Positive Urgency UI," and "Teleport-to-Journal Animation" create an engaging and motivating experience. The focus is on making habit building intuitive, rewarding, and deeply integrated with personal reflection.
 
 ---
 
 ## Project Classification
 
-**Technical Type:** {{project_type}}
-**Domain:** {{domain_type}}
-**Complexity:** {{complexity_level}}
+**Technical Type:** Single Page Application (SPA) built with Next.js
+**Domain:** Personal Productivity / Habit Tracking
+**Complexity:** Moderate to High
 
-{{project_classification}}
-
-{{#if domain_context_summary}}
-
-### Domain Context
-
-{{domain_context_summary}}
-{{/if}}
+"whatcha-doin" is classified as a Moderate to High complexity SPA in the Personal Productivity / Habit Tracking domain, leveraging modern web technologies for a rich user experience.
 
 ---
 
+
+
 ## Success Criteria
 
-{{success_criteria}}
-
-{{#if business_metrics}}
-
-### Business Metrics
-
-{{business_metrics}}
-{{/if}}
-
+The success of "whatcha-doin" will be measured by user engagement, habit completion rates, and positive feedback on the unique UX features.
+- **User Engagement:** High daily active users (DAU) and retention rates.
+- **Habit Completion:** Increased average streak lengths and consistent habit completion.
+- **User Satisfaction:** Positive feedback on the intuitiveness, efficiency, and motivational aspects of the application.
+- **Feature Adoption:** High usage of core features like journaling, public profiles, and novel UX patterns.
 ---
 
 ## Product Scope
@@ -76,7 +67,7 @@ This is the focused feature set required to deliver the core identity-building e
 
 ## Web App Specific Requirements
 
-The project will be a Single Page Application (SPA) built with Next.js, providing a smooth, app-like user experience. It should be optimized for modern browsers (e.g., Chrome, Firefox, Safari). SEO is not a priority for the application itself. The application must support real-time synchronization of user data across different devices.
+The project will be a Single Page Application (SPA) built with Next.js, providing a smooth, app-like user experience. It should be optimized for modern browsers (e.g., Chrome, Firefox, Safari). The primary UI component library will be `shadcn/ui`, complemented by `Aceternity UI` for animations and micro-interactions. SEO is not a priority for the application itself. The application must support real-time synchronization of user data across different devices.
 
 ---
 
@@ -109,13 +100,16 @@ This section details the specific functionalities of the application, derived fr
 - **FR-2.5:** Each habit chip must display a visible streak counter badge.
 
 ### FR-3: Todo Management (One-off Tasks)
-- **FR-3.1:** Users must be able to create a new "todo" with a text description.
-- **FR-3.2:** When creating or editing a todo, users must be able to mark it as "public" or "private".
+- **FR-3.1:** Users must be able to create a new "todo" with a text description using an "Intelligent Notepad" concept. This includes an inline input field at the bottom of the list and the ability to create 2-level deep sub-todos using the `Tab` key.
+- **FR-3.2:** When creating or editing a todo, users must be able to mark it as "public" or "private" via a `🌐/🔒` privacy toggle visible on hover.
 - **FR-3.3:** Users must be able to mark a todo as complete.
 - **FR-3.4:** Users must be able to delete a todo.
 
 ### FR-4: Main Interface & Core Logic
-- **FR-4.1:** The main user interface must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile". All columns must sort their habit chips according to the following three-level order: 1. Public habits first, 2. by highest streak count (descending), 3. by name (ascending).
+- **FR-4.1:** The main user interface must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile".
+    - On desktop, this will be a two-row layout: Top row with "Today" and "Yesterday" side-by-side, and a full-width "The Pile" on the bottom. Interaction will be `Drag-and-Drop`.
+    - On mobile, this will be a single-column, stacked layout: "Today", then "Yesterday", then "The Pile". Interaction will be `Tap-to-Move`.
+    All columns must sort their habit chips according to the following three-level order: 1. Public habits first, 2. by highest streak count (descending), 3. by name (ascending).
 - **FR-4.2:** The daily state change occurs at 12:00 am in the user's local timezone. At this time, any habits completed the previous day appear in the "Yesterday" column.
 - **FR-4.3:** Users must be able to drag a habit from "Yesterday" to "Today" to mark it as complete for the current day and continue its active streak.
 - **FR-4.4 (The "Two-Day Rule"):** If a habit in the "Yesterday" column is not moved to "Today" by the daily cut-off, it must be automatically moved to "The Pile", unless the "Grace Period" is triggered. When moved to The Pile due to a missed day, its active streak is reset to zero, but the previous streak count is preserved as a 'High Score' and displayed in a visually distinct manner (e.g., grayed out).
@@ -135,16 +129,20 @@ This section details the specific functionalities of the application, derived fr
 - **FR-5.2:** The system must provide a dual-view journal with distinct "Public" and "Private" sections.
 - **FR-5.3:** Notes from completed public items must be automatically added to the Public Journal.
 - **FR-5.4:** Notes from completed private items must be automatically added to the Private Journal.
-- **FR-5.5:** Users must be able to add free-form text directly to either the public or private journal.
+- **FR-5.5:** Users must be able to add free-form text directly to either the public or private journal using a Markdown editor.
 - **FR-5.6:** Users must be able to edit the content of any journal entry at any time.
 - **FR-5.7:** The journal view must default to showing today's entries and provide a date selector to view entries from past dates.
-- **FR-5.8:** The public journal displayed on the public profile page must be searchable by its text content.
+
 
 ### FR-6: General UI & UX
 - **FR-6.1:** The application must feature a widget that displays a motivational quote.
 - **FR-6.2:** All core user actions (e.g., creating items, navigating, completing tasks) must be achievable via keyboard shortcuts.
 - **FR-6.3:** The application must function as a Single Page Application (SPA), providing a fluid user experience without full-page reloads for navigation.
-- **FR-6.4:** The application must include a prominent theme switcher to allow users to toggle between a light ("Zenith") and a dark ("Monolith") theme.
+- **FR-6.4:** The application must include a prominent theme switcher to allow users to toggle between a light ("Zenith" - clean, energetic, pastel gradients) and a dark ("Monolith" - sharp, focused, bold accent) theme.
+
+### FR-7: Novel UX Patterns
+- **FR-7.1 (Positive Urgency UI):** The 'Yesterday' column must feature an "Ambient Animated Background" with a slow, shifting gradient (cool colors transitioning to warm colors) to subtly indicate time passing. A tooltip on hover must display the time remaining until the daily cut-off.
+- **FR-7.2 (Teleport-to-Journal Animation):** Upon completion of an "Action" (Todo), it must visually fade out from the "Actions" section and simultaneously fade in/pop into the "Completed Todos" section within the Journal, providing clear and delightful feedback.
 
 ---
 
@@ -179,18 +177,6 @@ Requirements must be decomposed into epics and bite-sized stories.
 
 ## References
 
-{{#if product_brief_path}}
-- Product Brief: {{product_brief_path}}
-{{/if}}
-{{#if domain_brief_path}}
-- Domain Brief: {{domain_brief_path}}
-{{/if}}
-{{#if research_documents}}
-- Research: {{research_documents}}
-{{/if}}
-
----
-
 ## Next Steps
 
 1. **Epic & Story Breakdown** - Run: `workflow create-epics-and-stories`
@@ -199,6 +185,6 @@ Requirements must be decomposed into epics and bite-sized stories.
 
 ---
 
-_This PRD captures the essence of {{project_name}} - {{product_magic_summary}}_
+_This PRD captures the essence of whatcha-doin - an intuitive, keyboard-first habit tracker with novel UX and integrated journaling._
 
-_Created through collaborative discovery between {{user_name}} and AI facilitator._
+_Created through collaborative discovery between hammaadworks and AI facilitator._
