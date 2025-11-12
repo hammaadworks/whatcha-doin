@@ -104,20 +104,44 @@ The application's core functionality revolves around several critical user journ
     *   **Undo:** A long-press on a `Today` chip allows users to revert to the previous state/streak.
     *   **Sorting (`The Pile`):** Habits are sorted by Public first, then Streak Count (DESC), then Name (ASC).
     *   **Habit Chip:** Displays name, streak badge, and `🌐 Public` / `🔒 Private` icon.
+    *   **Habit Goal Adjustment (Upgrade/Downgrade):**
+        *   Users can set and modify a quantitative goal for a habit (e.g., "Read 5 pages", "Do 20 pushups").
+        *   When a habit's goal is upgraded or downgraded, the existing streak will **continue uninterrupted**. The new goal becomes the requirement for continuing the streak from the moment of change.
+        *   **UI:** Clear confirmation dialogs will inform the user of the change and its impact on future requirements. The streak counter remains unchanged, but the displayed goal on the habit card immediately updates.
+    *   **Habit Granularity:**
+        *   The system will support both **broad habits** (e.g., "Workout") and **atomic habits** (e.g., "10 Pushups").
+        *   **UI:** For broad habits, the completion modal will allow for logging details (e.g., reps, duration, specific activities) within the completion flow without requiring separate habit definitions. Users will be guided to choose the appropriate granularity based on their "why."
 
-2.  **Grace Period Feature:**
+2.  **Habit Completion Flow & Data Entry:**
+    *   **Trigger:** When a habit or todo is marked complete, a modal appears.
+    *   **Goal & Actual Value Recording:** The system formally records the `current_goal_value` for a habit, the `actual_value_achieved` for each completion, and the `goal_at_completion` (the goal active when the habit was completed).
+    *   **Intensity Slider:**
+        *   **Purpose:** To capture the user's subjective feeling/quality of the habit completion, distinct from the quantitative goal.
+        *   **Values:** Discrete jumps (0, 20, 40, 60, 80, 100).
+        *   **Labels (Examples):**
+            *   0: "Didn't do it / Felt terrible"
+            *   20: "Barely managed / Not great"
+            *   40: "Okay / Could be better"
+            *   60: "Good / Satisfied"
+            *   80: "Great / Accomplished"
+            *   100: "Awesome! / Crushed it!"
+        *   **UI:** The slider will appear *after* the user marks completion or inputs a quantitative value. It will have clear, empathetic labels corresponding to the discrete values. It will be visually separate from the quantitative goal input.
+    *   **Additional Fields:** The modal will also include fields for duration and free-form text notes.
+    *   **Bypass:** Users can bypass detail entry by pressing `Enter` to log the item with default values.
+
+3.  **Grace Period Feature:**
     *   **Purpose:** To provide an empathetic "gentle reminder" for missed habits.
     *   **Screen:** An "End of Day Summary" screen appears if the user opens the app after 12 AM with pending habits from the previous day.
     *   **Interaction:** Users can tap to mark pending habits complete, or use a "+ Add another habit you completed" button to add from `The Pile` or create new for the previous day.
     *   **Confirmation:** A single `Finish & Start [New Day]` button concludes the grace period.
 
-3.  **Actions (Todos) System:**
+4.  **Actions (Todos) System:**
     *   **Location:** A separate section positioned above the Habits board.
     *   **Creation/Editing:** Utilizes an "Intelligent Notepad" concept with an inline input field at the bottom of the list. `Tab` allows for 2-level deep sub-todos. A `🌐/🔒` privacy toggle is available on hover.
     *   **Sorting:** Public first, then Creation Time (ASC).
     *   **Completion:** Features a "Teleport-to-Journal" animation, where the todo fades out from "Actions" and fades in/pops into "Completed Todos" in the Journal.
 
-4.  **Journal System:**
+5.  **Journal System:**
     *   **Structure:** A "Two-Sided Journal" with distinct `[ 🌐 Public Journal ]` and `[ 🔒 Private Journal ]` tabs.
     *   **Content:** Each daily entry includes user-typed notes (Markdown editor), Completed Todos, and Habit Notes.
     *   **Privacy Logic:** The privacy of completed Habits/Todos notes is determined by their original status. Free-form notes' privacy is determined by the active tab. Absolute separation ensures public profiles only see `🌐 Public Journal` content.

@@ -98,6 +98,9 @@ This section details the specific functionalities of the application, derived fr
 - **FR-2.3:** Users must be able to edit the name and public/private status of an existing habit.
 - **FR-2.4:** Users must be able to delete a habit.
 - **FR-2.5:** Each habit chip must display a visible streak counter badge.
+- **FR-2.6:** Users must be able to set and modify a quantitative goal for a habit (e.g., "Read 5 pages", "Do 20 pushups").
+- **FR-2.7:** When a habit's goal is upgraded or downgraded, the existing streak must continue uninterrupted. The new goal becomes the requirement for continuing the streak from the moment of change.
+- **FR-2.8:** The system must support both broad habits (e.g., "Workout") and atomic habits (e.g., "10 Pushups"). For broad habits, the UI will allow for logging details (e.g., reps, duration, specific activities) within the completion flow without requiring separate habit definitions.
 
 ### FR-3: Todo Management (One-off Tasks)
 - **FR-3.1:** Users must be able to create a new "todo" with a text description using an "Intelligent Notepad" concept. This includes an inline input field at the bottom of the list and the ability to create 2-level deep sub-todos using the `Tab` key.
@@ -123,9 +126,10 @@ This section details the specific functionalities of the application, derived fr
 
 ### FR-5: Journaling & Data Entry
 - **FR-5.1:** When a habit or todo is marked complete, a modal must appear allowing the user to record details.
-    - **FR-5.1.1:** The modal must include an effort score slider with 5 configurable snap-points and labels (e.g., 20: 😮‍💨, 40: ✨, 60: 💪, 80: 🔥, 100: 🤯).
-    - **FR-5.1.2:** The modal must include fields for duration and free-form text notes.
-    - **FR-5.1.3:** Users must be able to bypass detail entry by pressing `Enter` to log the item with default values.
+    - **FR-5.1.1:** The modal must include an intensity slider with discrete values (0, 20, 40, 60, 80, 100) and empathetic labels (e.g., 0: "Didn't do it / Felt terrible", 100: "Awesome! / Crushed it!"). This slider captures the user's subjective feeling/quality of the habit completion.
+    - **FR-5.1.2:** The system must formally record the `current_goal_value` for a habit, the `actual_value_achieved` for each completion, and the `goal_at_completion` (the goal active when the habit was completed).
+    - **FR-5.1.3:** The modal must include fields for duration and free-form text notes.
+    - **FR-5.1.4:** Users must be able to bypass detail entry by pressing `Enter` to log the item with default values.
 - **FR-5.2:** The system must provide a dual-view journal with distinct "Public" and "Private" sections.
 - **FR-5.3:** Notes from completed public items must be automatically added to the Public Journal.
 - **FR-5.4:** Notes from completed private items must be automatically added to the Private Journal.
