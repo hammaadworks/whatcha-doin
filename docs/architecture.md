@@ -68,6 +68,13 @@ This approach accelerates development by leveraging established best practices a
 *   **Supabase Functions (PostgreSQL):** Leverage PostgreSQL's `RAISE NOTICE` or `RAISE WARNING` for structured logging within functions, appearing in Supabase logs.
 *   **Alerting:** Critical errors will trigger alerts via the Lark chat webhook.
 
+### Date/Time Handling
+
+*   **Storage (Supabase PostgreSQL):** All dates and times will be stored in **UTC (Coordinated Universal Time)** using PostgreSQL's `TIMESTAMP WITH TIME ZONE` type.
+*   **Transmission (API/Functions):** Dates and times will always be transmitted as **ISO 8601 strings** (e.g., `2025-11-12T10:30:00Z`).
+*   **Client-Side (Next.js Frontend):** The frontend will detect the user's local timezone, convert UTC times from the database to the user's local timezone for display, and convert user input back to UTC ISO 8601 strings for transmission.
+*   **Calculations (Supabase Functions/PostgreSQL):** All core logic and calculations will be performed server-side using **UTC timestamps**, considering the user's stored timezone offset (user's preferred timezone will be stored in their profile).
+
 ## Data Architecture
 
 {{data_models_and_relationships}}
