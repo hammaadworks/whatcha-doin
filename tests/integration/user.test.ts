@@ -4,7 +4,7 @@ import { updateUserBio, getUserProfile, getPublicProfileData } from '@/lib/supab
 vi.mock('@/lib/supabase/client', () => {
   const mockSingle = vi.fn();
 
-  const mockEqChain: any = {
+  const mockEqChain = {
     eq: vi.fn((column, value) => mockEqChain),
     single: mockSingle,
   };
@@ -20,19 +20,24 @@ vi.mock('@/lib/supabase/client', () => {
     select: vi.fn(() => ({ eq: mockEq, single: mockSingle }))
   }));
 
-  const supabase = {
+  const supabaseClient = {
     from: mockFrom,
     auth: {
       signUp: vi.fn(),
     },
   };
+
   return {
-    supabaseClient: supabase,
+    supabaseClient: supabaseClient,
     mockSingle: mockSingle,
   };
 });
 
 import { supabaseClient, mockSingle } from '@/lib/supabase/client';
+
+
+
+
 
 test('updateUserBio updates the bio for a user', async () => {
   const testUser = { id: '123', email: 'test@example.com' };
