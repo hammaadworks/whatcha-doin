@@ -1,4 +1,4 @@
-import { supabaseClient } from "./client";
+import { supabase } from "./client";
 
 interface CreateHabitData {
   name: string;
@@ -11,7 +11,7 @@ interface CreateHabitData {
 export async function createHabit(habitData: CreateHabitData) {
   const { name, goal_value, goal_unit, user_id, is_public } = habitData; // Destructure is_public
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("habits")
     .insert([
       {
@@ -44,7 +44,7 @@ interface UpdateHabitData {
 export async function updateHabit(habitId: string, habitData: UpdateHabitData) {
   const { name, is_public, last_completed_at, goal_value, goal_unit } = habitData; // Destructure new goal fields
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("habits")
     .update({ name, is_public, last_completed_at, goal_value, goal_unit }) // Include new goal fields in update
     .eq("id", habitId)
@@ -59,7 +59,7 @@ export async function updateHabit(habitId: string, habitData: UpdateHabitData) {
 }
 
 export async function deleteHabit(habitId: string) {
-  const { error } = await supabaseClient
+  const { error } = await supabase
     .from("habits")
     .delete()
     .eq("id", habitId);
@@ -80,7 +80,7 @@ interface UpdateStreakData {
 export async function updateStreak(habitId: string, streakData: UpdateStreakData) {
   const { current_streak, last_streak } = streakData;
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("habits")
     .update({ current_streak, last_streak })
     .eq("id", habitId)

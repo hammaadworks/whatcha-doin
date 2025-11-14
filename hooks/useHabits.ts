@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabaseClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { useAuth } from './useAuth';
 import { updateHabit as updateHabitService, deleteHabit as deleteHabitService, updateStreak as updateStreakService } from '@/lib/supabase/habit'; // Import update, delete, and streak services
 import toast from 'react-hot-toast'; // Import toast
@@ -33,7 +33,7 @@ const useHabits = () => {
 
     setLoading(true);
     setError(null);
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from('habits')
       .select('*')
       .eq('user_id', user.id);

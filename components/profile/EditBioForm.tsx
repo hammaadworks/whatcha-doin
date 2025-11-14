@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import {updateUserBio} from '@/lib/supabase/user';
-import {supabaseClient} from '@/lib/supabase/client';
+import {supabase} from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 
 function EditBioForm({bio}: { bio: string }) {
@@ -12,7 +12,7 @@ function EditBioForm({bio}: { bio: string }) {
         e.preventDefault();
         const {
             data: {user},
-        } = await supabaseClient.auth.getUser();
+        } = await supabase.auth.getUser();
 
         if (user) {
             const {error} = await updateUserBio(user.id, newBio);

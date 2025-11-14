@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect} from "react";
-import {supabaseClient} from "@/lib/supabase/client";
+import {supabase} from "@/lib/supabase/client";
 import {create} from "zustand";
 
 interface AuthState {
@@ -29,14 +29,14 @@ export const useAuth = () => {
         const getSession = async () => {
             const {
                 data: {session},
-            } = await supabaseClient.auth.getSession();
+            } = await supabase.auth.getSession();
             setSession(session);
             setLoading(false);
         };
 
         getSession().then(_ => {});
 
-        const {data: authListener} = supabaseClient.auth.onAuthStateChange(
+        const {data: authListener} = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setSession(session);
                 setLoading(false);

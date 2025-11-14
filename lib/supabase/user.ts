@@ -1,7 +1,7 @@
-import {supabaseClient} from '@/lib/supabase/client';
+import {supabase} from '@/lib/supabase/client';
 
 export async function getUserProfile(userId: string) {
-    const {data, error} = await supabaseClient
+    const {data, error} = await supabase
         .from('users')
         .select('bio')
         .eq('id', userId)
@@ -11,7 +11,7 @@ export async function getUserProfile(userId: string) {
 }
 
 export async function updateUserBio(userId: string, bio: string) {
-    const {error} = await supabaseClient
+    const {error} = await supabase
         .from('users')
         .update({bio})
         .eq('id', userId);
@@ -30,7 +30,7 @@ export async function getPublicProfileData(userId: string): Promise<{
     data: PublicProfile | null,
     error: Error | null
 }> {
-    const {data, error} = await supabaseClient
+    const {data, error} = await supabase
         .from('users')
         .select(`
       bio,
