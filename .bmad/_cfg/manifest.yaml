@@ -1,0 +1,10 @@
+installation:
+  version: 6.0.0-alpha.9
+  installDate: '2025-11-14T03:53:15.309Z'
+  lastUpdated: '2025-11-14T03:53:15.309Z'
+modules:
+  - core
+  - bmm
+ides:
+  - gemini
+  - github-copilot
