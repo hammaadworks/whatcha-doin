@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label"; // Import Label
 
 interface HabitCreatorProps {
   onHabitCreated: () => void; // New prop to notify parent
+  initialUser?: any; // Optional prop to pass a mock user for development/testing
 }
 
 const predefinedUnits = [
@@ -29,8 +30,8 @@ const predefinedUnits = [
   "Custom...",
 ];
 
-export function HabitCreator({ onHabitCreated }: HabitCreatorProps) {
-  const { user } = useAuth(); // Assuming useAuth provides user object with id
+export function HabitCreator({ onHabitCreated, initialUser }: HabitCreatorProps) {
+  const { user } = useAuth(initialUser); // Pass initialUser to useAuth
   const [habitName, setHabitName] = useState("");
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [goalValue, setGoalValue] = useState<number | undefined>(undefined);

@@ -9,6 +9,8 @@
 
 ## Executive Summary
 
+**NOTE:** For development purposes, Magic Link authentication is temporarily disabled. The application is configured to use a hardcoded test user session for all feature development. This is achieved by injecting a mock user via the `AuthProvider` component in `app/(main)/layout.tsx` when `NEXT_PUBLIC_DEV_MODE_ENABLED=true`. To re-enable Magic Link, set `NEXT_PUBLIC_DEV_MODE_ENABLED=false` in `.env.local` (or remove it) and set `enable_signup = true` in `supabase/config.toml` under both `[auth]` and `[auth.email]` sections.
+
 This PRD outlines the development of "whatcha-doin," a habit and todo tracking application designed to foster personal growth and consistency. The vision is to create an intuitive, keyboard-first experience that empowers users to build positive routines and reflect on their progress, ultimately leading to a more organized and fulfilling life.
 
 ### What Makes This Special

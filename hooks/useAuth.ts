@@ -22,10 +22,16 @@ const useAuthStore = create<AuthState>((set) => ({
     setLoading: (loading) => set({loading}),
 }));
 
-export const useAuth = () => {
-    const {user, session, loading, setSession, setLoading} = useAuthStore();
+export const useAuth = (initialUser?: any) => {
+    const {user, session, loading, setSession, setUser, setLoading} = useAuthStore();
 
     useEffect(() => {
+        if (initialUser) {
+            setUser(initialUser);
+            setLoading(false);
+            return;
+        }
+
         const getSession = async () => {
             const {
                 data: {session},
@@ -46,7 +52,7 @@ export const useAuth = () => {
         return () => {
             authListener?.subscription.unsubscribe();
         };
-    }, [setSession, setLoading]);
+    }, [setSession, setLoading, initialUser]);
 
     return {user, session, loading};
 };

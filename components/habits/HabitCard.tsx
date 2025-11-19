@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import EditHabitModal from './EditHabitModal'; // Import the modal component
 

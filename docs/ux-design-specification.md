@@ -7,6 +7,8 @@ _Generated using BMad Method - Create UX Design Workflow v1.0_
 
 ## Executive Summary
 
+**NOTE:** For development purposes, Magic Link authentication is temporarily disabled. The application is configured to use a hardcoded test user session for all feature development. This is achieved by injecting a mock user via the `AuthProvider` component in `app/(main)/layout.tsx` when `NEXT_PUBLIC_DEV_MODE_ENABLED=true`. To re-enable Magic Link, set `NEXT_PUBLIC_DEV_MODE_ENABLED=false` in `.env.local` (or remove it) and set `enable_signup = true` in `supabase/config.toml` under both `[auth]` and `[auth.email]` sections.
+
 "whatcha-doin" is an identity-building toolkit focused on helping "The Ambitious Underachiever" build consistent habits. The core experience is about building identity through consistent actions, with a philosophy of "no friction, no stress, only pure productivity." It's the app where users build their identity with consistent habits one by one.
 
 ---
