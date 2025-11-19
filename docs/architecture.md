@@ -2,6 +2,8 @@
 
 ## Executive Summary
 
+**NOTE:** For development purposes, Magic Link authentication is temporarily disabled. The application is configured to use a hardcoded test user session for all feature development. This is achieved by injecting a mock user via the `AuthProvider` component in `app/(main)/layout.tsx` when `NEXT_PUBLIC_DEV_MODE_ENABLED=true`. To re-enable Magic Link, set `NEXT_PUBLIC_DEV_MODE_ENABLED=false` in `.env.local` (or remove it) and set `enable_signup = true` in `supabase/config.toml` under both `[auth]` and `[auth.email]` sections.
+
 This document outlines the architectural decisions for 'whatcha-doin', a Next.js application leveraging Supabase for its backend services (PostgreSQL, Authentication, Realtime, Storage, and PostgREST API) and deployed on Vercel with GitHub Actions for CI/CD. The architecture prioritizes frugality, scalability, and a robust user experience, implementing novel UX patterns through a hybrid client-side/Supabase Database Function approach for critical logic like the Grace Period and "Two-Day Rule" enforcement. Key cross-cutting concerns such as error handling, logging, date/time management, API response formats, and a lean testing strategy have been defined to ensure consistency and maintainability.
 ## Project Structure
 
@@ -377,6 +379,10 @@ This section summarizes the key architectural decisions made during this workflo
 15. **ADR 015: Data Storage for Intensity (Moving Average)**
     *   **Decision:** For historical trends of intensity, implement a moving average (e.g., 7-day and 30-day averages) rather than storing every single daily intensity entry. The `last_recorded_intensity` will be stored for immediate display.
     *   **Rationale:** Balances the need for historical context and trend analysis with concerns about database efficiency and storage. Provides valuable insights without overwhelming the database with granular daily entries.
+
+16. **ADR 016: Development Mode User Injection**
+    *   **Decision:** Implement an `AuthProvider` client component to inject a mock user session when `NEXT_PUBLIC_DEV_MODE_ENABLED=true` in `app/(main)/layout.tsx`.
+    *   **Rationale:** Allows for seamless feature development and testing without requiring a live Supabase authentication flow, improving developer experience and enabling rapid iteration during the MVP phase.
 
 ---
 
