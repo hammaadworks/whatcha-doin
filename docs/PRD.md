@@ -45,7 +45,7 @@ The success of "whatcha-doin" will be measured by user engagement, habit complet
 ### MVP - Minimum Viable Product
 
 This is the focused feature set required to deliver the core identity-building experience.
-- **User System:** User accounts with Magic Link login and a simple user bio.
+- **User System:** User accounts with Magic Link logins and a simple user bio.
 - **Core "Habits" System:** Create, edit, and delete recurring "habits" with a public/private flag. A three-column layout ("Today", "Yesterday", "The Pile") with drag-and-drop functionality. The "Two-Day Rule" governs streak management, and a visible streak counter is displayed on each habit.
 - **Core "Todos" System:** Create, edit, and delete one-off "todos", also with a public/private flag.
 - **Journal System:** A dual-view journal with "Public" and "Private" tabs. It automatically aggregates notes from completed items into the correct tab. Users can also add free-form text and edit any journal entry at any time. The main UI shows today's entry by default, with a date selector to view past entries.
@@ -90,7 +90,7 @@ This section details the specific functionalities of the application, derived fr
 
 ### FR-1: User & Profile Management
 - **FR-1.1:** Users must be able to create an account using a Magic Link sent to their email address.
-- **FR-1.2:** The system must support user login and logout.
+- **FR-1.2:** The system must support user logins and logout.
 - **FR-1.3:** Users must be able to edit a simple text bio for their profile.
 - **FR-1.4:** Each user must have a public profile page accessible via a shareable, unique URL.
 - **FR-1.5:** The public profile page must display the user's bio, all public habits, all public todos, and the public journal.

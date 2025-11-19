@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useAuthStore } from "@/lib/store/auth";
-import Login from "./Login";
+import Logins from "./Logins";
 
 export default function Auth() {
   const { session, setSession } = useAuthStore();
@@ -59,7 +59,7 @@ export default function Auth() {
   };
 
   if (!session) {
-    return <Login />;
+    return <Logins />;
   }
 
   return null;

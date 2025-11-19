@@ -10,7 +10,7 @@ export default function LogoutButton() {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (!error) {
-      router.push("/"); // Redirect to login page after logout
+      router.push("/"); // Redirect to logins page after logout
     } else {
       console.error("Error logging out:", error.message);
       // Optionally, display an error message to the user

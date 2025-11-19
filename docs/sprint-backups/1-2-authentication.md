@@ -12,8 +12,8 @@ so that I can securely access and protect my session.
 
 1.  A user can log in using the existing Magic Link mechanism.
 2.  A user can explicitly log out of the application.
-3.  The application state should reflect the user's authentication status (e.g., showing a login button when logged out and a logout button when logged in).
-4.  Authenticated routes should be protected, redirecting unauthenticated users to a login page.
+3.  The application state should reflect the user's authentication status (e.g., showing a logins button when logged out and a logout button when logged in).
+4.  Authenticated routes should be protected, redirecting unauthenticated users to a logins page.
 
 ## Tasks / Subtasks
 
@@ -22,12 +22,12 @@ so that I can securely access and protect my session.
   - [x] Subtask 1.2: Add a logout button to the UI that is only visible to authenticated users.
 - [x] Task 2: Authentication State Management (AC: #3)
   - [x] Subtask 2.1: Create a mechanism to track the user's session state globally in the application.
-  - [x] Subtask 2.2: Conditionally render UI elements (e.g., Login/Logout buttons) based on the authentication state.
+  - [x] Subtask 2.2: Conditionally render UI elements (e.g., Logins/Logout buttons) based on the authentication state.
 - [x] Task 3: Protected Routes (AC: #4)
   - [x] Subtask 3.1: Implement a higher-order component or middleware to protect routes that require authentication.
-  - [x] Subtask 3.2: Redirect unauthenticated users attempting to access protected routes to the login page.
+  - [x] Subtask 3.2: Redirect unauthenticated users attempting to access protected routes to the logins page.
 - [x] Task 4: Testing
-  - [x] Subtask 4.1: Write integration tests for login and logout flows.
+  - [x] Subtask 4.1: Write integration tests for logins and logout flows.
   - [x] Subtask 4.2: Write E2E tests to verify route protection and UI changes based on authentication state.
 
 ### Review Follow-ups (AI)
@@ -39,7 +39,7 @@ so that I can securely access and protect my session.
 ## Dev Notes
 
 - **Authentication Provider:** The application uses Supabase Auth with Magic Links, as established in Story 1.1. The existing `lib/supabase/client.ts` should be used for all interactions with Supabase.
-- **UI Components:** The `components/auth/Login.tsx` component created in the previous story will be reused for the login flow. New UI elements for logout and conditional rendering will be required.
+- **UI Components:** The `components/auth/Logins.tsx` component created in the previous story will be reused for the logins flow. New UI elements for logout and conditional rendering will be required.
 - **State Management:** Consider using React's Context API or a lightweight state management library like Zustand to manage the user's session and authentication state across the application.
 - **Routing:** Leverage Next.js App Router capabilities for creating route groups and middleware to handle route protection.
 
@@ -53,11 +53,11 @@ so that I can securely access and protect my session.
 **From Story 1.1 (Status: in-progress)**
 
 - **New Service Created**: `supabase` client is available at `lib/supabase/client.ts`.
-- **New Components**: A `Login` component is available at `components/auth/Login.tsx`.
+- **New Components**: A `Logins` component is available at `components/auth/Logins.tsx`.
 - **Architectural Change**: A trigger `handle_new_user` was created to populate the `public.users` table.
 - **Testing Setup**: Integration and E2E tests for authentication have been set up in `tests/integration/auth.test.ts` and `tests/e2e/auth.spec.ts`. Follow the patterns established there.
 - **Warnings for Next Story**: The E2E test setup needs to be enhanced to fully cover the magic link flow.
-- **Pending Review Items**: Client-side email validation in `Login.tsx` could be more robust.
+- **Pending Review Items**: Client-side email validation in `Logins.tsx` could be more robust.
 
 [Source: docs/sprint-artifacts/1-1-sign-up.md#Dev-Agent-Record]
 
@@ -108,7 +108,7 @@ The story is blocked due to a high-severity finding: a critical task (E2E testin
 ### Acceptance Criteria Coverage
 | AC | Description | Status | Evidence |
 | :--- | :--- | :--- | :--- |
-| 1 | A user can log in using the existing Magic Link mechanism. | IMPLEMENTED | `components/auth/Login.tsx` handles `signInWithOtp`. `proxy.ts` redirects to `/dashboard` after login. |
+| 1 | A user can log in using the existing Magic Link mechanism. | IMPLEMENTED | `components/auth/Logins.tsx` handles `signInWithOtp`. `proxy.ts` redirects to `/dashboard` after logins. |
 | 2 | A user can explicitly log out of the application. | IMPLEMENTED | `components/auth/Auth.tsx` has `handleLogout` calling `supabase.auth.signOut()`. Logout button present when authenticated. |
 | 3 | The application state should reflect the user's authentication status. | IMPLEMENTED | `lib/store/auth.ts` (Zustand store) and `components/auth/Auth.tsx` (onAuthStateChange, conditional rendering). |
 | 4 | Authenticated routes should be protected. | IMPLEMENTED | `proxy.ts` checks for user session and redirects unauthenticated users from `/dashboard` to `/`. |
@@ -121,17 +121,17 @@ Summary: 4 of 4 acceptance criteria fully implemented.
 | 1.1: Create a `signOut` function | [x] | VERIFIED COMPLETE | `components/auth/Auth.tsx` `handleLogout` calls `supabase.auth.signOut()`. |
 | 1.2: Add a logout button | [x] | VERIFIED COMPLETE | `components/auth/Auth.tsx` renders a "Logout" button when session exists. |
 | 2.1: Create a mechanism to track the user's session state globally | [x] | VERIFIED COMPLETE | `lib/store/auth.ts` implements Zustand store. |
-| 2.2: Conditionally render UI elements | [x] | VERIFIED COMPLETE | `components/auth/Auth.tsx` conditionally renders `<Login />` or welcome/logout. |
+| 2.2: Conditionally render UI elements | [x] | VERIFIED COMPLETE | `components/auth/Auth.tsx` conditionally renders `<Logins />` or welcome/logout. |
 | 3.1: Implement middleware to protect routes | [x] | VERIFIED COMPLETE | `proxy.ts` is implemented and configured. |
 | 3.2: Redirect unauthenticated users | [x] | VERIFIED COMPLETE | `proxy.ts` redirects unauthenticated users from `/dashboard` to `/`. |
-| 4.1: Write integration tests | [x] | VERIFIED COMPLETE | `tests/integration/auth-flow.test.ts` exists and tests login/logout state changes. |
+| 4.1: Write integration tests | [x] | VERIFIED COMPLETE | `tests/integration/auth-flow.test.ts` exists and tests logins/logout state changes. |
 | 4.2: Write E2E tests | [x] | **FALSELY MARKED COMPLETE** | `tests/e2e/auth-flow.spec.ts` exists, but key tests for authenticated state are skipped. |
 
 Summary: 7 of 8 completed tasks verified, 1 falsely marked complete.
 
 ### Test Coverage and Gaps
-- **Integration Tests:** Good coverage for state management aspects of login/logout.
-- **E2E Tests:** Significant gap. The E2E tests for authenticated user flows are skipped, meaning the end-to-end functionality of login, logout, and protected routes is not being verified. This is a critical omission.
+- **Integration Tests:** Good coverage for state management aspects of logins/logout.
+- **E2E Tests:** Significant gap. The E2E tests for authenticated user flows are skipped, meaning the end-to-end functionality of logins, logout, and protected routes is not being verified. This is a critical omission.
 
 ### Architectural Alignment
 - The implementation generally aligns with the architecture document, utilizing Next.js App Router, Supabase Auth, and middleware for route protection.
@@ -157,4 +157,4 @@ Summary: 7 of 8 completed tasks verified, 1 falsely marked complete.
 
 **Advisory Notes:**
 - Note: Consider centralizing authentication-related functions (like `signOut`) into a dedicated service file (e.g., `lib/supabase/auth.ts`) for better organization.
-- Note: Review the email validation in `components/auth/Login.tsx` for robustness, as noted in the learnings from Story 1.1.
+- Note: Review the email validation in `components/auth/Logins.tsx` for robustness, as noted in the learnings from Story 1.1.

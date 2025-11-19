@@ -19,12 +19,12 @@
   - [ ] Subtask 1.2: Add a logout button to the UI that is only visible to authenticated users.
 - [ ] Task 2: Authentication State Management (AC: #3)
   - [ ] Subtask 2.1: Create a mechanism to track the user's session state globally in the application.
-  - [ ] Subtask 2.2: Conditionally render UI elements (e.g., Login/Logout buttons) based on the authentication state.
+  - [ ] Subtask 2.2: Conditionally render UI elements (e.g., Logins/Logout buttons) based on the authentication state.
 - [ ] Task 3: Protected Routes (AC: #4)
   - [ ] Subtask 3.1: Implement a higher-order component or middleware to protect routes that require authentication.
-  - [ ] Subtask 3.2: Redirect unauthenticated users attempting to access protected routes to the login page.
+  - [ ] Subtask 3.2: Redirect unauthenticated users attempting to access protected routes to the logins page.
 - [ ] Task 4: Testing
-  - [ ] Subtask 4.1: Write integration tests for login and logout flows.
+  - [ ] Subtask 4.1: Write integration tests for logins and logout flows.
   - [ ] Subtask 4.2: Write E2E tests to verify route protection and UI changes based on authentication state.
     </tasks>
   </story>
@@ -32,8 +32,8 @@
   <acceptanceCriteria>
 1.  A user can log in using the existing Magic Link mechanism.
 2.  A user can explicitly log out of the application.
-3.  The application state should reflect the user's authentication status (e.g., showing a login button when logged out and a logout button when logged in).
-4.  Authenticated routes should be protected, redirecting unauthenticated users to a login page.
+3.  The application state should reflect the user's authentication status (e.g., showing a logins button when logged out and a logout button when logged in).
+4.  Authenticated routes should be protected, redirecting unauthenticated users to a logins page.
   </acceptanceCriteria>
 
   <artifacts>
@@ -42,7 +42,7 @@
         <path>docs/PRD.md</path>
         <title>Product Requirements Document</title>
         <section>FR-1.2</section>
-        <snippet>The system must support user login and logout.</snippet>
+        <snippet>The system must support user logins and logout.</snippet>
       </doc>
       <doc>
         <path>docs/architecture.md</path>
@@ -72,11 +72,11 @@
         <reason>The Supabase client, which should be used for all authentication operations.</reason>
       </artifact>
       <artifact>
-        <path>components/auth/Login.tsx</path>
+        <path>components/auth/Logins.tsx</path>
         <kind>component</kind>
-        <symbol>Login</symbol>
+        <symbol>Logins</symbol>
         <lines>1-73</lines>
-        <reason>The existing login component, which will be reused for the login flow.</reason>
+        <reason>The existing logins component, which will be reused for the logins flow.</reason>
       </artifact>
     </code>
     <dependencies>
@@ -105,7 +105,7 @@
 
   <constraints>
 - Use Supabase for all authentication operations.
-- Reuse the existing `Login` component.
+- Reuse the existing `Logins` component.
 - Follow Next.js App Router conventions for route protection.
 - Manage session state globally.
   </constraints>

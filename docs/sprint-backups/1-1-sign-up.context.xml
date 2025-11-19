@@ -15,7 +15,7 @@
     <soThat>I can create a secure account without needing to remember a password</soThat>
     <tasks>
 - [ ] Task 1: UI Development (AC: #1, #3)
-  - [ ] Subtask 1.1: Create the `Auth UI Component` (`components/auth/Login.tsx`) with an email input field and a submit button.
+  - [ ] Subtask 1.1: Create the `Auth UI Component` (`components/auth/Logins.tsx`) with an email input field and a submit button.
   - [ ] Subtask 1.2: Implement the display of a confirmation message after form submission.
 - [ ] Task 2: Authentication Logic (AC: #2, #5)
   - [ ] Subtask 2.1: Implement the client-side logic to call `supabase.auth.signInWithOtp` with the user's email.
@@ -68,10 +68,10 @@
     </docs>
     <code>
       <artifact>
-        <path>components/auth/Login.tsx</path>
+        <path>components/auth/Logins.tsx</path>
         <kind>component</kind>
-        <symbol>Login</symbol>
-        <reason>UI component for user sign-up/login.</reason>
+        <symbol>Logins</symbol>
+        <reason>UI component for user sign-up/logins.</reason>
       </artifact>
       <artifact>
         <path>hooks/useAuth.ts</path>
@@ -89,7 +89,7 @@
   </artifacts>
 
   <constraints>
-    - The main UI component for authentication should be located at `components/auth/Login.tsx`.
+    - The main UI component for authentication should be located at `components/auth/Logins.tsx`.
     - Authentication logic should be handled within the component or a dedicated hook (`hooks/useAuth.ts`).
     - Implementation must strictly follow the design outlined in the Epic 1 Technical Specification.
   </constraints>

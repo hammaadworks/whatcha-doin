@@ -55,7 +55,7 @@ Here's the proposed epic structure, designed to facilitate incremental and integ
 ## Functional Requirements Inventory
 
 -   **FR-1.1:** Users must be able to create an account using a Magic Link sent to their email address.
--   **FR-1.2:** The system must support user login and logout.
+-   **FR-1.2:** The system must support user logins and logout.
 -   **FR-1.3:** Users must be able to edit a simple text bio for their profile.
 -   **FR-1.4:** Each user must have a public profile page accessible via a shareable, unique URL.
 -   **FR-1.5:** The public profile page must display the user's bio, all public habits, all public todos, and the public journal.
@@ -223,14 +223,14 @@ So that I can access the application and my personalized dashboard.
 
 **Given** the application is running and the foundational layout is present (Epic 1 completed),
 **When** I visit the application's root URL,
-**Then** I am presented with the existing sign-up/login interface (`Auth.tsx`, `Login.tsx`).
+**Then** I am presented with the existing sign-up/logins interface (`Auth.tsx`, `Logins.tsx`).
 
-**And** after successful login, I am redirected to the dashboard with the foundational layout.
+**And** after successful logins, I am redirected to the dashboard with the foundational layout.
 **And** `npm run dev` shows the integrated authentication flow.
 
 **Prerequisites:** Epic 1 completed.
 
-**Technical Notes:** This story integrates the existing `Auth.tsx`, `AuthWrapper.tsx`, and `Login.tsx` components, ensuring the authentication flow works seamlessly with the new application structure.
+**Technical Notes:** This story integrates the existing `Auth.tsx`, `AuthWrapper.tsx`, and `Logins.tsx` components, ensuring the authentication flow works seamlessly with the new application structure.
 
 ### Story 2.2: Display User Bio on Dashboard
 

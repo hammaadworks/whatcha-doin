@@ -26,20 +26,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 ```
 
-#### Subtask 1.1 & 1.2 & Task 2.1: `components/auth/Login.tsx`
+#### Subtask 1.1 & 1.2 & Task 2.1: `components/auth/Logins.tsx`
 ```tsx
 "use client";
 
 import { useState } from "react";
 import { supabaseClient } from "@/lib/supabase/client"; // Import supabase client
 
-export default function Login() {
+export default function Logins() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const handleLogins = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setMessage("");
@@ -66,7 +66,7 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Sign Up
         </h1>
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogins} className="space-y-4">
           <div>
             <label
               htmlFor="email"
@@ -122,7 +122,7 @@ CREATE TRIGGER on_auth_user_created
 
 #### Task 3 Verification Steps
 **Verification Steps for Subtask 3.1 (Trigger):**
-1.  Sign up a new user using the `Login.tsx` component (or directly via Supabase Auth).
+1.  Sign up a new user using the `Logins.tsx` component (or directly via Supabase Auth).
 2.  Access the Supabase Studio (or query the database directly) and check the `public.users` table. A new record should exist with the `id` and `email` matching the newly signed-up user.
 
 **Verification Steps for Subtask 3.2 (RLS Policies):**
@@ -166,7 +166,7 @@ describe('Authentication Integration', () => {
 
     mockSignInWithOtp.mockResolvedValueOnce({ data: { user: null, session: null }, error: null });
 
-    // Simulate the call from the Login component
+    // Simulate the call from the Logins component
     await supabase.auth.signInWithOtp({
       email: testEmail,
       options: {
@@ -194,8 +194,8 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Sign-up Flow', () => {
   test('should allow a user to sign up with email and display a confirmation message', async ({ page }) => {
-    // Assuming the Login component is rendered on the homepage or a specific /login route
-    await page.goto('/'); // Adjust this URL if your login page is different
+    // Assuming the Logins component is rendered on the homepage or a specific /logins route
+    await page.goto('/'); // Adjust this URL if your logins page is different
 
     // Fill in the email input
     await page.fill('input[type="email"]', 'test-e2e@example.com');
@@ -227,7 +227,7 @@ test.describe('Sign-up Flow', () => {
 ## Tasks / Subtasks
 
 - [x] Task 1: UI Development (AC: #1, #3)
-  - [x] Subtask 1.1: Create the `Auth UI Component` (`components/auth/Login.tsx`) with an email input field and a submit button.
+  - [x] Subtask 1.1: Create the `Auth UI Component` (`components/auth/Logins.tsx`) with an email input field and a submit button.
   - [x] Subtask 1.2: Implement the display of a confirmation message after form submission.
 - [x] Task 2: Authentication Logic (AC: #2, #5)
   - [x] Subtask 2.1: Implement the client-side logic to call `supabase.auth.signInWithOtp` with the user's email.
@@ -240,7 +240,7 @@ test.describe('Sign-up Flow', () => {
   - [x] Subtask 4.2: Write an E2E test (Playwright) for the "golden path" of user sign-up.
     
     ### Review Follow-ups (AI)
-- [x] [Medium] Implement more robust client-side email format validation in `components/auth/Login.tsx`.
+- [x] [Medium] Implement more robust client-side email format validation in `components/auth/Logins.tsx`.
 - [x] [Medium] Update story markdown to mark Subtask 4.1 as complete (`[x]`).
 - [x] [Medium] Update story markdown to mark Subtask 4.2 as complete (`[x]`).
 
@@ -274,38 +274,38 @@ test.describe('Sign-up Flow', () => {
     still marked as incomplete (`[ ]`) in the story markdown.
 
 **LOW Severity:**
-*   **`Login.tsx`: Client-side input validation is minimal.**
+*   **`Logins.tsx`: Client-side input validation is minimal.**
     *   **Rationale:** While server-side validation by Supabase will enforce correctness, adding more robust client-side email format validation would improve user experience by providing immediate feedback.
 
 ### Acceptance Criteria Coverage
 
 | AC# | Description | Status | Evidence |
 |---|---|---|---|
-| 1 | A user can enter their email address into a designated sign-up form. | IMPLEMENTED | `components/auth/Login.tsx:30-37`, `tests/e2e/auth.spec.ts:9` |
-| 2 | Upon submission, the system calls the `supabase.auth.signInWithOtp` method. | IMPLEMENTED | `components/auth/Login.tsx:20-26`, `tests/integration/auth.test.ts:33` |
-| 3 | A confirmation message is displayed to the user, instructing them to check their email. | IMPLEMENTED | `components/auth/Login.tsx:55-57`, `tests/e2e/auth.spec.ts:15` |
-| 4 | The user receives an email containing a single-use Magic Link. | PARTIAL | `components/auth/Login.tsx:22-24` |
-| 5 | Clicking the Magic Link authenticates the user and redirects them to the application's main dashboard. | PARTIAL | `components/auth/Login.tsx:22-24` |
-| 6 | A new user record is created in the `auth.users` table. | IMPLEMENTED | `components/auth/Login.tsx:20-26`, `tests/integration/auth.test.ts:48` |
+| 1 | A user can enter their email address into a designated sign-up form. | IMPLEMENTED | `components/auth/Logins.tsx:30-37`, `tests/e2e/auth.spec.ts:9` |
+| 2 | Upon submission, the system calls the `supabase.auth.signInWithOtp` method. | IMPLEMENTED | `components/auth/Logins.tsx:20-26`, `tests/integration/auth.test.ts:33` |
+| 3 | A confirmation message is displayed to the user, instructing them to check their email. | IMPLEMENTED | `components/auth/Logins.tsx:55-57`, `tests/e2e/auth.spec.ts:15` |
+| 4 | The user receives an email containing a single-use Magic Link. | PARTIAL | `components/auth/Logins.tsx:22-24` |
+| 5 | Clicking the Magic Link authenticates the user and redirects them to the application's main dashboard. | PARTIAL | `components/auth/Logins.tsx:22-24` |
+| 6 | A new user record is created in the `auth.users` table. | IMPLEMENTED | `components/auth/Logins.tsx:20-26`, `tests/integration/auth.test.ts:48` |
 | 7 | A corresponding user record is created in the `public.users` table, linked to the `auth.users` record. | IMPLEMENTED | `supabase/migrations/20251113101354_create_user_profile_trigger.sql:1-10`, `tests/integration/auth.test.ts:59-61` |
 **Summary:** 5 of 7 acceptance criteria fully implemented.
 
 ### Task Completion Validation
 
-| Task | Marked As | Verified As | Evidence |
-|---|---|---|---|
-| Task 1: UI Development (AC: #1, #3) | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx` |
-| Subtask 1.1: Create the `Auth UI Component` (`components/auth/Login.tsx`) with an email input field and a submit button. | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx:28-54` |
-| Subtask 1.2: Implement the display of a confirmation message after form submission. | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx:55-57` |
-| Task 2: Authentication Logic (AC: #2, #5) | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx` |
-| Subtask 2.1: Implement the client-side logic to call `supabase.auth.signInWithOtp` with the user's email. | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx:20-26` |
-| Subtask 2.2: Handle the authentication callback and session management after the user clicks the Magic Link. | [x] | VERIFIED COMPLETE | `components/auth/Login.tsx:22-24` |
-| Task 3: Backend & Database (AC: #6, #7) | [x] | VERIFIED COMPLETE | `supabase/migrations/20251113101354_create_user_profile_trigger.sql` |
+| Task | Marked As | Verified As | Evidence                                                                  |
+|---|---|---|---------------------------------------------------------------------------|
+| Task 1: UI Development (AC: #1, #3) | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx`                                              |
+| Subtask 1.1: Create the `Auth UI Component` (`components/auth/Logins.tsx`) with an email input field and a submit button. | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx:28-54`                                        |
+| Subtask 1.2: Implement the display of a confirmation message after form submission. | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx:55-57`                                        |
+| Task 2: Authentication Logic (AC: #2, #5) | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx`                                              |
+| Subtask 2.1: Implement the client-side logic to call `supabase.auth.signInWithOtp` with the user's email. | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx:20-26`                                        |
+| Subtask 2.2: Handle the authentication callback and session management after the user clicks the Magic Link. | [x] | VERIFIED COMPLETE | `components/auth/Logins.tsx:22-24`                                        |
+| Task 3: Backend & Database (AC: #6, #7) | [x] | VERIFIED COMPLETE | `supabase/migrations/20251113101354_create_user_profile_trigger.sql`      |
 | Subtask 3.1: Verify that the Supabase trigger to create a `public.users` record from `auth.users` is working as expected. | [x] | VERIFIED COMPLETE | `supabase/migrations/20251113101354_create_user_profile_trigger.sql:1-10` |
-| Subtask 3.2: Ensure RLS policies are correctly applied for new user creation. | [x] | VERIFIED COMPLETE | `supabase/migrations/20251113093152_initial_schema_setup.sql` |
-| Task 4: Testing (AC: #1, #2, #3, #4, #5, #6, #7) | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/integration/auth.test.ts`, `tests/e2e/auth.spec.ts` |
-| Subtask 4.1: Write an integration test to verify the complete sign-up flow. | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/integration/auth.test.ts` |
-| Subtask 4.2: Write an E2E test (Playwright) for the "golden path" of user sign-up. | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/e2e/auth.spec.ts` |
+| Subtask 3.2: Ensure RLS policies are correctly applied for new user creation. | [x] | VERIFIED COMPLETE | `supabase/migrations/20251113093152_initial_schema_setup.sql`             |
+| Task 4: Testing (AC: #1, #2, #3, #4, #5, #6, #7) | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/integration/auth.test.ts`, `tests/e2e/auth.spec.ts`                |
+| Subtask 4.1: Write an integration test to verify the complete sign-up flow. | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/integration/auth.test.ts`                                          |
+| Subtask 4.2: Write an E2E test (Playwright) for the "golden path" of user sign-up. | [x] | IMPLEMENTED BUT NOT MARKED COMPLETE | `tests/e2e/auth.spec.ts`                                                  |
 **Summary:** 9 of 9 completed tasks verified. 0 questionable. 0 falsely marked complete. 2 tasks implemented but not marked complete.
 
 ### Test Coverage and Gaps
@@ -332,7 +332,7 @@ The implementation aligns well with the architectural decisions outlined in `doc
 ### Action Items
 
 **Code Changes Required:**
-- [x] [Medium] Implement more robust client-side email format validation in `components/auth/Login.tsx`.
+- [x] [Medium] Implement more robust client-side email format validation in `components/auth/Logins.tsx`.
 - [x] [Medium] Update story markdown to mark Subtask 4.1 as complete (`[x]`).
 - [x] [Medium] Update story markdown to mark Subtask 4.2 as complete (`[x]`).
 

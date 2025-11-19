@@ -11,13 +11,13 @@ const isValidEmail = (email: string) => {
   return /\S+@\S+\.\S+/.test(email);
 };
 
-export default function Login() {
+export default function Logins() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const handleLogins = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setMessage("");
@@ -60,7 +60,7 @@ export default function Login() {
         </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-4 w-full">
+      <form onSubmit={handleLogins} className="space-y-4 w-full">
         <div>
           <Label htmlFor="email" className="sr-only">
             Email

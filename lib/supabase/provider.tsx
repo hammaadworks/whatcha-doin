@@ -21,8 +21,8 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
         console.log("SupabaseProvider: SIGNED_IN event, redirecting to /dashboard");
         router.push("/dashboard");
       } else if (event === "SIGNED_OUT") {
-        console.log("SupabaseProvider: SIGNED_OUT event, redirecting to /login");
-        router.push("/login");
+        console.log("SupabaseProvider: SIGNED_OUT event, redirecting to /logins");
+        router.push("/logins");
       }
     });
 

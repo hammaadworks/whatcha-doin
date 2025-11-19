@@ -11,8 +11,8 @@ export default function PublicAppHeader() {
       </Link>
       <div className="flex items-center gap-4">
         <AnimatedThemeToggler />
-        <Link href="/login">
-          <Button>Login</Button>
+        <Link href="/logins">
+          <Button>Logins</Button>
         </Link>
       </div>
     </header>

@@ -15,13 +15,13 @@ This epic establishes the foundational identity and authentication layer for the
 
 **In Scope:**
 - User account creation using Supabase Auth's Magic Link feature.
-- Secure user login and logout.
+- Secure user logins and logout.
 - A simple, editable text bio within the user's profile.
 - A shareable, public-facing profile page that displays the user's bio and is ready to host future public content (habits, todos, journal entries).
 - The database schema for the `users` table, including columns for profile information like `bio` and `timezone`.
 
 **Out of Scope:**
-- Any form of social or third-party login (e.g., Google, GitHub).
+- Any form of social or third-party logins (e.g., Google, GitHub).
 - Password-based authentication.
 - Advanced profile customization (e.g., avatars, themes, banners).
 - Displaying any data on the public profile beyond the bio (this will be handled in subsequent epics).
@@ -36,9 +36,9 @@ This epic directly implements the User Management and Authentication components 
 
 | Service/Module | Responsibility | Inputs/Outputs | Owner |
 | :--- | :--- | :--- | :--- |
-| **Supabase Auth** | Handles user sign-up, login (Magic Link), logout, and session management. | Input: User email. Output: JWT session token. | Supabase |
+| **Supabase Auth** | Handles user sign-up, logins (Magic Link), logout, and session management. | Input: User email. Output: JWT session token. | Supabase |
 | **User Profile Service** (`lib/supabase/user.ts`) | Provides an abstraction layer for interacting with the `users` table. | Functions to get/update user profile data (e.g., `getUserProfile`, `updateUserBio`). | Dev Team |
-| **Auth UI Component** (`components/auth/Login.tsx`) | Renders the UI for email input and handles the call to Supabase Auth for sending the Magic Link. | Input: User email. Output: Triggers auth flow. | Dev Team |
+| **Auth UI Component** (`components/auth/Logins.tsx`) | Renders the UI for email input and handles the call to Supabase Auth for sending the Magic Link. | Input: User email. Output: Triggers auth flow. | Dev Team |
 | **Public Profile Page** (`app/(main)/profile/[userId]/page.tsx`) | Fetches and displays a user's public profile information. | Input: `userId` from URL. Output: Rendered public profile. | Dev Team |
 
 ### Data Models and Contracts
@@ -77,14 +77,14 @@ WITH CHECK (auth.uid() = id);
 This epic will primarily use the auto-generated PostgREST API from Supabase. No custom API routes are required.
 
 **Key Supabase Client Interactions:**
-- `supabase.auth.signInWithOtp({ email })`: To initiate the Magic Link login.
+- `supabase.auth.signInWithOtp({ email })`: To initiate the Magic Link logins.
 - `supabase.auth.signOut()`: To log the user out.
 - `supabase.from('users').select('*').eq('id', userId).single()`: To fetch a user's profile.
 - `supabase.from('users').update({ bio: newBio }).eq('id', userId)`: To update a user's bio.
 
 ### Workflows and Sequencing
 
-**1. User Sign-up / Login Flow:**
+**1. User Sign-up / Logins Flow:**
 1.  User enters their email into the `Auth UI Component`.
 2.  The component calls `supabase.auth.signInWithOtp()` with the user's email.
 3.  Supabase sends a Magic Link to the user's email address.
@@ -119,7 +119,7 @@ This epic will primarily use the auto-generated PostgREST API from Supabase. No 
 ### Observability
 
 - Authentication-related errors (e.g., failed Magic Link delivery) will be logged in Supabase's internal logs.
-- Client-side errors during login or profile updates will be captured by Sentry.
+- Client-side errors during logins or profile updates will be captured by Sentry.
 - Critical failures in the authentication flow will trigger an alert to the Lark chat webhook as defined in the architecture.
 [Source: `docs/architecture.md#Error-Handling`]
 

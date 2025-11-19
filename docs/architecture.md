@@ -13,7 +13,7 @@ The project will adopt a Next.js App Router-based structure, designed for clear 
 whatcha-doin/
 ├── .github/                     # GitHub Actions workflows for CI/CD
 ├── app/                         # Next.js App Router (pages, layouts, API routes)
-│   ├── (auth)/                  # Authentication related routes/components (login, signup)
+│   ├── (auth)/                  # Authentication related routes/components (logins, signup)
 │   ├── (main)/                  # Main application routes/components (habits, journal, actions)
 │   │   ├── habits/
 │   │   ├── journal/
@@ -88,7 +88,7 @@ This approach accelerates development by leveraging established best practices a
 | Email Service | Rely on Supabase Auth's built-in email | N/A | User Management (authentication) | Frugality, simplicity, Supabase Auth handles core requirement for MVP; defer dedicated service for future needs. |
 | Deployment Target | Vercel | N/A | All epics | Optimized for Next.js, generous free tier for MVP, seamless integration with GitHub for CI/CD (GitHub Actions). |
 | Search Solution | Deferred | N/A | Journal | PRD updated to remove search requirement (FR-5.8); journal navigation is via date picker only for MVP. |
-| Background Jobs | Hybrid: Client-side trigger + Supabase Database Functions (PostgreSQL) | N/A | Habit Management, Grace Period | Client-side (Next.js) triggers Grace Period on app open/login for local timezone. Supabase Database Functions (PostgreSQL) enforce "Two-Day Rule" and validate state changes server-side, handling multi-day absences and ensuring data integrity. Grace screen appears once per day, and this is the most frugal/cleanest solution for MVP. |
+| Background Jobs | Hybrid: Client-side trigger + Supabase Database Functions (PostgreSQL) | N/A | Habit Management, Grace Period | Client-side (Next.js) triggers Grace Period on app open/logins for local timezone. Supabase Database Functions (PostgreSQL) enforce "Two-Day Rule" and validate state changes server-side, handling multi-day absences and ensuring data integrity. Grace screen appears once per day, and this is the most frugal/cleanest solution for MVP. |
 | Error Handling Strategy | User-facing: Inline/Toast/Error Page; Internal: Sentry (frontend), Supabase logs (backend), Lark webhook (critical alerts) | N/A | All epics | Aligns with UX principles, ensures proactive monitoring, and leverages cost-effective solutions. |
 | Logging Approach | Structured logging with standard levels; Supabase logs (backend), Sentry (frontend), Lark webhook (critical alerts) | N/A | All epics | Ensures maintainability, debuggability, and centralized visibility of application health. |
 | Date/Time Handling | Store UTC in DB, transmit ISO 8601 UTC strings, client converts for local display/input, server-side calculations use UTC with user's stored timezone. | N/A | All epics | Ensures data integrity, avoids timezone bugs, provides correct local user experience, and maintains server as source of truth. |
@@ -153,7 +153,7 @@ This approach accelerates development by leveraging established best practices a
     *   **Frameworks:** Vitest (for speed) with React Testing Library (for components).
     *   **Coverage:** Prioritize high coverage for core logic.
 *   **Integration Tests:**
-    *   **Focus:** Key interactions between Next.js frontend and Supabase (e.g., user login, habit creation, grace period flow).
+    *   **Focus:** Key interactions between Next.js frontend and Supabase (e.g., user logins, habit creation, grace period flow).
     *   **Frameworks:** Vitest, direct testing of Supabase Database Functions.
     *   **Coverage:** Focus on important data flows.
 *   **End-to-End (E2E) Tests:**
@@ -232,7 +232,7 @@ The primary API will be provided by Supabase's auto-generated PostgREST API. For
 
 The security architecture for 'whatcha-doin' will be built upon the robust features provided by Supabase, ensuring data protection and user privacy.
 
-*   **Authentication:** Supabase Auth will handle user authentication, specifically implementing **Magic Link login** (FR-1.1, FR-6.3). This includes configuring tokens to be single-use and to expire within a short timeframe (NFR-2.1).
+*   **Authentication:** Supabase Auth will handle user authentication, specifically implementing **Magic Link logins** (FR-1.1, FR-6.3). This includes configuring tokens to be single-use and to expire within a short timeframe (NFR-2.1).
 *   **Authorization (Row Level Security - RLS):** Strict separation between public and private data will be enforced using **PostgreSQL Row Level Security (RLS)** (NFR-2.2). RLS policies will be defined to ensure:
     *   Users can only access and modify their own private data.
     *   Public data is accessible to all, but only modifiable by the owner.
@@ -297,7 +297,7 @@ The project can be initialized and set up using the following commands:
     ```
 4.  **Link to Supabase project (for cloud deployment):**
     ```bash
-    supabase login
+    supabase logins
     supabase link --project-ref [your-project-ref]
     ```
 5.  **Set up environment variables:**
@@ -345,7 +345,7 @@ This section summarizes the key architectural decisions made during this workflo
     *   **Rationale:** Clarification of requirements removed the text search need for MVP, simplifying the architecture.
 
 7.  **ADR 007: Background Jobs (Daily State Change & Grace Period)**
-    *   **Decision:** Hybrid approach: Client-side (Next.js) triggers Grace Period on app open/login for local timezone. Supabase Database Functions (PostgreSQL) enforce "Two-Day Rule" and validate state changes server-side.
+    *   **Decision:** Hybrid approach: Client-side (Next.js) triggers Grace Period on app open/logins for local timezone. Supabase Database Functions (PostgreSQL) enforce "Two-Day Rule" and validate state changes server-side.
     *   **Rationale:** Ensures local timezone accuracy, 'once per day' grace screen, server-side source of truth for streak logic (preventing abuse), handles multi-day absences gracefully, and is the most frugal/cleanest solution for MVP.
 
 8.  **ADR 008: Error Handling Strategy**
