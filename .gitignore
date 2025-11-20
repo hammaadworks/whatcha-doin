@@ -39,3 +39,15 @@ next-env.d.ts
 # Replit
 .replit
 .replit.nix
+
+# custom
+.gemini/tmp
+.gemini/mcp.json
+
+# supabase
+supabase/.branches
+supabase/.temp
+
+#playwright
+playwright-report
+test-results
