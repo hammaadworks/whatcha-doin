@@ -113,7 +113,24 @@ So that there is a foundation for the user's profile and main authenticated view
 
 **Technical Notes:** This story is a foundational step to enable the `/[username]` routing pattern. The page itself can be a simple placeholder for now. The migration should also update the existing test user with a default username.
 
-### Story 1.4: Implement Foundational Authenticated Main View Layout
+### Story 1.4: Implement Default Username Generation at Signup
+
+As a new user,
+I want a default username to be automatically generated for me from my email address upon signup,
+So that I have a valid profile URL from the start without extra steps.
+
+**Acceptance Criteria:**
+
+1. A Supabase Database Function is created that triggers on a new user insert into `auth.users`.
+2. The function extracts the local part of the new user's email (before the '@').
+3. It checks if the extracted username already exists in `public.users`.
+4. If the username is unique, it is inserted into the `username` column for the new user.
+5. If the username is not unique, a random 3-digit number is appended (e.g., `abc_198`), and this new username is inserted.
+6. The function handles potential race conditions and ensures a unique username is always generated.
+
+**Prerequisites:** Story 1.3 completed.
+
+### Story 1.5: Implement Foundational Authenticated Main View Layout
 
 As a user,
 I want to see the basic layout of my private profile view, including placeholders for my bio, todo list, and the three
@@ -122,7 +139,7 @@ So that I have a clear structure for where my habits and todos will appear.
 
 **Prerequisites:** Story 1.3.
 
-### Story 1.5: Integrate Existing HabitCard into "The Pile"
+### Story 1.6: Integrate Existing HabitCard into "The Pile"
 
 As a user,
 I want to see a sample habit card displayed within "The Pile" column on my main view,
@@ -130,7 +147,7 @@ so that I can visualize how my habits will appear and confirm the basic integrat
 
 **Prerequisites:** Story 1.4.
 
-### Story 1.6: Refactor and Integrate HabitCreator into "The Pile"
+### Story 1.7: Refactor and Integrate HabitCreator into "The Pile"
 
 As a user,
 I want to be able to see and interact with the habit creation input field within "The Pile" column,

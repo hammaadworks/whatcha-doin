@@ -1,16 +1,20 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js"; // Assuming Supabase user type
+import { User as SupabaseUser } from "@supabase/supabase-js";
+
+export interface User extends SupabaseUser {
+  username?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
+  loading: boolean; // Renamed from isLoading for consistency
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthContextProvider({
+export function AuthProvider({
   children,
   initialUser,
 }: {
@@ -18,43 +22,36 @@ export function AuthContextProvider({
   initialUser?: User | null;
 }) {
   const [user, setUser] = useState<User | null>(initialUser || null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = () => {
+    const initializeAuth = async () => {
       if (process.env.NEXT_PUBLIC_DEV_MODE_ENABLED === "true") {
         console.log("Development mode enabled. Injecting mock user.");
         const mockUser: User = {
           id: "68be1abf-ecbe-47a7-bafb-46be273a2e",
           email: "hammaadworks@gmail.com",
+          username: "hammaadworks", // Added username
           aud: "authenticated",
           app_metadata: {},
           user_metadata: {},
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-        setTimeout(() => {
-          setUser(mockUser);
-          setIsLoading(false);
-        }, 0);
+        setUser(mockUser);
       } else if (initialUser) {
-        setTimeout(() => {
-          setUser(initialUser);
-          setIsLoading(false);
-        }, 0);
+        setUser(initialUser);
       } else {
-        setTimeout(() => {
-          setUser(null);
-          setIsLoading(false);
-        }, 0);
+        setUser(null);
       }
+      setLoading(false);
     };
 
     initializeAuth();
   }, [initialUser]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   );

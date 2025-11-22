@@ -15,7 +15,7 @@
     <soThat>So that there is a foundation for the user's profile and main authenticated view.</soThat>
     <tasks>-   **Task 1: Create Supabase Migration for `username` Column** (AC: #1, #2, #3)
     -   [ ] Subtask 1.1: Generate a new Supabase migration file.
-    -   [ ] Subtask 1.2: Add `username` column of type `text` to `public.users` table (Note: This maps to `public_id` in `architecture.md` for consistency with user-facing terminology).
+    -   [ ] Subtask 1.2: Add `username` column of type `text` to `public.users` table.
     -   [ ] Subtask 1.3: Add `UNIQUE` constraint to the `username` column.
     -   [ ] Subtask 1.4: Update the existing test user(s) with a default `username` (as per `epics.md` technical notes) ensuring it's not a reserved slug (ADR 017).
     -   [ ] Subtask 1.5: Apply the migration locally.
@@ -25,10 +25,10 @@
     -   [ ] Subtask 2.2: Implement basic rendering for the page (e.g., "Hello [username]").
     -   [ ] Subtask 2.3: Ensure the page can retrieve the `username` from the URL.
     -   [ ] Subtask 2.4: Conditionally render a placeholder for the authenticated user's private profile or a public view (as per ADR 017).
-    -   **Testing:** Manual navigation to `/<test_username>` (or the default test user's username) to verify rendering without errors. E2E test to navigate to a test user's profile and assert content.
+    -   **Testing:** Manual navigation to `/{test_username}` (or the default test user's username) to verify rendering without errors. E2E test to navigate to a test user's profile and assert content.
 -   **Task 3: Review and Update RLS Policies for `public.users` Table**
     -   [ ] Subtask 3.1: Review existing RLS policies for `public.users` to ensure compatibility with the new `username` column (as per previous story learnings).
-    -   [ ] Subtask 3.2: If necessary, modify RLS policies to allow authenticated users (including the dev-mode mock user) to `SELECT` and `UPDATE` their own `username` (Note: This maps to `public_id` in `architecture.md`).
+    -   [ ] Subtask 3.2: If necessary, modify RLS policies to allow authenticated users (including the dev-mode mock user) to `SELECT` and `UPDATE` their own `username`.
     -   **Testing:** Integration tests to verify RLS policies work as expected for `username` updates by the mock user.</tasks>
   </story>
 
@@ -43,32 +43,26 @@
       <doc>
         <path>docs/PRD.md</path>
         <title>whatcha-doin - Product Requirements Document</title>
-        <section>FR-1: User & Profile Management</section>
+        <section>FR-1: User &amp; Profile Management</section>
         <snippet>FR-1.4: Each user must be able to configure a unique username which makes their public profile page accessible via a shareable, user-friendly URL (e.g., `/user-chosen-username`). The username must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_), and must be unique across all users.</snippet>
       </doc>
       <doc>
         <path>docs/PRD.md</path>
         <title>whatcha-doin - Product Requirements Document</title>
-        <section>FR-1: User & Profile Management</section>
+        <section>FR-1: User &amp; Profile Management</section>
         <snippet>FR-1.5: The public profile page must display the user's bio, all public habits, all public todos, and the public journal.</snippet>
       </doc>
       <doc>
         <path>docs/architecture.md</path>
         <title>Architecture</title>
         <section>Data Models and Contracts</section>
-        <snippet>The `users` table schema defines a `public_id` column as `text` with `UNIQUE` and `Index` constraints, mapping to the user's `username`.</snippet>
-      </doc>
-      <doc>
-        <path>docs/architecture.md</path>
-        <title>Architecture</title>
-        <section>API Contracts</section>
-        <snippet>Supabase Function `POST /rpc/check_public_id_uniqueness` for validating `public_id` uniqueness, and `PUT /users/{user_id}` for updating `public_id`.</snippet>
+        <snippet>The `users` table schema defines a `username` column as `text` with `UNIQUE` and `Index` constraints, mapping to the user's `username`.</snippet>
       </doc>
       <doc>
         <path>docs/architecture.md</path>
         <title>Architecture</title>
         <section>Security Architecture</section>
-        <snippet>Reserved Slugs Enforcement prevents `usernames` (public_ids) from conflicting with system routes, ensuring routing integrity.</snippet>
+        <snippet>Reserved Slugs Enforcement prevents `usernames` from conflicting with system routes, ensuring routing integrity.</snippet>
       </doc>
       <doc>
         <path>docs/architecture.md</path>
@@ -86,12 +80,12 @@
         <path>docs/ux-design-specification.md</path>
         <title>whatcha-doin UX Design Specification</title>
         <section>5.1 Critical User Paths</section>
-        <snippet>The `public_id` (username) makes public profiles accessible and shareable.</snippet>
+        <snippet>The `username` makes public profiles accessible and shareable.</snippet>
       </doc>
       <doc>
         <path>docs/epics.md</path>
         <title>whatcha-doin - Epic Breakdown</title>
-        <section>Epic 1: Core Application Foundation & Authenticated Root View</section>
+        <section>Epic 1: Core Application Foundation &amp; Authenticated Root View</section>
         <snippet>Goal: Establish foundational project infrastructure, implement a development-friendly bypass for Supabase data interaction, and lay out the basic authenticated UI accessible via the user's username.</snippet>
       </doc>
       <doc>
@@ -110,14 +104,15 @@
         <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
         <title>Epic Technical Specification: Core Application Foundations: User, Habit, and Todo Management</title>
         <section>Detailed Design - Data Models and Contracts</section>
-        <snippet>The `Users Table` schema specifies a `public_id` column as `text` (Unique, Index), directly related to the `username` feature.</snippet>
+        <snippet>The `Users Table` schema specifies a `username` column as `text` (Unique, Index).</snippet>
       </doc>
       <doc>
         <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
         <title>Epic Technical Specification: Core Application Foundations: User, Habit, and Todo Management</title>
         <section>Acceptance Criteria (Authoritative)</section>
-        <snippet>AC #4 states that the user can configure a unique public ID (slug) and AC #5 specifies the public profile display at `/[publicId]`.</snippet>
+        <snippet>AC #4 states that the user can configure a unique username and AC #5 specifies the public profile display at `/[username]`.</snippet>
       </doc>
+    </docs>
     <code>
       <artifact>
         <path>supabase/migrations/</path>
@@ -218,8 +213,12 @@
       <description>ADR 017: Dynamic Root Routing for User Profiles - use `/[username]` for user profile routing.</description>
     </constraint>
     <constraint>
+      <type>user-onboarding</type>
+      <description>Default Username Generation: A Supabase Database Function, triggered on new user creation, will automatically generate a default username from the user's email, appending a random 3-digit number if there is a conflict.</description>
+    </constraint>
+    <constraint>
       <type>security</type>
-      <description>Reserved Slugs Enforcement: Prevent `usernames` from conflicting with system routes (e.g., `auth`, `dashboard`).</description>
+      <description>Reserved Slugs Enforcement: A Supabase Database Function will be implemented to prevent `usernames` from conflicting with system routes (e.g., `auth`, `dashboard`).</description>
     </constraint>
     <constraint>
       <type>development-mode</type>
@@ -227,7 +226,7 @@
     </constraint>
     <constraint>
       <type>database-schema</type>
-      <description>Supabase Users Table Schema: `public_id` column (mapping to `username`) of type `text` with a `UNIQUE` constraint.</description>
+      <description>Supabase Users Table Schema: `username` of type `text` with a `UNIQUE` constraint, enforced by a Supabase Database Function.</description>
     </constraint>
     <constraint>
       <type>security</type>
@@ -236,10 +235,10 @@
   </constraints>
   <interfaces>
     <interface>
-      <name>check_public_id_uniqueness</name>
-      <kind>Supabase Function</kind>
-      <signature>POST /rpc/check_public_id_uniqueness</signature>
-      <path>supabase/functions/</path>
+      <name>check_username_uniqueness</name>
+      <kind>Supabase Database Function</kind>
+      <signature>SELECT public.check_username_uniqueness(p_username TEXT)</signature>
+      <path>supabase/migrations/</path>
     </interface>
     <interface>
       <name>Update User Profile</name>

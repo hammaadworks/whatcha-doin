@@ -199,7 +199,7 @@ The data architecture will be built upon **Supabase PostgreSQL**, leveraging its
 
 ## API Contracts
 
-The primary API will be provided by Supabase's auto-generated PostgREST API. For any custom Supabase Database Functions (PostgreSQL functions) or future Supabase Edge Functions that return data to the client, a consistent JSON response format will be adhered to:
+The primary API will be provided by Supabase's auto-generated PostgREST API. For any custom logic, **Supabase Database Functions (PostgreSQL functions)** will be used and invoked from the client via `supabase.rpc()`. Per project constraints, **Supabase Edge Functions are to be avoided**. For any custom Database Functions that return data to the client, a consistent JSON response format will be adhered to:
 
 *   **Standard JSON Structure:** All responses will be JSON.
 *   **Data Payload:** For successful responses, the primary data will be nested under a `data` key.
@@ -335,7 +335,7 @@ This section summarizes the key architectural decisions made during this workflo
     *   **Rationale:** Consolidates all data persistence, authentication (Magic Link), real-time capabilities, and file storage into a single, integrated, and scalable platform. Maximizes free-tier usage, simplifies development, and eliminates the need for rework by fully committing to Supabase early.
 
 3.  **ADR 003: API Pattern**
-    *   **Decision:** Leverage Supabase's auto-generated PostgREST API as the primary data access pattern directly from the Next.js frontend. Custom Next.js API routes will be implemented only for specific logic not directly covered by PostgREST or Supabase Database Functions (e.g., handling server-side validation for unique usernames, which involves orchestrating multiple data operations or integrating external services).
+    *   **Decision:** Leverage Supabase's auto-generated PostgREST API as the primary data access pattern directly from the Next.js frontend. Custom Next.js API routes will be implemented only for specific logic not directly covered by PostgREST or Supabase Database Functions. For example, server-side validation for unique usernames will be handled by a **Supabase Database Function** (PostgreSQL function) invoked via `supabase.rpc()`.
     *   **Rationale:** Supabase's PostgREST provides a fully functional RESTful API from the PostgreSQL schema, significantly reducing the need for custom backend API development for core CRUD operations. This reduces complexity, development time, and Vercel serverless function costs, while allowing flexibility for specific business logic.
 
 4.  **ADR 004: Deployment & CI/CD**

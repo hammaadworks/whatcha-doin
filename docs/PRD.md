@@ -90,6 +90,7 @@ This section details the specific functionalities of the application, derived fr
 
 ### FR-1: User & Profile Management
 - **FR-1.1:** Users must be able to create an account using a Magic Link sent to their email address.
+- **FR-1.1.1:** Upon account creation, the system must automatically generate a default `username`. This username will be derived from the user's email address (the part before the '@'). If the derived username is already taken, a random 3-digit number will be appended (e.g., `abc_198`). Users can change this default username later in their settings.
 - **FR-1.2:** The system must support user logins and logout.
 - **FR-1.3:** Users must be able to edit a simple text bio for their profile.
 - **FR-1.4:** Each user must be able to configure a unique username which makes their public profile page accessible via a shareable, user-friendly URL (e.g., `/user-chosen-username`). The username must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_), and must be unique across all users.
