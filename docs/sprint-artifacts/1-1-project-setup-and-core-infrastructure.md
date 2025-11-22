@@ -1,6 +1,6 @@
 # Story 1.1: Project Setup and Core Infrastructure
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -18,14 +18,14 @@ So that all subsequent development can proceed efficiently and consistently.
 
 -   **Task 1: Initialize Next.js Project and Install Dependencies** (AC: #1)
     -   [x] Subtask 1.1: Execute `npx create-next-app@latest . --typescript --tailwind --eslint --app` to scaffold the project.
-    -   [x] Subtask 1.2: Run `pnpm install` (or `npm install`) to install all required dependencies.
-    -   [ ] Subtask 1.3: Verify `npm run dev` starts the application without errors.
-    -   [ ] Subtask 1.4: Confirm a basic "Hello World" or blank page is displayed.
+    -   [x] Subtask 1.2: Run `npm install` to install all required dependencies.
+    -   [x] Subtask 1.3: Verify `npm run dev` starts the application without errors.
+    -   [x] Subtask 1.4: Confirm a basic "Hello World" or blank page is displayed.
     -   **Testing:** Manual verification of application startup and initial display.
 -   **Task 2: Configure Development Tools** (AC: #2)
-    -   [ ] Subtask 2.1: Verify `eslint.config.mjs` is present and configured.
-    -   [ ] Subtask 2.2: Verify `tailwind.config.ts` is present and configured.
-    -   [ ] Subtask 2.3: Verify `tsconfig.json` is present and configured for TypeScript.
+    -   [x] Subtask 2.1: Verify `eslint.config.mjs` is present and configured.
+    -   [x] Subtask 2.2: Verify `tailwind.config.ts` is present and configured.
+    -   [x] Subtask 2.3: Verify `tsconfig.json` is present and configured for TypeScript.
     -   **Testing:** Run `npm run lint` and `npx tsc --noEmit` to ensure no errors.
 
 
