@@ -2,10 +2,11 @@
 
 import React, {useState} from 'react';
 import {updateUserBio} from '@/lib/supabase/user';
-import {supabase} from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 
 function EditBioForm({bio}: { bio: string }) {
+    const supabase = createClient();
     const [newBio, setNewBio] = useState(bio);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

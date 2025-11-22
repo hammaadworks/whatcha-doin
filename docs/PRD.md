@@ -45,12 +45,12 @@ The success of "whatcha-doin" will be measured by user engagement, habit complet
 ### MVP - Minimum Viable Product
 
 This is the focused feature set required to deliver the core identity-building experience.
-- **User System:** User accounts with Magic Link logins, a simple user bio, and a user-configurable, unique public ID (slug) for their public profile.
+- **User System:** User accounts with Magic Link logins, a simple user bio, and a user-configurable, unique username for their public profile.
 - **Core "Habits" System:** Create, edit, and delete recurring "habits" with a public/private flag. A three-column layout ("Today", "Yesterday", "The Pile") with drag-and-drop functionality. The "Two-Day Rule" governs streak management, and a visible streak counter is displayed on each habit.
 - **Core "Todos" System:** Create, edit, and delete one-off "todos", also with a public/private flag.
 - **Journal System:** A dual-view journal with "Public" and "Private" tabs. It automatically aggregates notes from completed items into the correct tab. Users can also add free-form text and edit any journal entry at any time. The main UI shows today's entry by default, with a date selector to view past entries.
 - **Daily Interaction:** A recording modal appears upon completion of any habit or todo to log an effort score, duration, and notes.
-- **Content & Profile:** A motivational quote widget. A shareable public profile (accessible via `/[publicId]`) that displays the user's bio, all public habits and their streaks, all public todos, and the complete, searchable Public Journal.
+- **Content & Profile:** A motivational quote widget. A shareable public profile (accessible via `/[username]`) that displays the user's bio, all public habits and their streaks, all public todos, and the complete, searchable Public Journal.
 
 ### Growth Features (Post-MVP)
 
@@ -92,7 +92,7 @@ This section details the specific functionalities of the application, derived fr
 - **FR-1.1:** Users must be able to create an account using a Magic Link sent to their email address.
 - **FR-1.2:** The system must support user logins and logout.
 - **FR-1.3:** Users must be able to edit a simple text bio for their profile.
-- **FR-1.4:** Each user must be able to configure a unique public ID (slug) which makes their public profile page accessible via a shareable, user-friendly URL (e.g., `/user-chosen-slug`). The public ID must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_), and must be unique across all users.
+- **FR-1.4:** Each user must be able to configure a unique username which makes their public profile page accessible via a shareable, user-friendly URL (e.g., `/user-chosen-username`). The username must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_), and must be unique across all users.
 - **FR-1.5:** The public profile page must display the user's bio, all public habits, all public todos, and the public journal.
 
 ### FR-2: Habit Management (Recurring Habits)

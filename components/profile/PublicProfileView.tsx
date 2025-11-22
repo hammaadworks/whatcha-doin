@@ -25,7 +25,7 @@ export default function PublicProfileView({ profile }: { profile: PublicProfile 
       {profile.todos.length > 0 ? (
         <ul className="mb-4">
           {profile.todos.map(todo => (
-            <li key={todo.id} className="text-foreground">{todo.task}</li>
+            <li key={todo.id} className="text-foreground">{todo.description}</li>
           ))}
         </ul>
       ) : (

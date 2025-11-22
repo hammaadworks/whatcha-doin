@@ -20,7 +20,7 @@ whatcha-doin/
 │   │   ├── grace-period/        # Grace Period screen page
 │   │   └── actions/
 │   ├── api/                     # Next.js API Routes (if any custom serverless functions are needed beyond Supabase)
-│   ├── [publicId]/              # Dynamic route for user profiles (e.g., /hammaadworks)
+│   ├── [username]/              # Dynamic route for user profiles (e.g., /hammaadworks)
 │   │   └── page.tsx             # Renders public/private profile based on access
 │   └── layout.tsx               # Root layout
 ├── components/                  # Reusable React components (UI, shared)
@@ -111,7 +111,7 @@ This approach accelerates development by leveraging established best practices a
 *   **Frontend Component Folder Naming:** `kebab-case` for directories containing components (e.g., `habit-card/`).
 *   **Frontend Variable/Function Naming (TypeScript):** `camelCase` for variables and functions (e.g., `userName`, `getHabits`).
 *   **Frontend Type/Interface Naming (TypeScript):** `PascalCase` for types and interfaces.
-*   **Public ID/Slug Naming:** `kebab-case` for user-chosen public IDs (slugs). Must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_).
+*   **Username Naming:** `kebab-case` for user-chosen usernames. Must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_).
 
 ### Code Organization
 
@@ -174,7 +174,7 @@ For the MVP, entirely novel architectural patterns are not required. The unique 
 
 The data architecture will be built upon **Supabase PostgreSQL**, leveraging its relational capabilities to ensure data integrity and support complex queries. Data models will be designed to reflect the core entities of the application: users, habits, todos, and journal entries.
 
-*   **Users:** Will store user authentication details (managed by Supabase Auth) and profile information (e.g., `user_id`, `email`, `bio`, `timezone`, `grace_screen_shown_for_date`, `public_id`).
+*   **Users:** Will store user authentication details (managed by Supabase Auth) and profile information (e.g., `user_id`, `email`, `bio`, `timezone`, `grace_screen_shown_for_date`, `username`).
 *   **Habits:** Will store recurring habit details (e.g., `habit_id`, `user_id`, `name`, `is_public`, `current_streak`, `last_streak`, `created_at`, `goal_value`, `goal_unit`, `last_recorded_mood`, `last_recorded_work_value`, `last_recorded_work_unit`, `pile_state`, `junked_at`).
 *   **Habit Completions (NEW Table):** A new table `habit_completions` will store each instance of a habit being completed.
     *   `completion_id`: Unique identifier.
@@ -245,7 +245,7 @@ The security architecture for 'whatcha-doin' will be built upon the robust featu
 *   **Data Encryption:** Supabase PostgreSQL inherently provides encryption at rest for data stored in the database. Data in transit will be secured using **TLS/SSL** for all communication between the client, Vercel, and Supabase.
 *   **API Security:** Supabase's PostgREST API is secured by JWTs issued by Supabase Auth. All requests will require valid authentication tokens.
 *   **Server-Side Validation:** Critical business logic, such as the "Two-Day Rule" and grace period processing, will be executed within **Supabase Database Functions**. This server-side execution prevents client-side manipulation and ensures the integrity of core application rules.
-*   **Reserved Slugs Enforcement:** A mechanism will be implemented to prevent users from registering `publicId`s that conflict with system routes (e.g., `auth`, `dashboard`, `journal`, `grace-period`, `api`, `profile`). This ensures the integrity of core application navigation.
+*   **Reserved Slugs Enforcement:** A mechanism will be implemented to prevent users from registering `usernames` that conflict with system routes (e.g., `auth`, `dashboard`, `journal`, `grace-period`, `api`, `profile`). This ensures the integrity of core application navigation.
 *   **Environment Variables:** Sensitive information (e.g., Supabase API keys) will be stored securely using **Vercel Environment Variables** and accessed only on the server-side where necessary. Client-side environment variables will be public.
 
 ## Performance Considerations
@@ -277,7 +277,7 @@ The application will be deployed on **Vercel**. This choice is driven by its dee
 To set up the development environment for 'whatcha-doin', developers will need the following:
 
 *   **Node.js:** Latest LTS version (e.g., v20.x).
-*   **npm/Yarn/pnpm:** A package manager (pnpm recommended for speed and disk space efficiency).
+*   **pnpm:** A package manager.
 *   **Git:** Version control system.
 *   **Docker Desktop:** For local Supabase development (optional, but recommended for mirroring production environment).
 *   **Code Editor:** VS Code with recommended extensions (e.g., ESLint, Prettier, Tailwind CSS IntelliSense, PostgreSQL extensions).
@@ -294,7 +294,7 @@ The project can be initialized and set up using the following commands:
     ```
 2.  **Install dependencies:**
     ```bash
-    pnpm install # or npm install or yarn install
+    pnpm install
     ```
 3.  **Initialize Supabase locally (optional, for local development):**
     ```bash
@@ -314,7 +314,7 @@ The project can be initialized and set up using the following commands:
     ```
 7.  **Start the development server:**
     ```bash
-    pnpm dev # or npm run dev or yarn dev
+    pnpm dev
     ```
 
 ### CI/CD
@@ -335,7 +335,7 @@ This section summarizes the key architectural decisions made during this workflo
     *   **Rationale:** Consolidates all data persistence, authentication (Magic Link), real-time capabilities, and file storage into a single, integrated, and scalable platform. Maximizes free-tier usage, simplifies development, and eliminates the need for rework by fully committing to Supabase early.
 
 3.  **ADR 003: API Pattern**
-    *   **Decision:** Leverage Supabase's auto-generated PostgREST API as the primary data access pattern directly from the Next.js frontend. Custom Next.js API routes will be implemented only for specific logic not directly covered by PostgREST or Supabase Database Functions (e.g., handling server-side validation for unique public slugs, which involves orchestrating multiple data operations or integrating external services).
+    *   **Decision:** Leverage Supabase's auto-generated PostgREST API as the primary data access pattern directly from the Next.js frontend. Custom Next.js API routes will be implemented only for specific logic not directly covered by PostgREST or Supabase Database Functions (e.g., handling server-side validation for unique usernames, which involves orchestrating multiple data operations or integrating external services).
     *   **Rationale:** Supabase's PostgREST provides a fully functional RESTful API from the PostgreSQL schema, significantly reducing the need for custom backend API development for core CRUD operations. This reduces complexity, development time, and Vercel serverless function costs, while allowing flexibility for specific business logic.
 
 4.  **ADR 004: Deployment & CI/CD**
@@ -390,9 +390,9 @@ This section summarizes the key architectural decisions made during this workflo
     *   **Decision:** Implement an `AuthProvider` client component to directly inject a mock user's `user_id` into the session when `NEXT_PUBLIC_DEV_MODE_ENABLED=true` in `app/(main)/layout.tsx`. This allows for direct interaction with Supabase tables using the provided `user_id` for all data operations.
     *   **Rationale:** This strategy allows for seamless feature development and testing without requiring a live Supabase authentication flow, improving developer experience and enabling rapid iteration. It explicitly bypasses Supabase Auth for data operations in development, while Supabase tables are still used as the primary data store. This temporary bypass will be replaced by full Supabase Auth integration in the final epic.
 
-17. **ADR 017: Dynamic Root Routing for User Profiles**
-    *   **Decision:** Implement user profile routing using a dynamic root segment `/[publicId]` (e.g., `whatcha-doin.com/hammaadworks`). The route will dynamically serve either a public, read-only view or a private, editable view of the profile based on the logged-in user's `publicId` matching the URL segment.
-    *   **Rationale:** Provides a clean, shareable, and user-friendly URL structure for profiles, aligning with industry best practices (e.g., GitHub profiles). It allows users to copy and share the link directly from the browser. This strategy necessitates a list of **reserved system slugs** (e.g., `auth`, `dashboard`, `journal`, `grace-period`, `api`) that users cannot choose as their `publicId` to prevent routing conflicts.
+*   **ADR 017: Dynamic Root Routing for User Profiles**
+    *   **Decision:** Implement user profile routing using a dynamic root segment `/[username]` (e.g., `whatcha-doin.com/hammaadworks`). The route will dynamically serve either a public, read-only view or a private, editable view of the profile based on the logged-in user's username matching the URL segment.
+    *   **Rationale:** Provides a clean, shareable, and user-friendly URL structure for profiles, aligning with industry best practices (e.g., GitHub profiles). It allows users to copy and share the link directly from the browser. This strategy necessitates a list of **reserved system usernames** (e.g., `auth`, `dashboard`, `journal`, `grace-period`, `api`) that users cannot choose as their username to prevent routing conflicts.
 
 ---
 
