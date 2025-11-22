@@ -15,7 +15,7 @@ the [PRD](./PRD.md) into implementable stories.
 **CRITICAL ARCHITECTURAL DECISION:** The application will leverage **Supabase** for all data persistence from day one. This includes PostgreSQL for data storage, Authentication for user management, and its auto-generated API. This simplifies the architecture, eliminates future rework, and accelerates core feature development.
 
 **Important Development Note:** To allow immediate access to the application during local development, a predefined user
-session will be injected (see Epic 1, Story 1.2) to bypass the full authentication flow. This bypass will now mock a Supabase session by directly interacting with Supabase tables using the hardcoded user's `user_id`, bypassing Supabase Authentication for data operations. After successful authentication (or bypass), the user will be redirected to their root-level profile `/[username]`.
+session will be injected (see Epic 1, Story 1.2) to bypass the full authentication flow. This bypass will now mock a Supabase session by directly interacting with Supabase tables using the hardcoded user's `user_id`, bypassing Supabase Authentication for data operations. After successful authentication (or bypass), the user will be on their root-level profile `/[username]`, which serves as the entry point for their entire private dashboard experience (e.g., `/[username]/habits`).
 
 **Living Document Notice:** This is the initial version. It will be updated after UX Design and Architecture workflows
 add interaction and technical details to stories.
@@ -24,8 +24,8 @@ Here's the proposed epic structure, designed to facilitate incremental and integ
 progress and continuous value delivery:
 
 *   **Epic 1: Core Application Foundation & Authenticated Root View**
-Goal: Establish the foundational project infrastructure, implement a development-friendly bypass for Supabase data interaction, and lay out the basic authenticated UI accessible via the user's username.
-    *   **Scope:** Project setup, core infrastructure, development data interaction bypass (mocking Supabase Auth and directly using tables with a hardcoded user ID), the basic authenticated root view (bio, todo, three-box sections), and initial setup for user authentication (FR-1.1, FR-1.2 for future, FR-1.3 for current).
+Goal: Establish the foundational project infrastructure, implement a development-friendly bypass for Supabase data interaction, and lay out the basic authenticated UI, which is the user's main dashboard located at `/[username]`.
+    *   **Scope:** Project setup, core infrastructure, development data interaction bypass (mocking Supabase Auth and directly using tables with a hardcoded user ID), the basic authenticated root view at `/[username]` (bio, todo, three-box sections), and initial setup for user authentication (FR-1.1, FR-1.2 for future, FR-1.3 for current).
     *   **Sequencing:** This is the absolute first epic, providing the essential environment and core authenticated UI before any
         feature-specific development begins.
     *   **System Architecture Alignment:** This epic directly implements the User Management and Authentication components, leveraging **Supabase Auth** for Magic Link functionality and **Supabase PostgreSQL** for storing user profile data in the `users` table. All security and data access will be governed by the **Row Level Security (RLS)** policies and **JWT-based authentication**. Public profile pages will be **Server-Side Rendered (SSR)** or **Static Site Generated (SSG)** Next.js pages for fast load times (NFR-1.1).
@@ -130,14 +130,18 @@ So that I have a valid profile URL from the start without extra steps.
 
 **Prerequisites:** Story 1.3 completed.
 
+7. When a user navigates to `/[username]`, the system first checks if the username exists. If not, it displays the application's 404 Not Found page.
+
 ### Story 1.5: Implement Foundational Authenticated Main View Layout
 
 As a user,
-I want to see the basic layout of my private profile view, including placeholders for my bio, todo list, and the three
+I want to see the basic layout of my private profile view at `/[username]`, including placeholders for my bio, todo list, and the three
 habit columns ("Today", "Yesterday", and "The Pile"),
 So that I have a clear structure for where my habits and todos will appear.
 
 **Prerequisites:** Story 1.3.
+
+**Technical Notes:** This layout will be implemented within `app/[username]/page.tsx` and its corresponding layout file.
 
 ### Story 1.6: Integrate Existing HabitCard into "The Pile"
 

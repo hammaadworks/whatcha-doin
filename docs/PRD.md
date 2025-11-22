@@ -50,7 +50,7 @@ This is the focused feature set required to deliver the core identity-building e
 - **Core "Todos" System:** Create, edit, and delete one-off "todos", also with a public/private flag.
 - **Journal System:** A dual-view journal with "Public" and "Private" tabs. It automatically aggregates notes from completed items into the correct tab. Users can also add free-form text and edit any journal entry at any time. The main UI shows today's entry by default, with a date selector to view past entries.
 - **Daily Interaction:** A recording modal appears upon completion of any habit or todo to log an effort score, duration, and notes.
-- **Content & Profile:** A motivational quote widget. A shareable public profile (accessible via `/[username]`) that displays the user's bio, all public habits and their streaks, all public todos, and the complete, searchable Public Journal.
+- **Content & Profile:** A motivational quote widget. A shareable public profile (accessible via `/[username]`) that displays the user's bio, all public habits and their streaks, all public todos, and the complete, searchable Public Journal. This same `/[username]` URL serves as the entry point to the private dashboard for the authenticated user.
 
 ### Growth Features (Post-MVP)
 
@@ -113,7 +113,7 @@ This section details the specific functionalities of the application, derived fr
 - **FR-3.4:** Users must be able to delete a todo.
 
 ### FR-4: Main Interface & Core Logic
-- **FR-4.1:** The main user interface must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile".
+- **FR-4.1:** The main user interface for an authenticated user, located at their `/[username]` route, must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile".
     - On desktop, this will be a two-row layout: Top row with "Today" and "Yesterday" side-by-side, and a full-width "The Pile" on the bottom. Interaction will be `Drag-and-Drop`.
     - On mobile, this will be a single-column, stacked layout: "Today", then "Yesterday", then "The Pile". Interaction will be `Tap-to-Move`.
     All columns must sort their habit chips according to the following three-level order: 1. Public habits first, 2. by highest streak count (descending), 3. by name (ascending). "The Pile" column has a special sorting order: 1. "Lively" habits first, then 2. Public habits, 3. by highest last streak (descending), and 4. by name (ascending).

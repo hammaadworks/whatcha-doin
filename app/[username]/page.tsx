@@ -1,6 +1,5 @@
-'use client';
-
-import { useAuth } from '@/hooks/useAuth';
+import { notFound } from 'next/navigation';
+import { getUserByUsername } from '@/lib/supabase/user';
 import { PublicProfileView } from '@/components/profile/PublicProfileView';
 
 type ProfilePageProps = {
@@ -9,26 +8,18 @@ type ProfilePageProps = {
   };
 };
 
-export default function ProfilePage({ params }: ProfilePageProps) {
-  const { user, loading } = useAuth();
-  const { username } = params;
+export default async function ProfilePage({ params }: ProfilePageProps) {
+  const { username } = await params;
+  const user = await getUserByUsername(username);
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!user) {
+    notFound();
   }
 
-  const isOwner = user?.username === username;
-
+  // Assuming PublicProfileView can handle the full user object
   return (
     <div>
-      {isOwner ? (
-        <div>
-          <h1>Welcome to your profile, {username}!</h1>
-          {/* Placeholder for the authenticated user's private dashboard */}
-        </div>
-      ) : (
-        <PublicProfileView username={username} />
-      )}
+      <PublicProfileView user={user} />
     </div>
   );
 }

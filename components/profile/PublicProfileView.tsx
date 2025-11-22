@@ -1,13 +1,15 @@
 'use client';
 
+import { PublicUserDisplay } from '@/lib/supabase/user';
+
 type PublicProfileViewProps = {
-  username: string;
+  user: PublicUserDisplay;
 };
 
-export function PublicProfileView({ username }: PublicProfileViewProps) {
+export function PublicProfileView({ user }: PublicProfileViewProps) {
   return (
     <div>
-      <h1>Public Profile of {username}</h1>
+      <h1>Public Profile of {user.username}</h1>
       {/* Placeholder for public profile content */}
     </div>
   );

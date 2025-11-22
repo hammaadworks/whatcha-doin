@@ -14,14 +14,14 @@ whatcha-doin/
 ├── .github/                     # GitHub Actions workflows for CI/CD
 ├── app/                         # Next.js App Router (pages, layouts, API routes)
 │   ├── (auth)/                  # Authentication related routes/components (logins, signup)
-│   ├── (main)/                  # Main application routes/components (habits, journal, actions)
-│   │   ├── habits/
-│   │   ├── journal/
-│   │   ├── grace-period/        # Grace Period screen page
-│   │   └── actions/
 │   ├── api/                     # Next.js API Routes (if any custom serverless functions are needed beyond Supabase)
-│   ├── [username]/              # Dynamic route for user profiles (e.g., /hammaadworks)
-│   │   └── page.tsx             # Renders public/private profile based on access
+│   ├── [username]/              # Dynamic route for user profiles and private dashboard
+│   │   ├── habits/              # Private habits page
+│   │   ├── journal/             # Private journal page
+│   │   ├── actions/             # Private todos/actions page
+│   │   ├── grace-period/        # Private grace period page
+│   │   ├── page.tsx             # Renders public profile or private dashboard based on auth
+│   │   └── layout.tsx           # Layout for all user-specific routes
 │   └── layout.tsx               # Root layout
 ├── components/                  # Reusable React components (UI, shared)
 │   ├── ui/                      # shadcn/ui components (customized)
@@ -56,7 +56,7 @@ whatcha-doin/
 ```
 
 **Key Architectural Boundaries:**
-*   **Frontend (Next.js `app/`):** Handles all UI rendering, client-side logic, and interaction.
+*   **Frontend (Next.js `app/`):** Handles all UI rendering, client-side logic, and interaction. The `app/[username]` directory contains all user-specific views, both public and private.
 *   **Shared Logic (`lib/`, `hooks/`, `components/`):** Reusable code that can be used across the frontend.
 *   **Backend (Supabase `supabase/`):** The primary backend, handling data persistence, authentication, real-time, and server-side business logic via PostgreSQL functions.
 *   **CI/CD (`.github/`):** Automated testing and deployment.
@@ -391,8 +391,11 @@ This section summarizes the key architectural decisions made during this workflo
     *   **Rationale:** This strategy allows for seamless feature development and testing without requiring a live Supabase authentication flow, improving developer experience and enabling rapid iteration. It explicitly bypasses Supabase Auth for data operations in development, while Supabase tables are still used as the primary data store. This temporary bypass will be replaced by full Supabase Auth integration in the final epic.
 
 *   **ADR 017: Dynamic Root Routing for User Profiles**
-    *   **Decision:** Implement user profile routing using a dynamic root segment `/[username]` (e.g., `whatcha-doin.com/hammaadworks`). The route will dynamically serve either a public, read-only view or a private, editable view of the profile based on the logged-in user's username matching the URL segment.
-    *   **Rationale:** Provides a clean, shareable, and user-friendly URL structure for profiles, aligning with industry best practices (e.g., GitHub profiles). It allows users to copy and share the link directly from the browser. This strategy necessitates a list of **reserved system usernames** (e.g., `auth`, `dashboard`, `journal`, `grace-period`, `api`) that users cannot choose as their username to prevent routing conflicts.
+    *   **Decision:** Implement a unified routing model using a dynamic root segment `/[username]` (e.g., `whatcha-doin.com/hammaadworks`). This route serves as the single entry point for all of a user's content.
+        - The root page (`app/[username]/page.tsx`) will dynamically render either the **private, editable dashboard** if the visitor is the authenticated owner, or the **public, read-only profile** for all other visitors.
+        - All private feature pages (e.g., Habits, Journal, Todos) will be nested under this dynamic route (e.g., `/[username]/habits`, `/[username]/journal`). Access to these sub-routes will be restricted to the authenticated user.
+        - If a `username` from the URL does not exist in the database, the application will render a custom 404 page (`app/four-o-four.tsx`).
+    *   **Rationale:** This approach provides a clean, shareable, and user-friendly URL structure that serves as a single, predictable namespace for each user. It simplifies the mental model by unifying the public and private access points and scales well for future feature additions. This strategy necessitates a list of **reserved system usernames** (e.g., `auth`, `api`, `profile`, `settings`) that users cannot choose to prevent routing conflicts.
 
 ---
 

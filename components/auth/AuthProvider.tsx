@@ -1,3 +1,3 @@
 "use client";
 
-export { AuthContextProvider as AuthProvider } from "@/hooks/useAuth.tsx";
+export { AuthProvider } from "@/hooks/useAuth.tsx";

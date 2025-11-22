@@ -1,7 +1,7 @@
 // tests/unit/useAuth.test.tsx
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { AuthContextProvider, useAuth } from '@/hooks/useAuth';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { User } from '@supabase/supabase-js';
 
 // Mock the Supabase User type for consistency
@@ -19,7 +19,7 @@ describe('useAuth Hook', () => {
   // Wrapper component to provide the AuthContextProvider
   const createWrapper = (initialUser?: User | null) => {
     return function Wrapper({ children }: { children: React.ReactNode }) {
-      return <AuthContextProvider initialUser={initialUser}>{children}</AuthContextProvider>;
+      return <AuthProvider initialUser={initialUser}>{children}</AuthProvider>;
     };
   };
 
@@ -30,7 +30,7 @@ describe('useAuth Hook', () => {
 
   it('should return initial loading state as true', () => {
     const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.loading).toBe(true);
     expect(result.current.user).toBeNull();
   });
 
@@ -40,7 +40,7 @@ describe('useAuth Hook', () => {
     const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.loading).toBe(false);
       expect(result.current.user).toEqual(expect.objectContaining({
         id: MOCK_USER.id,
         email: MOCK_USER.email,
@@ -55,7 +55,7 @@ describe('useAuth Hook', () => {
     const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(testInitialUser) });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.loading).toBe(false);
       expect(result.current.user).toEqual(expect.objectContaining({
         id: testInitialUser.id,
         email: testInitialUser.email,
@@ -69,7 +69,7 @@ describe('useAuth Hook', () => {
     const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(null) });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.loading).toBe(false);
       expect(result.current.user).toBeNull();
     });
   });
@@ -81,7 +81,7 @@ describe('useAuth Hook', () => {
     const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(testInitialUser) });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.loading).toBe(false);
       expect(result.current.user).toEqual(expect.objectContaining({
         id: MOCK_USER.id, // Should be mock user's ID, not initialUser's
         email: MOCK_USER.email,

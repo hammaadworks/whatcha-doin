@@ -1,22 +1,35 @@
+'use client';
+
 import React from 'react';
-import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import Link from 'next/link';
-import LogoutButton from '@/components/auth/LogoutButton';
+import { useAuth } from '@/hooks/useAuth';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 
-interface AppHeaderProps {
-  isAuthenticated?: boolean;
-}
+const AppHeader = () => {
+  const { user, loading } = useAuth();
 
-export default function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
   return (
-    <header className="bg-card text-foreground p-4 flex justify-between items-center flex-wrap">
-      <Link href="/dashboard" className="text-[var(--font-size-xl)] font-bold">
-        whatcha-doin
-      </Link>
-      <div className="flex items-center gap-4">
-        <AnimatedThemeToggler />
-        {isAuthenticated && <LogoutButton />}
+    <header className="flex items-center justify-between p-4 bg-gray-800 text-white">
+      <div className="flex items-center space-x-4">
+        {!user && (
+          <Link href="/login">
+            <ShimmerButton className="shadow-2xl">
+              <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+                Login
+              </span>
+            </ShimmerButton>
+          </Link>
+        )}
       </div>
+      <nav>
+        {/* Navigation items can go here */}
+      </nav>
     </header>
   );
-}
+};
+
+export default AppHeader;
