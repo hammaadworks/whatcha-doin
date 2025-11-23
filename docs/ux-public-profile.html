@@ -66,7 +66,7 @@
             background-color: var(--card);
             border-radius: 1.5rem;
             border: 1px solid var(--card-border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
             padding: 2.5rem 3rem;
             position: relative;
         }
@@ -141,6 +141,7 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .habit-chip .streak {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -164,16 +165,19 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
+
         .journal-entry h3 {
             font-size: 1.25rem;
             margin: 0 0 0.5rem 0;
             color: var(--primary);
         }
+
         .journal-entry .date {
             font-size: 0.9rem;
             color: var(--muted-fg);
             margin-bottom: 1rem;
         }
+
         .journal-entry p {
             font-size: 1rem;
             line-height: 1.6;
@@ -181,65 +185,138 @@
             margin: 0;
         }
 
+        .motivational-quote-card {
+            background: var(--accent-gradient);
+            color: var(--primary-fg);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--primary); /* subtle border matching primary */
+            animation: pulse-glow 5s infinite ease-in-out; /* Subtle animation for energy */
+        }
+        
+        .motivational-quote-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate-light 15s linear infinite;
+            opacity: 0.3;
+        }
+
+        .motivational-quote-card .quote-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .motivational-quote-card .quote-source {
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px var(--primary); }
+            50% { box-shadow: 0 0 25px var(--primary), 0 0 50px rgba(255,255,255,0.1); }
+            100% { box-shadow: 0 0 10px var(--primary); }
+        }
+
+        @keyframes rotate-light {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
     </style>
 </head>
 <body class="theme-dark">
 
-    <div class="profile-container">
-        <button id="theme-switcher" class="theme-switcher" title="Switch Theme">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
-        
-        <h1>hammaadworks</h1>
-        <p class="bio">Passionate about building software that helps people live more intentionally. Currently focused on mastering daily habits and reflecting on life's journey.</p>
+<div class="profile-container">
+    <button id="theme-switcher" class="theme-switcher" title="Switch Theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
 
-        <div class="section">
-            <h2>Habits</h2>
-            <div class="habit-grid">
-                <div class="habit-chip">Read a book <span class="streak">12</span></div>
-                <div class="habit-chip">Meditate <span class="streak">5</span></div>
-                <div class="habit-chip">Learn Spanish <span class="streak">30</span></div>
-                <div class="habit-chip">Workout <span class="streak">28</span></div>
-            </div>
-        </div>
+    <h1>hammaadworks</h1>
+    <p class="bio">Passionate about building software that helps people live more intentionally. Currently focused on
+        mastering daily habits and reflecting on life's journey.</p>
+    <div class="section">
+        <h2>Actions</h2>
+        <ol class="todo-list">
+            <li class="todo-item">Complete project proposal</li>
+            <li class="todo-item">Buy groceries</li>
+        </ol>
+    </div>
 
-        <div class="section">
-            <h2>Todos</h2>
-            <ol class="todo-list">
-                <li class="todo-item">Complete project proposal</li>
-                <li class="todo-item">Buy groceries</li>
-            </ol>
-        </div>
-
-        <div class="section">
-            <h2>Journal</h2>
-            <div class="journal-entry">
-                <h3>Reflections on consistency</h3>
-                <div class="date">November 22, 2025</div>
-                <p>Today was a good day for consistency. Managed to hit all my habits, even the tough ones. Reading for 30 minutes felt especially rewarding. It's becoming easier to get into the flow.</p>
-            </div>
-            <div class="journal-entry">
-                <h3>New insights from meditation</h3>
-                <div class="date">November 21, 2025</div>
-                <p>My meditation practice is deepening. Noticing subtle shifts in my thought patterns throughout the day. It's a powerful tool for self-awareness. Also, the Spanish lesson was tough today, but I pushed through.</p>
-            </div>
+    <div class="section">
+        <h2>Habits</h2>
+        <div class="habit-grid">
+            <div class="habit-chip">Read a book <span class="streak">12</span></div>
+            <div class="habit-chip">Meditate <span class="streak">5</span></div>
+            <div class="habit-chip">Learn Spanish <span class="streak">30</span></div>
+            <div class="habit-chip">Workout <span class="streak">28</span></div>
         </div>
     </div>
 
-    <script>
-        // Theme switcher logic
-        const themeSwitcher = document.getElementById('theme-switcher');
-        themeSwitcher.addEventListener('click', () => {
-            const isLightCurrently = document.body.classList.contains('theme-light');
-            
-            document.body.classList.toggle('theme-light', !isLightCurrently);
-            document.body.classList.toggle('theme-dark', isLightCurrently);
-            
-            themeSwitcher.innerHTML = isLightCurrently
-                ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
-                : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-        });
-    </script>
+    <div class="section">
+        <h2>Journal</h2>
+        <div class="journal-entry">
+            <h3>Reflections on consistency</h3>
+            <div class="date">November 22, 2025</div>
+            <p>Today was a good day for consistency. Managed to hit all my habits, even the tough ones. Reading for 30
+                minutes felt especially rewarding. It's becoming easier to get into the flow.</p>
+        </div>
+        <div class="journal-entry">
+            <h3>New insights from meditation</h3>
+            <div class="date">November 21, 2025</div>
+            <p>My meditation practice is deepening. Noticing subtle shifts in my thought patterns throughout the day.
+                It's a powerful tool for self-awareness. Also, the Spanish lesson was tough today, but I pushed
+                through.</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Motivations</h2>
+        <div class="motivational-quote-card">
+            <p class="quote-text"><q>Work on your dreams as if your life depends on it. Because it does.</q></p>
+            <p class="quote-source">— Unknown</p>
+        </div>
+    </div>
+
+    <footer style="text-align: center; margin-top: 3rem; color: var(--muted-fg); font-size: 0.9rem;">
+        &copy; 2025 whatcha-doin. All rights reserved.
+    </footer>
+
+</div>
+
+<script>
+    // Theme switcher logic
+    const themeSwitcher = document.getElementById('theme-switcher');
+    themeSwitcher.addEventListener('click', () => {
+        const isLightCurrently = document.body.classList.contains('theme-light');
+
+        document.body.classList.toggle('theme-light', !isLightCurrently);
+        document.body.classList.toggle('theme-dark', isLightCurrently);
+
+        themeSwitcher.innerHTML = isLightCurrently
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    });
+</script>
 
 </body>
 </html>

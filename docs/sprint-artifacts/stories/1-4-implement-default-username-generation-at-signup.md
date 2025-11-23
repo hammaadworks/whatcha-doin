@@ -53,9 +53,9 @@ so that I can have a seamless onboarding experience with a ready-to-use profile 
 
 ### References
 
-- [Source: `docs/epics.md#Story-1.4` (Username Generation)](../epics.md#story-14-implement-default-username-generation-at-signup)
-- [Source: `docs/architecture.md#Data-Architecture` (Database Functions)](../architecture.md#data-architecture)
-- [Source: `docs/PRD.md#Web-App-Specific-Requirements` (UI Libraries)](../PRD.md#web-app-specific-requirements)
+- [Source: `docs/epics.md#Story-1.4` (Username Generation)](../../epics.md#story-14-implement-default-username-generation-at-signup)
+- [Source: `docs/architecture.md#Data-Architecture` (Database Functions)](../../architecture.md#data-architecture)
+- [Source: `docs/PRD.md#Web-App-Specific-Requirements` (UI Libraries)](../../PRD.md#web-app-specific-requirements)
 
 ## Dev Agent Record
 

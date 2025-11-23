@@ -54,12 +54,12 @@ So that I have a clear structure for where my habits and todos will appear.
 
 ### References
 
--   [Source: `docs/epics.md#Story-1.5` (Story Details)](../epics.md#story-15-implement-foundational-authenticated-main-view-layout)
--   [Source: `docs/PRD.md#FR-4.1` (Main Interface Layout)](../PRD.md#fr-41-main-interface-core-logic)
--   [Source: `docs/PRD.md#FR-1.5` (Public Profile Content)](../PRD.md#fr-15-the-public-profile-page-must-display-the-user's-bio-all-public-habits-all-public-todos-and-the-public-journal)
--   [Source: `docs/architecture.md#ADR-017` (Dynamic Root Routing)](../architecture.md#adr-017-dynamic-root-routing-for-user-profiles)
--   [Source: `docs/ux-design-specification.md#4.2` (Overall Page Structure)](../ux-design-specification.md#42-overall-page-structure)
--   [Source: `docs/ux-design-specification.md#4.3` (Main Board Layout & Interaction)](../ux-design-specification.md#43-main-board-layout-interaction)
+-   [Source: `docs/epics.md#Story-1.5` (Story Details)](../../epics.md#story-15-implement-foundational-authenticated-main-view-layout)
+-   [Source: `docs/PRD.md#FR-4.1` (Main Interface Layout)](../../PRD.md#fr-41-main-interface-core-logic)
+-   [Source: `docs/PRD.md#FR-1.5` (Public Profile Content)](../../PRD.md#fr-15-the-public-profile-page-must-display-the-user's-bio-all-public-habits-all-public-todos-and-the-public-journal)
+-   [Source: `docs/architecture.md#ADR-017` (Dynamic Root Routing)](../../architecture.md#adr-017-dynamic-root-routing-for-user-profiles)
+-   [Source: `docs/ux-design-specification.md#4.2` (Overall Page Structure)](../../ux-design-specification.md#42-overall-page-structure)
+-   [Source: `docs/ux-design-specification.md#4.3` (Main Board Layout & Interaction)](../../ux-design-specification.md#43-main-board-layout-interaction)
 -   [Source: `docs/sprint-artifacts/1-4-implement-default-username-generation-at-signup.md` (Previous Story Learnings)]({{story_dir}}/1-4-implement-default-username-generation-at-signup.md)
 -   [Source: `docs/sprint-artifacts/tech-spec-epic-1.md` (Epic 1 Technical Specification)]
 
