@@ -3,6 +3,7 @@
 
 export interface Habit {
     id: string;
+    user_id: string; // Added user_id
     name: string;
     is_public: boolean;
     current_streak: number;

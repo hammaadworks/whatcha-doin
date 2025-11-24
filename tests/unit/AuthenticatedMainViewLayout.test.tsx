@@ -3,7 +3,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ProfilePageClient from '@/components/profile/ProfilePageClient'; // Corrected import to test the Client Component
+import PrivatePage from '@/components/profile/PrivatePage.tsx'; // Corrected import to test the Client Component
 import { User } from '@supabase/supabase-js'; // Import User type
 
 // Mock AuthContext and useAuth
@@ -41,7 +41,7 @@ jest.mock('@/components/layout/AppHeader', () => {
   return jest.fn(() => <div data-testid="app-header">Mocked AppHeader</div>);
 });
 
-describe('ProfilePageClient', () => { // Changed describe block title
+describe('PrivatePage', () => { // Changed describe block title
   const mockUsername = 'testuser';
   const mockAuthenticatedUser: User & { username: string; bio?: string } = { // Add bio as optional
     id: 'user123',
@@ -82,7 +82,7 @@ describe('ProfilePageClient', () => { // Changed describe block title
       loading: false,
     });
     // For owner, initialProfileUser should be the authenticated user
-    render(<ProfilePageClient username={mockUsername} initialProfileUser={mockAuthenticatedUser} />);
+    render(<PrivatePage username={mockUsername} initialProfileUser={mockAuthenticatedUser} />);
 
     await waitFor(() => {
       // Check for AppHeader
@@ -108,19 +108,19 @@ describe('ProfilePageClient', () => { // Changed describe block title
   // Test for loading state
   it('renders loading state when auth is loading', () => {
     mockUseAuth.mockReturnValue({ user: null, loading: true });
-    render(<ProfilePageClient username={mockUsername} initialProfileUser={null} />); // Pass initialProfileUser as null
+    render(<PrivatePage username={mockUsername} initialProfileUser={null} />); // Pass initialProfileUser as null
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
 
-  // Test for AC: #1 (PublicProfileView for non-owner)
-  it('renders PublicProfileView for unauthenticated user (fetched client-side)', async () => {
+  // Test for AC: #1 (PublicPage for non-owner)
+  it('renders PublicPage for unauthenticated user (fetched client-side)', async () => {
     mockFetch.mockResolvedValueOnce(Promise.resolve({
       ok: true,
       status: 200,
       json: async () => ({ id: 'someid', username: mockUsername, bio: 'Public test bio' }),
     } as Response));
 
-    render(<ProfilePageClient username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
+    render(<PrivatePage username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
 
     await waitFor(() => {
       expect(screen.getByText(`Public Profile of ${mockUsername}`)).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe('ProfilePageClient', () => { // Changed describe block title
     });
   });
 
-  it('renders PublicProfileView for authenticated user viewing another user\'s profile (fetched client-side)', async () => {
+  it('renders PublicPage for authenticated user viewing another user\'s profile (fetched client-side)', async () => {
     mockUseAuth.mockReturnValue({
       user: mockOtherUser,
       loading: false,
@@ -141,7 +141,7 @@ describe('ProfilePageClient', () => { // Changed describe block title
       json: async () => ({ id: 'someid', username: mockUsername, bio: 'Public test bio' }),
     } as Response));
 
-    render(<ProfilePageClient username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
+    render(<PrivatePage username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
 
     await waitFor(() => {
       expect(screen.getByText(`Public Profile of ${mockUsername}`)).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe('ProfilePageClient', () => { // Changed describe block title
       json: async () => ({ error: 'User not found' }),
     } as Response));
 
-    render(<ProfilePageClient username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
+    render(<PrivatePage username={mockUsername} initialProfileUser={null} />); // initialProfileUser is null, so it will fetch
 
     await waitFor(() => {
         expect(mockedNotFound).toHaveBeenCalled();

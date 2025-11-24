@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input } from "@/components/ui/input"; // Assuming shadcn/ui input
-import { Button } from "@/components/ui/button"; // Assuming shadcn/ui button
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Assuming shadcn/ui select
+} from "@/components/ui/select";
 import { createHabit } from "@/lib/supabase/habit"; // Import createHabit
-import { useAuth } from "@/hooks/useAuth"; // Assuming a hook to get user info
+import { useAuth } from "@/hooks/useAuth";
 import { Switch } from "@/components/ui/switch"; // Import Switch
 import { Label } from "@/components/ui/label"; // Import Label
 

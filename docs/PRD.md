@@ -105,6 +105,7 @@ This section details the specific functionalities of the application, derived fr
 - **FR-2.6:** Users must be able to set and modify a quantitative goal for a habit (e.g., "Read 5 pages"). The goal consists of a number and a unit. The unit can be selected from a predefined list (e.g., `minutes`, `hours`, `pages`, `reps`, `sets`, `questions`) or can be a custom value defined by the user.
 - **FR-2.7:** When a habit's goal is upgraded or downgraded, the existing streak must continue uninterrupted. The new `goal_value` becomes the requirement for continuing the streak from the moment of change.
 - **FR-2.8:** The system must support both broad habits (e.g., "Workout") and atomic habits (e.g., "10 Pushups"). For broad habits, the UI will allow for logging details (e.g., reps, duration, specific activities) within the completion flow without requiring separate habit definitions.
+- **FR-2.9:** Users must be able to click on any habit chip to open a modal that displays a read-only summary of the habit's details, such as its name, current streak, goal, public/private status, and creation date.
 
 ### FR-3: Todo Management (One-off Tasks)
 - **FR-3.1:** Users must be able to create a new "todo" with a text description using an "Intelligent Notepad" concept. This includes an inline input field at the bottom of the list and the ability to create 2-level deep sub-todos using the `Tab` key.

@@ -87,7 +87,7 @@ So that there is a foundation for the user's profile and main authenticated view
 -   The migration includes a Supabase Database Function `check_username_uniqueness(p_username TEXT)` to validate username uniqueness and check against a list of reserved slugs.
 -   The migration also includes a placeholder function `is_dev_mode()` and permissive RLS policies for all tables to allow the dev-mode mock user to bypass RLS checks, as per ADR 016.
 -   Created a new dynamic route `app/[username]/page.tsx` for user profiles.
--   Implemented basic rendering logic in `app/[username]/page.tsx` to conditionally display a private view for the profile owner or a public view (`PublicProfileView.tsx`) for other visitors.
+-   Implemented basic rendering logic in `app/[username]/page.tsx` to conditionally display a private view for the profile owner or a public view (`PublicPage.tsx`) for other visitors.
 -   Updated the `useAuth` hook (`hooks/useAuth.tsx`) to include a `username` in the mock user object, enabling the conditional rendering logic in the profile page.
 -   The implementation adheres to the "CEO's Mandate" to use Supabase Database Functions instead of Edge Functions.
 
@@ -95,7 +95,7 @@ So that there is a foundation for the user's profile and main authenticated view
 -   **New Files:**
     -   `supabase/migrations/20251122102303_add_username_and_uniqueness_function.sql`
     -   `app/[username]/page.tsx`
-    -   `components/profile/PublicProfileView.tsx`
+    -   `components/profile/PublicPage.tsx`
 -   **Modified Files:**
     -   `hooks/useAuth.tsx`
 

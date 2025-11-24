@@ -18,36 +18,36 @@ Evidence: Story fields are present in the `<story>` section of the context XML.
 (Lines: 12-16 in context.xml)
 
 ✓ Acceptance criteria list matches story draft exactly (no invention)
-Evidence: The `<acceptanceCriteria>` section directly reflects the acceptance criteria from the story markdown.
-(Lines: 18-24 in context.xml)
+Evidence: The `<acceptanceCriteria>` section now correctly contains all 8 ACs, including the new design-related ones.
+(Lines: 18-35 in context.xml)
 
 ✓ Tasks/subtasks captured as task list
-Evidence: The `<tasks>` section now correctly contains the detailed task list from the story markdown file.
-(Lines: 17-18, 25-46 in context.xml)
+Evidence: The `<tasks>` section now correctly contains the detailed task list from the story markdown, including the new design-related tasks.
+(Lines: 17-18, 36-84 in context.xml)
 
 ✓ Relevant docs (5-15) included with path and snippets
 Evidence: Four relevant documents (PRD, Architecture, UX Design, Epics) are included with paths and snippets, which is sufficient for the scope of this story.
-(Lines: 49-92 in context.xml)
+(Lines: 87-130 in context.xml)
 
 ✓ Relevant code references included with reason and line hints
-Evidence: The `<code>` section includes references to `HabitCard.tsx`, `app/[username]/page.tsx`, and `components/profile/ProfilePageClient.tsx` with detailed reasons and line hints.
-(Lines: 95-119 in context.xml)
+Evidence: The `<code>` section includes references to `HabitCard.tsx`, `app/[username]/page.tsx`, and `components/profile/PrivatePage.tsx` with detailed reasons and line hints.
+(Lines: 133-157 in context.xml)
 
 ✓ Interfaces/API contracts extracted if applicable
 Evidence: The `HabitCardProps` interface with its full signature and path is included in the `<interfaces>` section.
-(Lines: 128-149 in context.xml)
+(Lines: 166-187 in context.xml)
 
 ✓ Constraints include applicable dev rules and patterns
-Evidence: The `<constraints>` section lists three relevant constraints for implementation.
-(Lines: 123-126 in context.xml)
+Evidence: The `<constraints>` section has the listed constraints.
+(Lines: 161-164 in context.xml)
 
 ✓ Dependencies detected from manifests and frameworks
-Evidence: The `<dependencies>` section lists numerous Node.js packages extracted from `package.json`.
-(Lines: 153-180 in context.xml)
+Evidence: The `<dependencies>` section is populated from `package.json`.
+(Lines: 191-218 in context.xml)
 
 ✓ Testing standards and locations populated
-Evidence: The `<tests>` section includes standards, locations, and ideas.
-(Lines: 184-197 in context.xml)
+Evidence: The `<tests>` section has standards, locations, and updated ideas.
+(Lines: 222-239 in context.xml)
 
 ✓ XML structure follows story-context template format
 Evidence: The entire generated XML file adheres to the `story-context` template structure.

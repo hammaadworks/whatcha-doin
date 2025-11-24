@@ -33,7 +33,7 @@ BEGIN
   ) INTO is_unique;
 
   -- Check against reserved slugs
-  SELECT p_username IN ('auth', 'dashboard', 'journal', 'grace-period', 'api', 'profile') INTO is_reserved;
+  SELECT p_username IN ('auth', 'dashboard', 'journal', 'grace-period', 'api', 'profile', 'not-found') INTO is_reserved;
 
   RETURN is_unique AND NOT is_reserved;
 END;

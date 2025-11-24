@@ -57,18 +57,57 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Align items to the top */
+            align-items: center; /* Align items to the top */
         }
 
         .profile-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 800px; /* Default for smaller screens */
             background-color: var(--card);
             border-radius: 1.5rem;
             border: 1px solid var(--card-border);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
             padding: 2.5rem 3rem;
             position: relative;
+        }
+
+        @media (min-width: 1024px) { /* Larger screens */
+            .profile-container {
+                            max-width: 1100px; /* Wider for desktop */
+                            padding: 3rem 3.5rem; /* More padding for desktop */            }
+            .main-profile-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr; /* Main content 2/3, sidebar 1/3 */
+                gap: 3rem; /* Space between columns */
+            }
+            .main-content-column {
+                /* Content will naturally flow */
+            }
+            .sidebar-column {
+                background-color: var(--bg); /* Lighter background for sidebar */
+                border-radius: 1rem;
+                border: 1px solid var(--card-border);
+                padding: 2rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .sidebar-column .stat-item {
+                background-color: var(--card);
+                border: 1px solid var(--card-border);
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+            }
+            .sidebar-column .stat-item .label {
+                font-size: 0.9rem;
+                color: var(--muted-fg);
+                margin-bottom: 0.5rem;
+            }
+            .sidebar-column .stat-item .value {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: var(--primary);
+            }
         }
 
         .theme-switcher {
@@ -251,57 +290,87 @@
         </svg>
     </button>
 
-    <h1>hammaadworks</h1>
-    <p class="bio">Passionate about building software that helps people live more intentionally. Currently focused on
-        mastering daily habits and reflecting on life's journey.</p>
-    <div class="section">
-        <h2>Actions</h2>
-        <ol class="todo-list">
-            <li class="todo-item">Complete project proposal</li>
-            <li class="todo-item">Buy groceries</li>
-        </ol>
-    </div>
+    <div class="main-profile-grid">
+        <div class="main-content-column">
+            <h1>hammaadworks</h1>
+            <p class="bio">Passionate about building software that helps people live more intentionally. Currently focused on
+                mastering daily habits and reflecting on life's journey.</p>
+            <div class="section">
+                <h2>Actions</h2>
+                <ol class="todo-list">
+                    <li class="todo-item">Complete project proposal</li>
+                    <li class="todo-item">Buy groceries</li>
+                </ol>
+            </div>
 
-    <div class="section">
-        <h2>Habits</h2>
-        <div class="habit-grid">
-            <div class="habit-chip">Read a book <span class="streak">12</span></div>
-            <div class="habit-chip">Meditate <span class="streak">5</span></div>
-            <div class="habit-chip">Learn Spanish <span class="streak">30</span></div>
-            <div class="habit-chip">Workout <span class="streak">28</span></div>
-        </div>
-    </div>
+            <div class="section">
+                <h2>Habits</h2>
+                <div class="habit-grid">
+                    <div class="habit-chip">Read a book <span class="streak">12</span></div>
+                    <div class="habit-chip">Meditate <span class="streak">5</span></div>
+                    <div class="habit-chip">Learn Spanish <span class="streak">30</span></div>
+                    <div class="habit-chip">Workout <span class="streak">28</span></div>
+                </div>
+            </div>
 
-    <div class="section">
-        <h2>Journal</h2>
-        <div class="journal-entry">
-            <h3>Reflections on consistency</h3>
-            <div class="date">November 22, 2025</div>
-            <p>Today was a good day for consistency. Managed to hit all my habits, even the tough ones. Reading for 30
-                minutes felt especially rewarding. It's becoming easier to get into the flow.</p>
-        </div>
-        <div class="journal-entry">
-            <h3>New insights from meditation</h3>
-            <div class="date">November 21, 2025</div>
-            <p>My meditation practice is deepening. Noticing subtle shifts in my thought patterns throughout the day.
-                It's a powerful tool for self-awareness. Also, the Spanish lesson was tough today, but I pushed
-                through.</p>
-        </div>
-    </div>
+            <div class="section">
+                <h2>Journal</h2>
+                <div class="journal-entry">
+                    <h3>Reflections on consistency</h3>
+                    <div class="date">November 22, 2025</div>
+                    <p>Today was a good day for consistency. Managed to hit all my habits, even the tough ones. Reading for 30
+                        minutes felt especially rewarding. It's becoming easier to get into the flow.</p>
+                </div>
+                <div class="journal-entry">
+                    <h3>New insights from meditation</h3>
+                    <div class="date">November 21, 2025</div>
+                    <p>My meditation practice is deepening. Noticing subtle shifts in my thought patterns throughout the day.
+                        It's a powerful tool for self-awareness. Also, the Spanish lesson was tough today, but I pushed
+                        through.</p>
+                </div>
+            </div>
 
-    <div class="section">
-        <h2>Motivations</h2>
-        <div class="motivational-quote-card">
-            <p class="quote-text"><q>Work on your dreams as if your life depends on it. Because it does.</q></p>
-            <p class="quote-source">— Unknown</p>
+            <div class="section">
+                <h2>Motivational Quote</h2>
+                <div class="motivational-quote-card">
+                    <p class="quote-text"><q>Work on your dreams as if your life depends on it. Because it does.</q></p>
+                    <p class="quote-source">— Unknown</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-column">
+            <h2 style="margin-top: 0;">User Highlights</h2>
+            <div class="stat-item">
+                <div class="label">Longest Streak</div>
+                <div class="value">90 days</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Total Habits</div>
+                <div class="value">15</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Average Mood</div>
+                <div class="value">🙂 80%</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Goals Completed</div>
+                <div class="value">23</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Joined</div>
+                <div class="value">Oct 2025</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Public Journal Entries</div>
+                <div class="value">50</div>
+            </div>
         </div>
     </div>
 
     <footer style="text-align: center; margin-top: 3rem; color: var(--muted-fg); font-size: 0.9rem;">
         &copy; 2025 whatcha-doin. All rights reserved.
     </footer>
-
-</div>
 
 <script>
     // Theme switcher logic
