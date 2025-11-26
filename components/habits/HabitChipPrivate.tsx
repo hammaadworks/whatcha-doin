@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
 import { Habit } from '@/lib/supabase/types';
-import EditHabitModal from './EditHabitModal';
 import { HabitChipPublic } from './HabitChipPublic';
+import HabitInfoModal from './HabitInfoModal'; // Import HabitInfoModal
+import { Info } from 'lucide-react'; // Import Info icon
 
 interface HabitChipPrivateProps {
   habit: Habit;
@@ -25,68 +25,37 @@ export const HabitChipPrivate: React.FC<HabitChipPrivateProps> = ({
   onHabitDeleted,
   columnId,
 }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false); // State for info modal
 
-  const handleSave = (
-    habitId: string,
-    name: string,
-    isPublic: boolean,
-    goalValue?: number | null,
-    goalUnit?: string | null
-  ) => {
-    onHabitUpdated(habitId, name, isPublic, goalValue, goalUnit);
-    setIsEditModalOpen(false);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete the habit "${habit.name}"? This action cannot be undone.`)) {
-      onHabitDeleted(habit.id);
-    }
-  };
-  
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditModalOpen(true);
-  };
+  // No need for handleSave or handleDeleteClick here anymore, they are in HabitInfoModal
 
   const canBeDeleted = columnId === 'pile';
 
   return (
     <>
-      <div className="group relative w-fit">
-        {/* The public chip provides the base visuals and the info modal functionality */}
+      <div className="group relative flex items-center w-fit">
+        {/* The public chip provides the base visuals */}
         <HabitChipPublic habit={habit} />
         
-        {/* The private controls are layered on top and appear on hover */}
-        <div className="absolute inset-0 flex items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="flex items-center bg-[--chip-bg] rounded-full h-full px-1">
-            <button
-              onClick={handleEditClick}
-              className="rounded-full p-1.5 hover:bg-gray-500/20"
-              title="Edit Habit"
-            >
-              <Pencil size={16} />
-            </button>
-            {canBeDeleted && (
-              <button
-                onClick={handleDeleteClick}
-                className="rounded-full p-1.5 text-red-500 hover:bg-red-500/20"
-                title="Delete Habit"
-              >
-                <Trash2 size={16} />
-              </button>
-            )}
-          </div>
-        </div>
+        {/* The info button for private controls */}
+        <button
+            onClick={() => setIsInfoModalOpen(true)}
+            className="rounded-full p-1.5 hover:bg-gray-500/20 ml-2"
+            title="Habit Info & Actions"
+        >
+            <Info size={16} />
+        </button>
       </div>
 
-      {/* The Edit Modal is still managed by this private component */}
-      <EditHabitModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+      {/* The Info Modal is now managed by this private component */}
+      <HabitInfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
         habit={habit}
-        onSave={handleSave}
+        onHabitUpdated={onHabitUpdated}
+        onHabitDeleted={onHabitDeleted}
+        isPrivateHabit={true}
+        canBeDeleted={canBeDeleted}
       />
     </>
   );
