@@ -96,7 +96,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         >
         <AuthProvider initialUser={initialUser}>
             <AppHeader/>
-            <main className="flex-grow px-4 md:px-8 lg:px-16">
+            <main className="flex-grow flex items-center justify-center px-2 md:px-4 lg:px-8">
                 {children}
             </main>
             <AppFooter/>

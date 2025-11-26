@@ -22,7 +22,7 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({ isOwner }) => {
 
   return (
     <div className="section mb-10">
-      <h2 className="text-2xl font-extrabold border-b border-card-border pb-4 mb-6 text-foreground">Habits</h2>
+      <h2 className="text-2xl font-extrabold border-b border-primary pb-4 mb-6 text-foreground">Habits</h2>
 
       {isOwner ? (
         // Owner view with Accordion and Grid for private habits

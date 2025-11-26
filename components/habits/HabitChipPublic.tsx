@@ -7,18 +7,28 @@ import { ShineBorder } from '../ui/shine-border';
 
 interface HabitChipPublicProps {
   habit: Habit;
+  disableClick?: boolean;
+  rightAddon?: React.ReactNode; // New prop
+  isPrivate?: boolean; // New prop for styling distinction
 }
 
-export const HabitChipPublic: React.FC<HabitChipPublicProps> = ({ habit }) => {
+export const HabitChipPublic: React.FC<HabitChipPublicProps> = ({ habit, disableClick, rightAddon, isPrivate }) => {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
+  const handleClick = () => {
+    if (!disableClick) {
+      setIsInfoModalOpen(true);
+    }
+  };
 
   return (
     <>
       <div
-        onClick={() => setIsInfoModalOpen(true)}
-        className="group relative flex items-center gap-x-2 cursor-pointer rounded-full py-2.5 pl-5 pr-4 font-bold
+        onClick={handleClick}
+        className={`group relative flex items-center gap-x-2 rounded-full py-2.5 pl-5 pr-4 font-bold
                    border transition-colors w-fit
-                 bg-[--chip-bg] text-[--chip-text] border-[--chip-border] hover:bg-[--secondary-bg]"
+                 bg-[--chip-bg] text-[--chip-text] border-[--chip-border] hover:bg-[--secondary-bg]
+                 ${disableClick ? 'cursor-default' : 'cursor-pointer'}`}
       >
         {/* Main content */}
         <div className="flex items-center gap-x-2">
@@ -30,7 +40,8 @@ export const HabitChipPublic: React.FC<HabitChipPublicProps> = ({ habit }) => {
             {habit.current_streak}
           </div>
         </div>
-        <ShineBorder shineColor="hsl(var(--primary))" className="z-10" />
+        {rightAddon} {/* Render rightAddon here */}
+        <ShineBorder shineColor={isPrivate ? "hsl(var(--secondary))" : "hsl(var(--primary))"} className="z-10" />
       </div>
 
       {/* Modal */}

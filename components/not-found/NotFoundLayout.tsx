@@ -43,21 +43,21 @@ const NotFoundLayout: React.FC<NotFoundLayoutProps> = ({
         return () => clearInterval(interval); // Cleanup on unmount
     }, []);
 
-    return (<div className="relative flex w-full flex-col items-center justify-center bg-background p-4 font-mono">
+    return (<div className="relative bg-background px-4 py-2 font-mono">
         <div className="flex w-full max-w-md flex-col items-center">
-            <div className="mb-4 flex items-baseline font-mono">
+            <div className="mb-2 flex items-baseline font-mono">
                 <span className="font-bold text-8xl text-primary md:text-9xl">4</span>
                 <div className="relative mx-2">
-            <span className="cycling-digit animate-pulse font-bold text-8xl text-primary md:text-9xl">
-              {animatedChar}
-            </span>
+                    <span className="cycling-digit animate-pulse font-bold text-8xl text-primary md:text-9xl">
+                        {animatedChar}
+                    </span>
                     <div className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-xl"></div>
                 </div>
                 <span className="font-bold text-8xl text-primary md:text-9xl">4</span>
             </div>
-            <div className="mb-4 h-px w-16 bg-border"></div>
-            <h1 className="mb-2 text-center text-2xl font-bold md:text-3xl">{title}</h1>
-            <p className="mb-8 text-center text-muted-foreground">{description}</p>
+            <div className="mb-2 h-px w-16 bg-border"></div>
+            <h1 className="mb-1 text-center text-2xl font-bold md:text-3xl">{title}</h1>
+            <p className="mb-2 text-center text-muted-foreground">{description}</p>
             <div className="flex w-full max-w-xs flex-col gap-4 sm:flex-row">
                 <Button asChild className="flex-1">
                     <Link href="/">

@@ -11,7 +11,7 @@ interface MotivationsSectionProps {
 const MotivationsSection: React.FC<MotivationsSectionProps> = ({ username }) => {
   return (
     <div className="section mb-10">
-      <div className="flex justify-between items-center border-b border-card-border pb-4 mb-6">
+      <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
         <h2 className="text-2xl font-extrabold">Motivations</h2>
         <InsightsTrigger username={username} />
       </div>

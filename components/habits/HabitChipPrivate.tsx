@@ -35,16 +35,20 @@ export const HabitChipPrivate: React.FC<HabitChipPrivateProps> = ({
     <>
       <div className="group relative flex items-center w-fit">
         {/* The public chip provides the base visuals */}
-        <HabitChipPublic habit={habit} />
-        
-        {/* The info button for private controls */}
-        <button
-            onClick={() => setIsInfoModalOpen(true)}
-            className="rounded-full p-1.5 hover:bg-gray-500/20 ml-2"
-            title="Habit Info & Actions"
-        >
-            <Info size={16} />
-        </button>
+        <HabitChipPublic
+          habit={habit}
+          disableClick={true}
+          isPrivate={true} // Mark as private for styling
+          rightAddon={
+            <button
+              onClick={() => setIsInfoModalOpen(true)}
+              className="rounded-full p-1.5 hover:bg-gray-500/20"
+              title="Habit Info & Actions"
+            >
+              <Info size={16} />
+            </button>
+          }
+        />
       </div>
 
       {/* The Info Modal is now managed by this private component */}

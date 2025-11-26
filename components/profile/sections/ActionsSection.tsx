@@ -23,7 +23,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({ isOwner, actions: propA
 
   return (
     <div className="section mb-10">
-      <h2 className="text-2xl font-extrabold border-b border-card-border pb-4 mb-6 text-foreground">Actions</h2>
+      <h2 className="text-2xl font-extrabold border-b border-primary pb-4 mb-6 text-foreground">Actions</h2>
       <ActionsList actions={currentActions} onActionToggled={isOwner ? onActionToggled : undefined} justCompletedId={justCompletedId} />
     </div>
   );

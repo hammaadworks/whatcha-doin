@@ -107,24 +107,25 @@ const HabitInfoModal: React.FC<HabitInfoModalProps> = ({
           </div>
         </div>
         {isPrivateHabit && (
-          <DialogFooter className="flex-row sm:justify-between sm:space-x-2 pt-4">
+          <DialogFooter className="flex flex-row gap-2 justify-end pt-4">
             <Button
               variant="outline"
               onClick={() => {
                 setIsEditModalOpen(true);
-                // Don't close info modal yet, EditHabitModal will handle it
               }}
-              className="w-full"
+              size="sm"
+              className="text-sm"
             >
-              <Pencil className="mr-2 h-4 w-4" /> Edit Habit
+              <Pencil className="mr-2 h-4 w-4" /> Edit
             </Button>
             {canBeDeleted && (
               <Button
                 variant="destructive"
                 onClick={handleDeleteClick}
-                className="w-full"
+                size="sm"
+                className="text-sm"
               >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Habit
+                <Trash2 className="mr-2 h-4 w-4" /> Delete
               </Button>
             )}
           </DialogFooter>
