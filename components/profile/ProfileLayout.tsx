@@ -15,7 +15,7 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ username, bio, isOwner, c
   const bioContent = bio || (isOwner ? 'This is your private dashboard. Your bio will appear here, and you can edit it in settings.' : 'This user has not set a bio yet.');
 
   return (
-    <div className="profile-container w-full max-w-screen-xl 2xl:max-w-screen-2xl mx-auto bg-card border border-card-border shadow-lg rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 relative mt-8 mb-8">
+    <div className="profile-container w-full mx-auto bg-card border border-card-border shadow-lg rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 relative mt-8 mb-8">
       <h1 className="text-4xl font-extrabold text-center text-primary mb-2 mt-4">
         {isOwner ? `Welcome, ${username}!` : username}
       </h1>
