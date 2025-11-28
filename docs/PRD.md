@@ -95,6 +95,8 @@ This section details the specific functionalities of the application, derived fr
 - **FR-1.3:** Users must be able to edit a simple text bio for their profile.
 - **FR-1.4:** Each user must be able to configure a unique username which makes their public profile page accessible via a shareable, user-friendly URL (e.g., `/user-chosen-username`). The username must consist only of alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_), and must be unique across all users.
 - **FR-1.5:** The public profile page must display the user's bio, all public habits, all public todos, and the public journal.
+- **FR-1.6:** Users must be able to explicitly select and save their preferred timezone in their profile settings. If not set, the system should default to the browser's detected timezone.
+- **FR-1.7:** The user's current local time (or timezone identifier) must be displayed on their public and private profile. This provides context for visitors regarding the user's activity and deadlines.
 
 ### FR-2: Habit Management (Recurring Habits)
 - **FR-2.1:** Users must be able to create a new "habit" with a name via an inline input field within "The Pile" column. As the user types, a "+ Add Goal" button will appear, allowing them to optionally set a quantitative goal (number and unit) before creation. New habits default to 'Public' and start with a streak count of 0.
@@ -107,18 +109,25 @@ This section details the specific functionalities of the application, derived fr
 - **FR-2.8:** The system must support both broad habits (e.g., "Workout") and atomic habits (e.g., "10 Pushups"). For broad habits, the UI will allow for logging details (e.g., reps, duration, specific activities) within the completion flow without requiring separate habit definitions.
 - **FR-2.9:** Users must be able to click on any habit chip to open a modal that displays a read-only summary of the habit's details, such as its name, current streak, goal, public/private status, and creation date.
 
-### FR-3: Todo Management (One-off Tasks)
-- **FR-3.1:** Users must be able to create a new "todo" with a text description using an "Intelligent Notepad" concept. This includes an inline input field at the bottom of the list and the ability to create 2-level deep sub-todos using the `Tab` key.
-- **FR-3.2:** When creating or editing a todo, users must be able to mark it as "public" or "private" via a `🌐/🔒` privacy toggle visible on hover.
-- **FR-3.3:** Users must be able to mark a todo as complete.
-- **FR-3.4:** Users must be able to delete a todo.
+### FR-3: Action Management (Formerly Todos)
+- **FR-3.1:** Users must be able to create a new "Action" (formerly todo) with a text description. This system replaces the traditional todo list with an "Actions" section.
+- **FR-3.2:** The "Actions" system must support **unlimited deep nesting** of sub-actions. Users can create nested structures (e.g., Action A -> a1 -> a1.1) to organize complex tasks.
+- **FR-3.3:** When creating or editing an action, users must be able to mark it as "public" or "private" via a `🌐/🔒` privacy toggle. This privacy setting applies to the specific action node.
+- **FR-3.4:** Users must be able to mark any action node (parent or child) as complete.
+- **FR-3.5:** Users must be able to delete an action. Deleting a parent action deletes all its children.
+- **FR-3.6 (Next Day Clearing Logic):** "Actions" have a specific lifecycle for clearing completed items from the view.
+    - **FR-3.6.1:** Completed action items remain visible in the UI for the remainder of the day they were completed (until midnight local time).
+    - **FR-3.6.2:** On the "next day" (after midnight), completed items are automatically cleared (hidden/archived) from the active "Actions" view.
+    - **FR-3.6.3:** Crucially, this clearing applies to individual nodes. If a parent Action "A" has sub-actions "a1" (completed today) and "a2" (not completed), on the next day, "a1" will be cleared, but "A" and "a2" will remain visible. "A" remains visible because it still contains active children.
+    - **FR-3.6.4:** If a user unmarks an item before the day ends, it remains active.
+- **FR-3.7:** The data persistence for Actions must use a NoSQL-style structure (JSONB) to support the unlimited nesting requirement efficiently.
 
 ### FR-4: Main Interface & Core Logic
 - **FR-4.1:** The main user interface for an authenticated user, located at their `/[username]` route, must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile".
     - On desktop, this will be a two-row layout: Top row with "Today" and "Yesterday" side-by-side, and a full-width "The Pile" on the bottom. Interaction will be `Drag-and-Drop`.
     - On mobile, this will be a single-column, stacked layout: "Today", then "Yesterday", then "The Pile". Interaction will be `Tap-to-Move`.
     All columns must sort their habit chips according to the following three-level order: 1. Public habits first, 2. by highest streak count (descending), 3. by name (ascending). "The Pile" column has a special sorting order: 1. "Lively" habits first, then 2. Public habits, 3. by highest last streak (descending), and 4. by name (ascending).
-- **FR-4.2:** The daily state change occurs at 12:00 am in the user's local timezone. At this time, any habits completed the previous day appear in the "Yesterday" column.
+- **FR-4.2:** The daily state change occurs at 12:00 am in the user's **preferred local timezone** (as set in FR-1.6). At this time, any habits completed the previous day appear in the "Yesterday" column.
 - **FR-4.3:** Users must be able to drag a habit from "Yesterday" to "Today" to mark it as complete for the current day and continue its active streak.
 -   **FR-4.4 (The "Grace Period"):** If a user opens the app for the first time on a new day and has pending habits from the previous day, they must be presented with a dedicated "End of Day Summary" screen. This screen specifically addresses habits from the *immediately preceding* day. Habits missed for days prior to the immediate previous day will have already transitioned to "Lively" or "Junked" states as per the "Two-Day Rule".
     - **FR-4.4.1:** This screen must allow the user to mark pending habits from the previous day as complete.

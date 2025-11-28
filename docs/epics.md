@@ -279,58 +279,134 @@ So that I can correct mistakes.
 
 ---
 
-## Epic 3: Todo Management
+## Epic 3: Action Management
 
-**Goal:** Enable users to create, manage, and complete one-off tasks with privacy controls and sub-task
-capabilities.
+**Goal:** Enable users to create, manage, and complete hierarchical "Actions" with unlimited nesting, leveraging a NoSQL-style JSONB data structure to support complex task breakdown and a unique "Next Day Clearing" lifecycle dependent on user timezone.
 
-### Story 3.1: Implement Todo Creation Input
+### Story 3.1: Implement Timezone Management (Foundation)
 
 As a user,
-I want to see an input field in the "Todos" section of my authenticated root view to create new todos,
-So that I can easily add one-off tasks.
+I want to be able to explicitly set my preferred timezone (or have it auto-detected),
+So that all my "daily" logic (like Action clearing and Habit tracking) happens at the correct time for me, regardless of my device or travel.
+
+**Acceptance Criteria:**
+1.  Database migration to add `timezone` column to `users` table (if not already present).
+2.  Basic UI (likely in a settings modal or temporary dev panel) to set this timezone.
+3.  System defaults to browser timezone if not set.
 
 **Prerequisites:** Epic 1 completed.
 
-### Story 3.2: Create and Display Basic Todos
+### Story 3.2: Display User's Local Time
 
 As a user,
-I want to create a todo and see it appear in a list within the "Todos" section,
-So that I can keep track of my tasks.
+I want to see my current "System Time" displayed on the UI,
+So that I can verify the app knows where I am in time.
 
 **Prerequisites:** Story 3.1.
 
-### Story 3.3: Implement Todo Completion
+### Story 3.3: Initialize Actions Schema (JSONB)
+
+As a developer,
+I want to replace the existing `todos` table with a new `actions` table that uses a `JSONB` column,
+So that the system can support unlimited deep nesting of action items.
+
+**Acceptance Criteria:**
+1.  Migration created to drop the `todos` table.
+2.  Migration created to add the `actions` table with columns: `id`, `user_id`, `data` (JSONB), `created_at`, `updated_at`.
+3.  RLS policies applied to `actions` to ensure data privacy.
+
+**Prerequisites:** Epic 1 completed.
+
+### Story 3.4: Implement Recursive Action Item Component
 
 As a user,
-I want to mark a todo as complete,
-So that I can track my progress and clear completed tasks.
+I want to see my actions displayed in a nested list structure,
+So that I can visualize relationships between parent tasks and sub-tasks (to unlimited depth).
 
-**Prerequisites:** Story 3.2.
+**Acceptance Criteria:**
+1.  A React component `ActionItem` is created.
+2.  The component recursively renders its own `children` array from the data prop.
+3.  Visual indentation is applied to each nesting level.
 
-### Story 3.4: Implement Todo Deletion
+**Prerequisites:** Story 3.3.
 
-As a user,
-I want to delete a todo,
-So that I can remove unwanted tasks from my list.
-
-**Prerequisites:** Story 3.2.
-
-### Story 3.5: Implement Todo Privacy Toggle
+### Story 3.5: Implement Action Creation and Nesting
 
 As a user,
-I want to mark a todo as public or private,
-So that I can control what information is visible on my public profile.
+I want to create new actions and add sub-actions to any existing action,
+So that I can break down large tasks into manageable steps.
 
-**Prerequisites:** Story 3.2.
+**Acceptance Criteria:**
+1.  Users can add a "Root" action.
+2.  Users can add a "Child" action to any existing node.
+3.  The system updates the `data` JSONB column in Supabase to persist the new tree structure.
 
-### Story 3.6: Implement 2-Level Sub-Todos
+**Prerequisites:** Story 3.4.
+
+### Story 3.6: Implement Action Completion with Timestamps
 
 As a user,
-I want to create sub-todos by pressing `Tab` when creating a todo,
-So that I can break down complex tasks into smaller steps.
+I want to mark an action as complete and have the system record exactly when I did it,
+So that the system knows when to eventually clear it.
 
-**Prerequisites:** Story 3.2.
+**Acceptance Criteria:**
+1.  Marking an item sets `is_completed: true`.
+2.  Marking an item records the current timestamp in `completed_at`.
+3.  State is persisted to the `data` JSONB column.
+
+**Prerequisites:** Story 3.5.
+
+### Story 3.7: Implement "Next Day Clearing" Logic with Grace Period Support
+
+As a user,
+I want completed actions to remain visible today, and then move to my "End of Day Summary" or auto-archive on the next day,
+So that I get a fresh start but still have a chance to review/journal my achievements.
+
+**Acceptance Criteria:**
+1.  **Filtering:** `fetchActions` filters out items where `completed_at` is before Today 00:00 (using User Timezone).
+2.  **Grace Period Integration:** Instead of permanently vanishing immediately, these "cleared" items should be made available to the "End of Day Summary" screen (Epic 2 integration).
+3.  **Auto-Archive:** If the grace period is skipped (user didn't open app yesterday), the items are automatically archived/hidden.
+4.  **Tree Preservation:** Parents with active children remain visible in the main list.
+
+**Prerequisites:** Story 3.6, Story 3.1 (Timezone).
+
+### Story 3.8: Teleport Completed Actions to Journal (Markdown)
+
+As a user,
+I want my "cleared" actions to appear as a checklist in my Journal for that day,
+So that I have a text-based record of what I did.
+
+**Acceptance Criteria:**
+1.  When an action is cleared (either via Grace Period acceptance or auto-archive), the system finds or creates the `journal_entries` row for that action's completion date.
+2.  It appends a Markdown line: `- [x] Action Description` to the content.
+3.  This applies to the `data` update in `journal_entries`.
+
+**Prerequisites:** Story 3.7, Epic 4 (Journal).
+
+### Story 3.9: Implement Action Deletion
+
+As a user,
+I want to delete an action (and all its sub-actions),
+So that I can remove mistakes or tasks I no longer need to do.
+
+**Acceptance Criteria:**
+1.  User can delete any node.
+2.  Deleting a parent node automatically removes it and all its children from the JSON tree.
+3.  The updated tree is persisted to Supabase.
+
+**Prerequisites:** Story 3.5.
+
+### Story 3.10: Implement Action Text Editing
+
+As a user,
+I want to edit the text description of an existing action,
+So that I can correct typos or refine the task details.
+
+**Acceptance Criteria:**
+1.  User can click/tap to edit the text of any action node.
+2.  Changes are saved to the JSON structure in Supabase.
+
+**Prerequisites:** Story 3.5.
 
 ---
 

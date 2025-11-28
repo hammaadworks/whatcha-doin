@@ -3,15 +3,18 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import {MovingBorder} from '@/components/ui/moving-border';
+import { TimezoneSelector } from '@/components/profile/TimezoneSelector';
 
 interface ProfileLayoutProps {
     username: string;
     bio: string | null;
     isOwner: boolean;
+    timezone?: string | null;
+    onTimezoneChange?: (newTimezone: string) => void;
     children: React.ReactNode;
 }
 
-const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, children}) => {
+const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, timezone, onTimezoneChange, children}) => {
     const bioContent = bio || (isOwner ? 'This is your private dashboard. Your bio will appear here, and you can edit it in settings.' : 'This user has not set a bio yet.');
 
     return (<div
@@ -21,6 +24,24 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, ch
                 <h1 className="text-4xl font-extrabold text-center text-primary mb-2 mt-4">
                     {isOwner ? `Welcome, ${username}!` : username}
                 </h1>
+                
+                <div className="flex justify-center mb-4">
+                    {isOwner && onTimezoneChange ? (
+                        <TimezoneSelector currentTimezone={timezone || 'UTC'} onTimezoneChange={onTimezoneChange} />
+                    ) : timezone ? (
+                        <div className="text-sm text-muted-foreground flex items-center gap-2">
+                            <span className="font-mono">
+                                {new Date().toLocaleTimeString('en-US', {
+                                    timeZone: timezone,
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    timeZoneName: 'short'
+                                })}
+                            </span>
+                        </div>
+                    ) : null}
+                </div>
+
                 <div className="bio text-lg text-muted-foreground text-center mb-8 leading-relaxed">
                     <ReactMarkdown>{bioContent}</ReactMarkdown>
                 </div>

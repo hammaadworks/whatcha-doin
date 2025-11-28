@@ -78,7 +78,7 @@ The overall design aesthetic will be "Professional, tech-savvy, out-of-the-box w
 
 ### 4.2 Overall Page Structure
 The main interface is organized with the following top-to-bottom structure to provide a clear and logical user flow:
-1.  User Info/Bio
+1.  **User Info/Bio** (Includes Avatar, Username, Bio, and **Local Time Display**)
 2.  **"Actions" Section** (Todos)
 3.  **"Habits" Section** (The Identity Momentum Board: Today, Yesterday, The Pile)
 4.  **Journal Section** (Daily entry with date selector)
@@ -153,9 +153,9 @@ The application's core functionality revolves around several critical user journ
 
 4.  **Actions (Todos) System:**
     *   **Location:** A separate section positioned above the Habits board.
-    *   **Creation/Editing:** Utilizes an "Intelligent Notepad" concept with an inline input field at the bottom of the list. `Tab` allows for 2-level deep sub-todos. A `🌐/🔒` privacy toggle is available on hover.
+    *   **Creation/Editing:** Utilizes an "Intelligent Notepad" concept with an inline input field. `Tab` allows for **unlimited deep nesting** of sub-actions to organize complex tasks. A `🌐/🔒` privacy toggle is available on hover.
     *   **Sorting:** Public first, then Creation Time (ASC).
-    *   **Completion:** Features a "Teleport-to-Journal" animation, where the todo fades out from "Actions" and fades in/pops into "Completed Todos" in the Journal.
+    *   **Completion & Clearing:** When an action is marked complete, it plays a satisfying "check" animation but **remains visible** for the rest of the day to showcase progress. On the **next day** (after midnight), completed items are automatically cleared (archived) from the active view. Uncompleted items remain.
 
 5.  **Journal System:**
     *   **Structure:** A "Two-Sided Journal" with distinct `[ 🌐 Public Journal ]` and `[ 🔒 Private Journal ]` tabs.

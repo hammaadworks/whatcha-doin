@@ -1,117 +1,134 @@
-// hooks/useActions.ts
-"use client";
+'use client';
 
-import {useState} from 'react';
-import {Action} from '@/components/shared/ActionsList';
-import {mockActionsData} from '@/lib/mock-data';
+import { useState, useCallback, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { ActionNode, fetchActions, updateActions } from '@/lib/supabase/actions';
+import { useAuth } from './useAuth';
 
-export const useActions = () => {
-    const [actions, setActions] = useState<Action[]>(() => {
-        return [...mockActionsData].sort((a, b) => {
-            if (a.completed && !b.completed) return 1;
-            if (!a.completed && b.completed) return -1;
-            return a.originalIndex - b.originalIndex;
-        });
-    });
-    const [justCompletedId, setJustCompletedId] = useState<string | null>(null);
+export const useActions = (isOwner: boolean, timezone?: string) => {
+  const { user } = useAuth();
+  const [actions, setActions] = useState<ActionNode[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    // TODO: Replace with a call to fetch actions from Supabase
-    const getActions = async () => {
-        // For now, we are using mock data
-        return actions;
-    };
+  // Fetch initial data
+  useEffect(() => {
+    if (isOwner && user) {
+      setLoading(true);
+      fetchActions(user.id, timezone || 'UTC')
+        .then(setActions)
+        .catch(err => console.error("Failed to fetch actions:", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isOwner, user, timezone]);
 
-    const sortActions = (actionsToSort: Action[]) => {
-        return [...actionsToSort].sort((a, b) => {
-            if (a.completed && !b.completed) return 1;
-            if (!a.completed && b.completed) return -1;
-            return a.originalIndex - b.originalIndex;
-        });
-    };
+  // Central save function with optimistic update
+  const save = useCallback(async (newTree: ActionNode[]) => {
+    setActions(newTree);
+    if (isOwner && user) {
+      try {
+        await updateActions(user.id, newTree);
+      } catch (error) {
+        console.error("Failed to persist actions:", error);
+        // In a real app, we might trigger a toast or revert state here
+      }
+    }
+  }, [isOwner, user]);
 
-    // TODO: Replace with a call to toggle an action in Supabase
-    const toggleAction = (id: string) => {
-        let actionToHighlight: Action | undefined;
+  // --- CRUD Helpers (Recursive) ---
 
-        const checkParentCompletion = (children: Action[] | undefined): boolean => {
-            if (!children || children.length === 0) {
-                return false;
-            }
-            return children.every(child => child.completed);
-        };
-
-        const toggleActionAndFind = (currentActions: Action[]): Action[] => {
-            return currentActions.map(action => {
-                let currentAction = {...action};
-
-                if (currentAction.id === id) {
-                    currentAction.completed = !currentAction.completed;
-                    if (currentAction.children) {
-                        currentAction.children = currentAction.children.map(child => ({
-                            ...child,
-                            completed: currentAction.completed
-                        }));
-                    }
-                    actionToHighlight = currentAction;
-                } else if (currentAction.children && currentAction.children.length > 0) {
-                    currentAction.children = toggleActionAndFind(currentAction.children);
-                    const allChildrenCompleted = checkParentCompletion(currentAction.children);
-                    if (currentAction.completed !== allChildrenCompleted) {
-                        currentAction.completed = allChildrenCompleted;
-                    }
-                }
-
-                if (!actionToHighlight && currentAction.children && currentAction.children.some(child => child.id === id)) {
-                    actionToHighlight = currentAction.children.find(child => child.id === id);
-                }
-
-                return currentAction;
-            });
-        };
-
-        setActions(currentActions => {
-            const updatedActions = toggleActionAndFind(currentActions);
-
-            if (actionToHighlight && actionToHighlight.completed) {
-                setJustCompletedId(id);
-                setTimeout(() => {
-                    setJustCompletedId(null);
-                    setActions(prev => sortActions(prev));
-                }, 500);
-            } else {
-                return sortActions(updatedActions);
-            }
-            return updatedActions;
-        });
-    };
-
-    // TODO: Replace with a call to add an action in Supabase
-    const addAction = (description: string, parentId?: string) => {
-        const newAction: Action = {
-            id: Date.now().toString(), description, completed: false, originalIndex: actions.length, children: [],
-        };
-
-        if (parentId) {
-            setActions(currentActions => {
-                const addToAction = (current: Action[]): Action[] => {
-                    return current.map(action => {
-                        if (action.id === parentId) {
-                            return {...action, children: [...(action.children || []), newAction]};
-                        }
-                        if (action.children && action.children.length > 0) {
-                            return {...action, children: addToAction(action.children)};
-                        }
-                        return action;
-                    });
-                };
-                return addToAction(currentActions);
-            });
-        } else {
-            setActions(currentActions => [...currentActions, newAction]);
+  const addAction = (description: string, parentId?: string) => {
+    const addRecursive = (nodes: ActionNode[]): ActionNode[] => {
+      if (!parentId) {
+        return [
+          ...nodes,
+          {
+            id: uuidv4(),
+            description,
+            completed: false,
+            originalIndex: nodes.length,
+            children: [],
+            completed_at: undefined
+          }
+        ];
+      }
+      return nodes.map(node => {
+        if (node.id === parentId) {
+          return {
+            ...node,
+            children: [
+              ...(node.children || []),
+              {
+                id: uuidv4(),
+                description,
+                completed: false,
+                originalIndex: (node.children?.length || 0),
+                children: [],
+                completed_at: undefined
+              }
+            ]
+          };
+        } else if (node.children) {
+          return { ...node, children: addRecursive(node.children) };
         }
+        return node;
+      });
     };
+    save(addRecursive(actions));
+  };
 
-    return {
-        actions, justCompletedId, toggleAction, addAction,
+  const toggleAction = (id: string) => {
+    const toggleRecursive = (nodes: ActionNode[]): ActionNode[] => {
+      return nodes.map(node => {
+        if (node.id === id) {
+          const newCompleted = !node.completed;
+          return {
+            ...node,
+            completed: newCompleted,
+            completed_at: newCompleted ? new Date().toISOString() : undefined
+          };
+        } else if (node.children) {
+          return { ...node, children: toggleRecursive(node.children) };
+        }
+        return node;
+      });
     };
+    save(toggleRecursive(actions));
+  };
+
+  const updateActionText = (id: string, newText: string) => {
+    const updateRecursive = (nodes: ActionNode[]): ActionNode[] => {
+      return nodes.map(node => {
+        if (node.id === id) {
+          return { ...node, description: newText };
+        } else if (node.children) {
+          return { ...node, children: updateRecursive(node.children) };
+        }
+        return node;
+      });
+    };
+    save(updateRecursive(actions));
+  };
+
+  const deleteAction = (id: string) => {
+    const deleteRecursive = (nodes: ActionNode[]): ActionNode[] => {
+      return nodes
+        .filter(node => node.id !== id)
+        .map(node => {
+          if (node.children) {
+            return { ...node, children: deleteRecursive(node.children) };
+          }
+          return node;
+        });
+    };
+    save(deleteRecursive(actions));
+  };
+
+  return {
+    actions,
+    loading,
+    addAction,
+    toggleAction,
+    updateActionText,
+    deleteAction
+  };
 };

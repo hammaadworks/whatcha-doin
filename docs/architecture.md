@@ -147,8 +147,11 @@ This approach accelerates development by leveraging established best practices a
 
 *   **Storage (Supabase PostgreSQL):** All dates and times will be stored in **UTC (Coordinated Universal Time)** using PostgreSQL's `TIMESTAMP WITH TIME ZONE` type.
 *   **Transmission (API/Functions):** Dates and times will always be transmitted as **ISO 8601 strings** (e.g., `2025-11-12T10:30:00Z`).
-*   **Client-Side (Next.js Frontend):** The frontend will detect the user's local timezone, convert UTC times from the database to the user's local timezone for display, and convert user input back to UTC ISO 8601 strings for transmission.
-*   **Calculations (Supabase Functions/PostgreSQL):** All core logic and calculations will be performed server-side using **UTC timestamps**, considering the user's stored timezone offset (user's preferred timezone will be stored in their profile).
+*   **Timezone Strategy:**
+    *   **User Preference:** Users will be able to explicitly select their preferred timezone (stored in the `users` table).
+    *   **Logic Execution:** Core logic like "Next Day Clearing" and "Daily State Change" will respect this *stored* timezone preference. This ensures that if a user travels or uses a different device, their "Identity Day" remains consistent with their chosen setting, rather than fluctuating with the browser's system time.
+    *   **Fallback:** If no preference is set, the system will default to the browser's detected timezone (client-side) or UTC (server-side default).
+*   **Calculations (Supabase Functions/PostgreSQL):** All core logic and calculations will be performed server-side using **UTC timestamps**, considering the user's stored timezone offset.
 
 ### Testing Strategy
 
@@ -187,7 +190,17 @@ The data architecture will be built upon **Supabase PostgreSQL**, leveraging its
     *   `duration_value`: Duration value recorded (FR-5.1.5).
     *   `duration_unit`: Duration unit recorded (FR-5.1.5).
     *   `notes`: Free-form text notes for this completion (FR-5.1.5).
-*   **Todos:** Will store one-off task details (e.g., `todo_id`, `user_id`, `parent_todo_id` for sub-todos, `description`, `is_public`, `is_completed`, `created_at`).
+*   **Actions (Formerly Todos):** Will store action items using a **JSONB** column to support unlimited nesting.
+    *   `id`: Unique identifier for the root action container (or individual action if we treat roots as rows).
+    *   `user_id`: Foreign key to `users`.
+    *   `data`: A **JSONB** column storing the entire action tree structure. Each node in the JSON tree will contain:
+        *   `id`: Unique ID for the node.
+        *   `text`: Description.
+        *   `is_completed`: Boolean status.
+        *   `completed_at`: Timestamp of completion (critical for "Next Day Clearing" logic).
+        *   `children`: Array of sub-action nodes (recursive).
+    *   `created_at`, `updated_at`.
+    *   *Rationale:* JSONB is chosen to perfectly fit the "unlimited nesting" requirement and allows for fetching the entire user's action tree in a single query, which is efficient for this specific use case. The "Next Day Clearing" logic will be handled by parsing this JSON structure (client-side or server-side function) to filter out items where `is_completed` is true AND `completed_at` is before the current day. Cleared items are eligible for display in the **Grace Period Summary** (Habits System) before being finally archived/hidden.
 *   **Journal Entries:** Will store daily reflections and aggregated notes from completed items (e.g., `entry_id`, `user_id`, `entry_date`, `content`, `is_public`, `created_at`).
 *   **Relationships:** Foreign keys will establish relationships between users and their habits, todos, and journal entries. Sub-todos will have a self-referencing relationship.
 

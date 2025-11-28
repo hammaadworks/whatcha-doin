@@ -15,7 +15,7 @@ export async function getUserByUsernameClient(username: string): Promise<PublicU
     const supabase = createClient();
     const { data, error } = await supabase
         .from('users')
-        .select('id, username, bio')
+        .select('id, username, bio, timezone')
         .eq('username', username)
         .single();
 
@@ -24,6 +24,21 @@ export async function getUserByUsernameClient(username: string): Promise<PublicU
         return null;
     }
     return data as PublicUserDisplay;
+}
+
+export async function updateUserTimezone(userId: string, timezone: string) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from('users')
+        .update({ timezone })
+        .eq('id', userId)
+        .select();
+
+    if (error) {
+        console.error('Error updating user timezone:', error);
+        throw error;
+    }
+    return data;
 }
 
 // Any other client-side user-related functions can go here.

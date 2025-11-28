@@ -17,6 +17,7 @@ export function PublicPage({ user }: Readonly<PublicProfileViewProps>) {
       username={user.username || ''}
       bio={user.bio ?? null}
       isOwner={false}
+      timezone={user.timezone} // Pass timezone
     >
       <ActionsSection isOwner={false} />
       <HabitsSection isOwner={false} />

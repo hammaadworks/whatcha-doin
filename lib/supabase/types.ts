@@ -36,6 +36,7 @@ export interface PublicUserDisplay {
     id: string;
     username?: string;
     bio?: string; // Made optional
+    timezone?: string; // Added timezone
 }
 
 export interface PublicProfile extends PublicUserDisplay {

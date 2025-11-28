@@ -13,20 +13,25 @@ import MotivationsSection from '@/components/profile/sections/MotivationsSection
 import {PublicPage} from '@/components/profile/PublicPage';
 import {useActions} from '@/hooks/useActions'; // Import the new hook
 
+import {updateUserTimezone} from '@/lib/supabase/user.client';
+
 type ProfilePageClientProps = {
     username: string; initialProfileUser: PublicUserDisplay | null;
 };
 
 export default function PrivatePage({username, initialProfileUser}: Readonly<ProfilePageClientProps>) {
     const {user: authenticatedUser, loading: authLoading} = useAuth();
-    const {actions, justCompletedId, toggleAction, addAction} = useActions();
+    // 1. Local state first (Hooks must be top level)
     const [clientFetchedProfileUser, setClientFetchedProfileUser] = useState<PublicUserDisplay | null>(null);
+    const [optimisticTimezone, setOptimisticTimezone] = useState<string | null>(null);
 
+    // 2. Derived state
     const isOwner = authenticatedUser?.username === username;
 
     let profileToDisplay: PublicUserDisplay | (typeof authenticatedUser & {
         username?: string;
-        bio?: string
+        bio?: string;
+        timezone?: string;
     }) | null = null;
     let overallLoading: boolean;
 
@@ -39,6 +44,9 @@ export default function PrivatePage({username, initialProfileUser}: Readonly<Pro
         profileToDisplay = clientFetchedProfileUser || initialProfileUser;
         overallLoading = (!clientFetchedProfileUser && !initialProfileUser);
     }
+
+    // 3. Now we can safely use the hook with the derived values
+    const {actions, toggleAction, addAction} = useActions(isOwner, optimisticTimezone || profileToDisplay?.timezone || 'UTC');
 
     useEffect(() => {
         if (!isOwner && !authLoading && !clientFetchedProfileUser && !initialProfileUser) {
@@ -56,6 +64,19 @@ export default function PrivatePage({username, initialProfileUser}: Readonly<Pro
         }
     }, [username, authenticatedUser, authLoading, isOwner, clientFetchedProfileUser, initialProfileUser]);
 
+    const handleTimezoneChange = async (newTimezone: string) => {
+        if (isOwner && authenticatedUser) {
+            setOptimisticTimezone(newTimezone);
+            try {
+                await updateUserTimezone(authenticatedUser.id, newTimezone);
+                // Ideally, refresh auth context here if it holds timezone, or rely on optimistic state
+            } catch (error) {
+                console.error("Failed to update timezone", error);
+                setOptimisticTimezone(null); // Revert
+            }
+        }
+    };
+
     if (overallLoading) {
         return <div>Loading...</div>;
     }
@@ -69,13 +90,14 @@ export default function PrivatePage({username, initialProfileUser}: Readonly<Pro
                 username={username}
                 bio={profileToDisplay.bio ?? null}
                 isOwner={isOwner}
+                timezone={optimisticTimezone || profileToDisplay.timezone}
+                onTimezoneChange={handleTimezoneChange}
             >
                 <ActionsSection
                     isOwner={isOwner}
                     actions={actions}
                     onActionToggled={toggleAction}
                     onActionAdded={addAction}
-                    justCompletedId={justCompletedId}
                 />
                 <HabitsSection isOwner={isOwner}/>
                 <JournalSection isOwner={isOwner}/>
