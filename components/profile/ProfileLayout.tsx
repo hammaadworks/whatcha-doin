@@ -1,21 +1,48 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 import ReactMarkdown from 'react-markdown';
 import {MovingBorder} from '@/components/ui/moving-border';
-import { TimezoneSelector } from '@/components/profile/TimezoneSelector';
+// Removed TimezoneSelector import as it's no longer directly used for display here
 
 interface ProfileLayoutProps {
     username: string;
     bio: string | null;
     isOwner: boolean;
     timezone?: string | null;
-    onTimezoneChange?: (newTimezone: string) => void;
+    onTimezoneChange?: (newTimezone: string) => Promise<void>;
     children: React.ReactNode;
 }
 
-const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, timezone, onTimezoneChange, children}) => {
+const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, timezone, onTimezoneChange, children}) => { // Removed onTimezoneChange from props
     const bioContent = bio || (isOwner ? 'This is your private dashboard. Your bio will appear here, and you can edit it in settings.' : 'This user has not set a bio yet.');
+
+    // State to hold the current local time string
+    const [localTime, setLocalTime] = useState<string>('');
+
+    useEffect(() => {
+        // Update local time display every second
+        const updateTime = () => {
+          if (timezone) {
+            try {
+              const timeString = new Date().toLocaleTimeString('en-US', {
+                timeZone: timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+              });
+              setLocalTime(timeString);
+            } catch (e) {
+              setLocalTime('Invalid Timezone');
+            }
+          } else {
+              setLocalTime(''); // Clear if no timezone
+          }
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+    }, [timezone]); // Re-run effect if timezone changes
 
     return (<div
             className="profile-container w-full mx-auto bg-card border border-primary shadow-lg rounded-3xl relative mt-8 mb-8 overflow-hidden">
@@ -26,17 +53,10 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({username, bio, isOwner, ti
                 </h1>
                 
                 <div className="flex justify-center mb-4">
-                    {isOwner && onTimezoneChange ? (
-                        <TimezoneSelector currentTimezone={timezone || 'UTC'} onTimezoneChange={onTimezoneChange} />
-                    ) : timezone ? (
+                    {timezone && localTime ? ( // Always display only the time if timezone is available
                         <div className="text-sm text-muted-foreground flex items-center gap-2">
                             <span className="font-mono">
-                                {new Date().toLocaleTimeString('en-US', {
-                                    timeZone: timezone,
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    timeZoneName: 'short'
-                                })}
+                                {localTime}
                             </span>
                         </div>
                     ) : null}

@@ -16,6 +16,10 @@ interface ActionItemProps {
   onActionAdded?: (description: string, parentId?: string) => void;
   onActionUpdated?: (id: string, newText: string) => void;
   onActionDeleted?: (id: string) => void;
+  onActionIndented?: (id: string) => void; // New prop
+  onActionOutdented?: (id: string) => void; // New prop
+  onActionMovedUp?: (id: string) => void;   // New prop
+  onActionMovedDown?: (id: string) => void; // New prop
   justCompletedId?: string | null;
   level: number;
 }
@@ -44,14 +48,20 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   onActionAdded, 
   onActionUpdated,
   onActionDeleted,
+  onActionIndented,
+  onActionOutdented,
+  onActionMovedUp,
+  onActionMovedDown,
   justCompletedId, 
   level 
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true); // Default expanded to see children
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isAddingSubItem, setIsAddingSubItem] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(action.description);
   const editInputRef = useRef<HTMLInputElement>(null);
+  const divRef = useRef<HTMLDivElement>(null); // Ref for the main div
+  const [isFocused, setIsFocused] = useState(false); // State for focus styling
 
   const hasChildren = action.children && action.children.length > 0;
   const { total, completed } = getCompletionCounts(action);
@@ -67,24 +77,61 @@ export const ActionItem: React.FC<ActionItemProps> = ({
     if (editText.trim()) {
       onActionUpdated?.(action.id, editText.trim());
     } else {
-        // Revert if empty
         setEditText(action.description);
     }
     setIsEditing(false);
+    divRef.current?.focus(); // Re-focus the item after editing
   };
 
   const handleEditCancel = () => {
     setEditText(action.description);
     setIsEditing(false);
+    divRef.current?.focus(); // Re-focus the item after canceling
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // If we're editing, let the input handle its own key events
+    if (isEditing) return;
+
+    if (e.key === 'Tab') {
+      e.preventDefault(); // Prevent default tab behavior (losing focus)
+      if (e.shiftKey) {
+        onActionOutdented?.(action.id);
+      } else {
+        onActionIndented?.(action.id);
+      }
+      // Re-focus the item after indent/outdent
+      divRef.current?.focus();
+    } else if (e.metaKey || e.ctrlKey) { // For Cmd/Ctrl + Shift + Arrow keys
+      if (e.shiftKey) {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          onActionMovedUp?.(action.id);
+          divRef.current?.focus();
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          onActionMovedDown?.(action.id);
+          divRef.current?.focus();
+        }
+      }
+    }
   };
 
   return (
     <div key={action.id} className="mb-2">
       <div
+        ref={divRef}
+        tabIndex={0} // Make the div focusable
+        onKeyDown={handleKeyDown}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         className={cn(
-          "flex items-center space-x-3 p-3 rounded-md bg-card border border-card-border shadow-sm transition-all duration-300 group",
+          "flex items-center space-x-3 p-3 rounded-md border shadow-sm transition-all duration-300 group focus:outline-none", // Add focus:outline-none
+          isFocused ? "border-primary-light ring-2 ring-primary-light" : "border-card-border", // Focus styling
           {
             "bg-accent/30 scale-95": justCompletedId === action.id,
+            "bg-card": !action.completed, // Default background for uncompleted
+            "bg-muted-foreground/10 text-muted-foreground": action.completed && !isFocused, // Gray out completed items
           }
         )}
       >
@@ -162,8 +209,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
           <span className="flex items-center justify-center">
             <CircularProgress
               progress={progressPercentage}
-              size={32}
-              strokeWidth={2}
+              size={40}
+              strokeWidth={4}
               color="text-primary"
               bgColor="text-muted-foreground"
             >

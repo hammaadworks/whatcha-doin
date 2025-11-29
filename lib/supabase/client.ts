@@ -29,8 +29,8 @@ export function createClient() {
       // The network requests (supabase.from) will likely use the ANON key by default 
       // because the internal supabase client hasn't actually signed in.
       // Our RLS policy must allow 'anon' access when is_dev_mode() is true.
-      const mockSession: Session = { 
-        access_token: "mock-access-token", 
+      const mockSession: Session = {
+        access_token: null as any, // Set access_token to null to prevent sending a malformed JWT
         token_type: "bearer",
         expires_in: 3600,
         expires_at: Math.floor(Date.now() / 1000) + 3600,
