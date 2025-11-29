@@ -139,7 +139,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
           id={action.id}
           checked={action.completed}
           onCheckedChange={() => onActionToggled && onActionToggled(action.id)}
-          className={cn("h-5 w-5 rounded-sm", { "pointer-events-none": !onActionToggled })}
+          className={cn("h-5 w-5 rounded-full", { "pointer-events-none": !onActionToggled })}
         />
         
         {isEditing ? (

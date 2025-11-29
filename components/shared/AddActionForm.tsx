@@ -64,8 +64,8 @@ export const AddActionForm = React.forwardRef<
 
   return (
     <div className={cn(
-      "flex items-center space-x-2 p-2 rounded-md bg-card border transition-all duration-200",
-      isInputFocused ? "border-primary shadow-md" : "border-card-border",
+      "flex items-center space-x-2 py-2 border-b transition-all duration-200", // Changed p-2 to py-2, removed rounded-md, bg-card
+      isInputFocused ? "border-primary" : "border-card-border", // Removed shadow-md
       className
     )}>
       <Input
@@ -75,7 +75,7 @@ export const AddActionForm = React.forwardRef<
         onChange={(e) => setDescription(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="flex-1 border-none focus-visible:ring-0 text-base" // Remove default input border and ring
+        className="flex-grow border-none focus-visible:ring-0 text-base h-8 px-0 bg-transparent placeholder-shown:text-muted-foreground/70"
       />
       
       {!isInputFocused && description === '' ? (

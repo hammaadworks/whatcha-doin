@@ -69,21 +69,37 @@ export default async function RootLayout({children,}: Readonly<{ children: React
     log.info('Fetching user session in RootLayout');
 
     const supabase = await createServerSideClient();
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
     if (error) {
-        log.error({ err: error }, 'Error fetching session in RootLayout');
+        // It's normal to have an error if no user is logged in (e.g. "Auth session missing!")
+        // We only log real errors, not just missing session
+        if (error.name !== 'AuthSessionMissingError') {
+             log.error({ err: error }, 'Error fetching user in RootLayout');
+        }
     }
 
     let initialUser = null;
-    if (session?.user) {
+    if (user) {
+        // Fetch public profile to get correct username and timezone
+        const { data: profile, error: profileError } = await supabase
+            .from('users')
+            .select('username, timezone')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) {
+             log.error({ err: profileError, userId: user.id }, 'Error fetching user profile in RootLayout');
+        }
+
         initialUser = {
-            ...session.user,
-            username: session.user.user_metadata?.username || session.user.email?.split('@')[0],
+            ...user,
+            username: profile?.username || user.user_metadata?.username || user.email?.split('@')[0],
+            timezone: profile?.timezone,
         };
-        log.info({ userId: initialUser.id, username: initialUser.username }, 'Session found for user');
+        log.info({ userId: initialUser.id, username: initialUser.username }, 'User authenticated in RootLayout');
     } else {
-        log.info('No active session found');
+        log.info('No active user session found');
     }
 
     return (<html lang="en">
@@ -94,7 +110,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
         >
-        <AuthProvider initialUser={initialUser}>
+        <AuthProvider>
             <AppHeader/>
             <main className="flex-grow flex items-center justify-center px-2 md:px-4 lg:px-8">
                 {children}
