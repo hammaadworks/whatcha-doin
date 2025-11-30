@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     },
     description: "whatcha-doin helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
     applicationName: "whatcha-doin",
-    creator: "hammaadworks",
-    publisher: "hammaadworks",
+    creator: "Hammaad Works",
+    publisher: "Hammaad Works",
     keywords: ["habit tracker", "habit building", "consistency", "goal setting", "productivity", "personal growth", "wellness", "community",],
-    authors: [{name: "hammaadworks", url: "https://github.com/hammaadworks"}],
+    authors: [{name: "Hammaad Works", url: "https://www.hammaadworks.com"}],
     openGraph: {
         title: "whatcha-doin | Building Consistency, One Habit at a Time",
         description: "whatcha-doin helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
@@ -112,7 +112,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         >
         <AuthProvider>
             <AppHeader/>
-            <main className="flex-grow flex items-center justify-center px-2 md:px-4 lg:px-8">
+            <main className="flex-grow flex justify-center px-2 md:px-4 lg:px-8">
                 {children}
             </main>
             <AppFooter/>
