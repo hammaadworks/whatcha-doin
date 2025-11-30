@@ -37,7 +37,7 @@ const AppFooter = () => {
                 return <span className="text-muted-foreground">App Already Installed</span>;
             } else {
                 return (<button onClick={promptInstall} className="text-primary hover:underline focus:outline-none">
-                        Install PWA
+                        Install the App
                     </button>);
             }
         }

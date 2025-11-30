@@ -6,11 +6,16 @@ import {useAuth} from '@/hooks/useAuth';
 import {Button} from '@/components/ui/button';
 import {AnimatedThemeToggler} from '@/components/ui/animated-theme-toggler';
 import UserMenuPopover from '@/components/auth/UserMenuPopover';
-import {LogIn} from "lucide-react";
+import {KeyRound} from "lucide-react";
+import {cn} from "@/lib/utils";
+import {Settings} from "lucide-react";
+import {SettingsDrawer} from '@/components/layout/SettingsDrawer';
+import KeyboardShortcutsModal from '@/components/shared/KeyboardShortcutsModal';
 
 const AppHeader = () => {
     const {user, loading} = useAuth();
     const [isDark, setIsDark] = useState(false);
+    const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
 
     useEffect(() => {
         const updateTheme = () => {
@@ -33,26 +38,41 @@ const AppHeader = () => {
 
     const logoSrc = isDark ? '/favicons/dark/logo-bg.png' : '/favicons/light/logo-bg.png';
 
-    return (<header
-            className="flex items-center justify-between p-4 bg-card border-b border-card-border text-card-foreground">
-            <div className="flex items-center space-x-2">
-                <Link href="/" className="flex items-center space-x-2">
-                    <img src={logoSrc} alt="Whatcha Doin' Logo" className="h-8 w-auto"/>
-                    <span className="text-gray-400">|</span>
-                    <span className="text-xl font-bold">whatcha-doin</span>
-                </Link>
-            </div>
+    return (<React.Fragment>
+            <header
+                className="sticky top-0 z-50 flex items-center justify-between p-4 bg-card border-b border-card-border text-card-foreground">
+                <div className="flex items-center space-x-2">
+                    <Link href="/" className="flex items-center space-x-2">
+                        <img src={logoSrc} alt="Whatcha Doin' Logo" className="h-8 w-auto"/>
+                        <span className="text-gray-400">|</span>
+                        <span className="text-xl font-bold">whatcha-doin</span>
+                    </Link>
+                </div>
 
-            <div className="flex items-center space-x-4">
-                <AnimatedThemeToggler/>
-                {user ? (<UserMenuPopover user={user}/>) : (<Button>
-                        <Link href="/logins">
-                            <LogIn className="mr-2 h-4 w-4"/>
-                            Login
-                        </Link>
-                    </Button>)}
-            </div>
-        </header>);
+                <div className="flex items-center space-x-4">
+                    <AnimatedThemeToggler/>
+                    {user && (<SettingsDrawer>
+                            <button
+                                className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex-shrink-0")}
+                            >
+                                <Settings className="h-6 w-6" strokeWidth={2.5}/>
+                                <span className="sr-only">Settings</span>
+                            </button>
+                        </SettingsDrawer>)}
+                    {user ? (<UserMenuPopover user={user}
+                                              onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsModalOpen(true)}/>) : (
+                        <Link href="/logins"
+                              className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex-shrink-0")}>
+                            <KeyRound className="h-6 w-6" strokeWidth={2.5}/>
+                            <span className="sr-only">Login</span>
+                        </Link>)}
+                </div>
+            </header>
+            <KeyboardShortcutsModal
+                open={isKeyboardShortcutsModalOpen}
+                onOpenChange={setIsKeyboardShortcutsModalOpen}
+            />
+        </React.Fragment>);
 };
 
 export default AppHeader;
