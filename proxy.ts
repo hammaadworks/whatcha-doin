@@ -68,6 +68,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/auth') || 
     pathname.startsWith('/logins') ||
     pathname === '/' ||
+    pathname === '/me' || // Explicitly exclude /me
     pathname.includes('.') 
   ) {
     return supabaseResponse

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Mail, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { DEFAULT_POST_LOGIN_REDIRECT } from "@/lib/constants";
 import { MagicCard } from "@/components/ui/magic-card";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
@@ -28,7 +28,7 @@ export default function Logins() {
     setIsSuccess(false);
 
     if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.");
+      setError("Please enter a valid email address to proceed.");
       setLoading(false);
       return;
     }
@@ -51,7 +51,7 @@ export default function Logins() {
   };
 
   return (
-    <div className="flex w-full flex-col items-center justify-center p-4">
+    <div className="flex w-full flex-col items-center justify-center p-2 pb-0">
       <BlurFade delay={0.25} inView>
         <MagicCard
           className="w-full max-w-md overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-2xl"
@@ -60,18 +60,18 @@ export default function Logins() {
           <div className="flex flex-col p-8 md:p-10">
             <div className="text-center mb-8">
               <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <ArrowRight className="h-6 w-6 text-primary" />
+                <Mail className="h-6 w-6 text-primary" />
               </div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 Welcome Back
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Enter your email to sign in to your account.
+                Your journey to consistency starts here. Enter your email to begin.
               </p>
             </div>
 
             {!isSuccess ? (
-              <form onSubmit={handleLogins} className="space-y-6">
+              <form onSubmit={handleLogins} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="sr-only">
                     Email
@@ -104,7 +104,7 @@ export default function Logins() {
                       Sending...
                     </span>
                   ) : (
-                    "Send Magic Link"
+                    "Continue with Magic Link"
                   )}
                 </ShimmerButton>
               </form>
@@ -114,9 +114,9 @@ export default function Logins() {
                   <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">Email Sent</h3>
+                  <h3 className="text-xl font-semibold text-foreground">Check Your Inbox</h3>
                   <p className="text-muted-foreground max-w-[250px] mx-auto">
-                    We&apos;ve sent a magic link to <span className="font-medium text-foreground">{email}</span>
+                    We&apos;ve sent a secure magic link to <span className="font-medium text-foreground">{email}</span>. Click the link in your email to instantly access your dashboard and continue building your identity.
                   </p>
                 </div>
                 <ShimmerButton
@@ -137,14 +137,15 @@ export default function Logins() {
                 <p>{error}</p>
               </div>
             )}
-          </div>
-            <div className="mt-8 text-center text-xs text-muted-foreground">
+            <div className="mt-6 text-center text-xs text-muted-foreground">
                 <p>
                     By clicking continue, you agree to our{" "}
-                    <a href="#" className="underline hover:text-primary">Terms of Service</a> and{" "}
-                    <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
+                        <a href="/legal/terms.html" className="underline hover:text-primary">Terms of Service</a> and{" "}
+                        <a href="/legal/privacy.html" className="underline hover:text-primary">Privacy Policy</a>
+                    .
                 </p>
             </div>
+          </div>
         </MagicCard>
       </BlurFade>
     </div>

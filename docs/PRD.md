@@ -15,7 +15,7 @@ This PRD outlines the development of "whatcha-doin," a habit and todo tracking a
 
 ### What Makes This Special
 
-"whatcha-doin" stands out by combining robust habit/todo management with a unique journaling system and novel UX patterns. Its "keyboard-first" design prioritizes efficiency, while features like the "Two-Day Rule," "Grace Period," "Positive Urgency UI," and "Teleport-to-Journal Animation" create an engaging and motivating experience. The focus is on making habit building intuitive, rewarding, and deeply integrated with personal reflection.
+"whatcha-doin" stands out by combining robust habit/todo management with a unique journaling system and novel UX patterns. Inspired by Isabella's timeless question from Phineas and Ferb, "Whatcha doin'?", this app provides a public and dynamic answer: users can share their personalized domain profile (`domain/[username]`) to showcase their activities, habits, and progress, turning a casual query into a powerful display of dedication. Its "keyboard-first" design prioritizes efficiency, while features like the "Two-Day Rule," "Grace Period," "Positive Urgency UI," and "Teleport-to-Journal Animation" create an engaging and motivating experience. The focus is on making habit building intuitive, rewarding, and deeply integrated with personal reflection.
 
 ---
 

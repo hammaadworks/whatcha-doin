@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {usePWAInstall} from '@/hooks/usePWAInstall';
+import ContactSupportModal from '@/components/shared/ContactSupportModal'; // Import the new modal component
+import { PWAInstallModal } from '@/components/shared/PWAInstallModal'; // Import the reusable PWA install modal
 
 const AppFooter = () => {
     const {
@@ -14,6 +16,8 @@ const AppFooter = () => {
         setInstallMessage,
         setShowInstallMessage
     } = usePWAInstall();
+
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false); // State for contact modal
 
     // Helper function to render the PWA button/message
     const renderPWAInstallUI = () => {
@@ -46,28 +50,21 @@ const AppFooter = () => {
     return (<footer className="text-center p-4 bg-card border-t border-card-border text-muted-foreground text-sm">
             &copy; {new Date().getFullYear()} whatcha-doin. All rights reserved.
 
+            <span className="mx-2">|</span>
+            <button onClick={() => setIsContactModalOpen(true)} className="text-primary hover:underline focus:outline-none">
+                Contact Support
+            </button>
             <>
                 <span className="mx-2">|</span>
                 {renderPWAInstallUI()}
             </>
 
-            {showInstallMessage && (<div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-                    onClick={closeInstallMessage} // Close when clicking outside
-                >
-                    <div
-                        className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center text-black"
-                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                    >
-                        <p className="mb-4">{installMessage}</p>
-                        <button
-                            onClick={closeInstallMessage}
-                            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark focus:outline-none"
-                        >
-                            OK
-                        </button>
-                    </div>
-                </div>)}
+            <ContactSupportModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+            <PWAInstallModal
+                show={showInstallMessage}
+                message={installMessage}
+                onClose={closeInstallMessage}
+            />
         </footer>);
 };
 

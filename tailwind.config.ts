@@ -70,10 +70,10 @@ const config = {
         },
         orbit: {
           "0%": {
-            transform: "rotate(0deg) translateY(calc(var(--radius) * -1)) rotate(0deg)",
+            transform: "translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--radius) * -1)) rotate(calc(var(--angle) * -1))",
           },
           "100%": {
-            transform: "rotate(360deg) translateY(calc(var(--radius) * -1)) rotate(-360deg)",
+            transform: "translate(-50%, -50%) rotate(calc(var(--angle) + 360deg)) translateY(calc(var(--radius) * -1)) rotate(calc((var(--angle) * -1) - 360deg))",
           },
         },
         shine: {
@@ -85,6 +85,10 @@ const config = {
           "70%": { transform: "rotate(360deg) scale(1.2)", opacity: "1" },
           "100%": { transform: "rotate(360deg) scale(1)", opacity: "1" },
         },
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -92,6 +96,7 @@ const config = {
         orbit: "orbit var(--duration) linear infinite",
         shine: 'shine var(--duration) linear infinite',
         "spin-scale": "spin-scale 0.5s ease-out forwards",
+        grid: "grid 15s linear infinite",
       },
     },
   },
