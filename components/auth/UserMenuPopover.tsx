@@ -10,13 +10,14 @@ import InsightsTrigger from '@/components/shared/InsightsTrigger';
 import { User as AuthUser } from '@/hooks/useAuth';
 import { cn } from "@/lib/utils"; // Import cn utility
 
-import { SettingsDrawer } from '@/components/layout/SettingsDrawer'; // Import SettingsDrawer
+
 
 interface UserMenuPopoverProps {
   user: AuthUser | null;
+  onOpenKeyboardShortcuts: () => void; // New prop
 }
 
-const UserMenuPopover: React.FC<UserMenuPopoverProps> = ({ user }) => {
+const UserMenuPopover: React.FC<UserMenuPopoverProps> = ({ user, onOpenKeyboardShortcuts }) => {
   if (!user) {
     return null;
   }
@@ -46,11 +47,11 @@ const UserMenuPopover: React.FC<UserMenuPopoverProps> = ({ user }) => {
               </div>
             </InsightsTrigger>
           )}
-          <SettingsDrawer>
-            <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer">
-              Settings
-            </div>
-          </SettingsDrawer>
+          <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer"
+               onClick={onOpenKeyboardShortcuts}>
+            Keyboard Shortcuts
+          </div>
+
           <div className="my-2 border-t border-primary/50 dark:border-primary/70" />
           <LogoutButton />
         </div>
