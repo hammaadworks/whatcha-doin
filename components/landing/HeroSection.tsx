@@ -71,26 +71,42 @@ export function HeroSection() {
         {/* Right Column: Interactive Terminal */}
         <div className="w-full max-w-lg mx-auto lg:ml-auto lg:mr-0">
              <BlurFade delay={0.6} inView className="w-full">
-                 <Terminal className="min-h-[350px] shadow-2xl border-border/50 bg-card/80 backdrop-blur-md">
+                 <Terminal className="min-h-[400px] shadow-2xl border-border/50 bg-card/80 backdrop-blur-md">
                     <TypingAnimation delay={500}>&gt; checking_status...</TypingAnimation>
                     
-                    <AnimatedSpan delay={1200} className="text-foreground">
+                    <AnimatedSpan delay={1000} className="text-foreground">
                       <span>[HABIT] "Gym" | Status: MISSED (Yesterday)</span>
                     </AnimatedSpan>
                     
-                    <AnimatedSpan delay={2000} className="text-amber-500 font-bold">
+                    <AnimatedSpan delay={1500} className="text-amber-500 font-bold">
                       <span>⚠ WARNING: Two-Day Rule Active!</span>
                     </AnimatedSpan>
 
-                    <TypingAnimation delay={3000}>
+                    <TypingAnimation delay={2500}>
                        &gt; completing_habit "Gym" --intensity=100%
                     </TypingAnimation>
 
-                    <AnimatedSpan delay={4000} className="text-green-500">
+                    <AnimatedSpan delay={3500} className="text-green-500">
                       <span>✔ SAVED. Streak: 12 Days (Rescued)</span>
                     </AnimatedSpan>
 
-                    <TypingAnimation delay={5000} className="text-primary font-bold">
+                    <TypingAnimation delay={4500}>
+                       &gt; create_action "Ship Beta V1" --priority=high
+                    </TypingAnimation>
+
+                    <AnimatedSpan delay={5500} className="text-blue-500">
+                      <span>✔ Action added to "The Pile". Focus Mode: ON</span>
+                    </AnimatedSpan>
+
+                    <TypingAnimation delay={6500}>
+                       &gt; view_journal --auto-sync
+                    </TypingAnimation>
+
+                    <AnimatedSpan delay={7500} className="text-muted-foreground">
+                      <span>✔ Journal updated with daily progress.</span>
+                    </AnimatedSpan>
+
+                    <TypingAnimation delay={8500} className="text-primary font-bold">
                        &gt; Identity: UPGRADING... _
                     </TypingAnimation>
                  </Terminal>
