@@ -3,7 +3,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { BackstorySection } from "@/components/landing/BackstorySection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
-import { ScienceAndFeaturesSection } from "@/components/landing/ScienceAndFeaturesSection"; // NEW combined section
+import { FeaturesShowcaseSection } from "@/components/landing/FeaturesShowcaseSection"; // Corrected and renamed section
 import { CTASection } from "@/components/landing/CTASection";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import { cn } from "@/lib/utils";
@@ -32,7 +32,7 @@ export default function LandingPage() {
         <ProblemSection />
         <BackstorySection />
         <BeforeAfterSection />
-        <ScienceAndFeaturesSection /> {/* Use the new combined section */}
+        <FeaturesShowcaseSection /> {/* Use the new corrected section */}
         <CTASection />
       </div>
     </div>

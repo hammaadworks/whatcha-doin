@@ -42,8 +42,8 @@ export function CTASection() {
 
         <BlurFade delay={0.8} inView>
             <blockquote className="mt-12 border-l-4 border-primary pl-6 py-2 text-xl italic text-muted-foreground text-left max-w-lg mx-auto bg-secondary/20 rounded-r-lg">
-                "A year from now, they'll ask how you did it. <br/>
-                You'll say: <span className="text-primary font-bold">'I just didn't miss two days.'</span>"
+                &quot;Next time they ask &apos;Whatcha doin&apos;?&apos;, you won&apos;t be stunned. <br/>
+                You&apos;ll just share your link. Good to go.&quot;
             </blockquote>
         </BlurFade>
       </div>
