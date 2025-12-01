@@ -1,11 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
+import { useId } from "react";
 
 interface FlickeringGridProps extends React.HTMLAttributes<HTMLDivElement> {
   squareSize?: number;
   gridGap?: number;
-  flickerChance?: number;
+  flickerChance?: number; // Not used in this simple version but kept for API compatibility
   color?: string;
   width?: number;
   height?: number;
@@ -24,6 +26,8 @@ export const FlickeringGrid = ({
   maxOpacity = 0.3,
   ...props
 }: FlickeringGridProps) => {
+  const patternId = useId();
+  
   return (
     <div
       className={cn(
@@ -35,35 +39,27 @@ export const FlickeringGrid = ({
       <svg className="absolute inset-0 h-full w-full">
         <defs>
           <pattern
-            id="flickering-grid"
+            id={patternId}
             width={squareSize + gridGap}
             height={squareSize + gridGap}
             patternUnits="userSpaceOnUse"
           >
-            <rect
+            <motion.rect
               width={squareSize}
               height={squareSize}
               fill={color}
-              className="animate-flicker"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, maxOpacity, 0] }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#flickering-grid)" />
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
-      <style jsx>{`
-        .animate-flicker {
-          animation: flicker 2s infinite;
-        }
-        @keyframes flicker {
-          0%,
-          100% {
-            opacity: 0;
-          }
-          50% {
-            opacity: ${maxOpacity};
-          }
-        }
-      `}</style>
     </div>
   );
 };
