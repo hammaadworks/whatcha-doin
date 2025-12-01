@@ -34,7 +34,8 @@ export function BackstorySection() {
                            Born from an <span className="text-primary">iconic question.</span>
                         </h2>
                         <p className="text-lg text-muted-foreground font-medium">
-                            Every episode, Isabella walks up with that curious smile and asks:
+                            Every episode, Isabella walks up with that curious smile and asks: <br/>
+                            <span className="text-foreground text-2xl font-bold italic">&quot;Whatcha doin&apos;?&quot;</span>
                         </p>
                    </div>
 
