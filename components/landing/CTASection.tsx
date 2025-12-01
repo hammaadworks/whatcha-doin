@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { CoolMode } from "@/components/ui/cool-mode";
 
 export function CTASection() {
   return (
@@ -25,11 +26,13 @@ export function CTASection() {
         <BlurFade delay={0.6} inView>
             <div className="flex flex-col items-center gap-4 sm:flex-row">
                 <Link href="/me">
-                    <ShimmerButton className="shadow-2xl" background="var(--primary)">
-                        <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10">
-                            Start Building Your Identity
-                        </span>
-                    </ShimmerButton>
+                    <CoolMode>
+                        <ShimmerButton className="shadow-2xl" background="var(--primary)">
+                            <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10">
+                                Start Building Your Identity
+                            </span>
+                        </ShimmerButton>
+                    </CoolMode>
                 </Link>
             </div>
             <p className="mt-4 text-sm font-medium text-muted-foreground">

@@ -6,6 +6,7 @@ import { RetroGrid } from "@/components/ui/retro-grid";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Terminal, TypingAnimation, AnimatedSpan } from "@/components/ui/terminal";
+import { CoolMode } from "@/components/ui/cool-mode";
 
 export function HeroSection() {
   return (
@@ -56,11 +57,13 @@ export function HeroSection() {
             <BlurFade delay={0.8} inView>
                 <div className="flex flex-col sm:flex-row gap-4 mt-2">
                     <Link href="/me">
-                        <ShimmerButton className="shadow-2xl" background="var(--primary)">
-                            <span className="whitespace-pre-wrap text-center text-base font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-                                Start Your Identity Run
-                            </span>
-                        </ShimmerButton>
+                        <CoolMode>
+                            <ShimmerButton className="shadow-2xl" background="var(--primary)">
+                                <span className="whitespace-pre-wrap text-center text-base font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+                                    Start Your Identity Run
+                                </span>
+                            </ShimmerButton>
+                        </CoolMode>
                     </Link>
                 </div>
             </BlurFade>
