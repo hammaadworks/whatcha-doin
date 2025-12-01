@@ -3,21 +3,26 @@
 import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {useAuth} from '@/hooks/useAuth';
-import {Button} from '@/components/ui/button';
 import {AnimatedThemeToggler} from '@/components/ui/animated-theme-toggler';
 import UserMenuPopover from '@/components/auth/UserMenuPopover';
-import {KeyRound} from "lucide-react";
+import {KeyRound, Settings} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {usePathname} from 'next/navigation';
-import {Settings} from "lucide-react";
 import {SettingsDrawer} from '@/components/layout/SettingsDrawer';
 import KeyboardShortcutsModal from '@/components/shared/KeyboardShortcutsModal';
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
 const AppHeader = () => {
     const {user, loading} = useAuth();
     const pathname = usePathname();
     const [isDark, setIsDark] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setIsScrolled(latest > 20);
+    });
 
     useEffect(() => {
         const updateTheme = () => {
@@ -35,43 +40,73 @@ const AppHeader = () => {
     }, []);
 
     if (loading) {
-        return null; // Or a loading spinner
+        return null;
     }
 
     const logoSrc = isDark ? '/favicons/dark/logo-bg.png' : '/favicons/light/logo-bg.png';
 
     return (<React.Fragment>
-            <header
-                className="sticky top-0 z-50 flex items-center justify-between p-4 bg-card border-b border-card-border text-card-foreground">
-                <div className="flex items-center space-x-2">
-                    <Link href="/" className="flex items-center space-x-2">
-                        <img src={logoSrc} alt="Whatcha Doin' Logo" className="h-8 w-auto"/>
-                        <span className="text-gray-400">|</span>
-                        <span className="text-xl font-bold">whatcha-doin</span>
-                    </Link>
-                </div>
+            <motion.header
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed top-0 z-50 w-full flex justify-center pointer-events-none"
+            >
+                <div className={cn(
+                    "pointer-events-auto flex items-center justify-between rounded-full transition-all duration-500 ease-in-out backdrop-blur-md w-[calc(100%-2rem)] max-w-5xl mt-4 border border-border/50",
+                    isScrolled 
+                        ? "px-4 py-2 bg-background/80 shadow-lg" 
+                        : "px-6 py-3 bg-background/60 shadow-md"
+                )}>
+                    <div className="flex items-center space-x-2">
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <div className="relative overflow-hidden rounded-full p-1 transition-transform group-hover:scale-110">
+                                <img src={logoSrc} alt="Whatcha Doin' Logo" className="h-8 w-auto"/>
+                            </div>
+                            <span className="text-muted-foreground/50">|</span>
+                            <span className="text-lg font-bold tracking-tight text-foreground/90 transition-opacity duration-300">
+                                whatcha-doin
+                            </span>
+                        </Link>
+                    </div>
 
-                <div className="flex items-center space-x-4">
-                    <AnimatedThemeToggler/>
-                    {user && (<SettingsDrawer>
-                            <button
-                                className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex-shrink-0")}
-                            >
-                                <Settings className="h-6 w-6" strokeWidth={2.5}/>
-                                <span className="sr-only">Settings</span>
-                            </button>
-                        </SettingsDrawer>)}
-                    {user ? (<UserMenuPopover user={user}
-                                              onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsModalOpen(true)}/>) : (
-                        <Link href="/logins"
-                              className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex-shrink-0",
-                                  pathname === '/logins' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'
-                              )}>
-                            <KeyRound className="h-6 w-6" strokeWidth={2.5}/>
-                            <span className="sr-only">Login</span>
-                        </Link>)}
+                    <div className="flex items-center space-x-2 md:space-x-4">
+                        <AnimatedThemeToggler/>
+                        
+                        {user && (
+                            <SettingsDrawer>
+                                <button
+                                    className={cn("relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-secondary/50 text-secondary-foreground transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
+                                >
+                                    <Settings className="h-4 w-4" strokeWidth={2.5}/>
+                                    <span className="sr-only">Settings</span>
+                                </button>
+                            </SettingsDrawer>
+                        )}
+
+                        {user ? (
+                            <UserMenuPopover 
+                                user={user}
+                                onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsModalOpen(true)}
+                            />
+                        ) : (
+                            <Link href="/logins">
+                                <button
+                                    className={cn(
+                                        "relative inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+                                        pathname === '/logins' 
+                                            ? "bg-primary text-primary-foreground shadow-md" 
+                                            : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+                                    )}
+                                >
+                                    <KeyRound className="mr-2 h-4 w-4" strokeWidth={2.5}/>
+                                    <span>Login</span>
+                                </button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
-            </header>
+            </motion.header>
             <KeyboardShortcutsModal
                 open={isKeyboardShortcutsModalOpen}
                 onOpenChange={setIsKeyboardShortcutsModalOpen}

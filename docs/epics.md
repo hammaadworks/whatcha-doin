@@ -343,20 +343,50 @@ So that I can break down large tasks into manageable steps.
 
 **Prerequisites:** Story 3.4.
 
-### Story 3.6: Implement Action Completion with Timestamps
+### Story 3.6: Implement Action Privacy Toggling
+
+As a user,
+I want to be able to toggle the public/private status of any action node,
+So that I can control what content is visible on my public profile.
+
+**Acceptance Criteria:**
+1.  A visual toggle (e.g., `🌐/🔒` icon) is present on each action item.
+2.  Toggling a parent action to private makes all its children private.
+3.  Toggling a child action to public makes all its ancestors public.
+4.  The `is_public` flag is correctly updated in the `data` JSONB column.
+
+**Prerequisites:** Story 3.5.
+
+### Story 3.7: Implement Action Keyboard Navigation & Manipulation
+
+As a power user,
+I want to be able to navigate, indent, outdent, and move actions using keyboard shortcuts,
+So that I can efficiently organize my action tree without using a mouse.
+
+**Acceptance Criteria:**
+1.  `ArrowUp`/`ArrowDown` navigate between sibling actions.
+2.  `Tab` indents an action, making it a child of the preceding sibling.
+3.  `Shift+Tab` outdents an action, making it a sibling of its former parent.
+4.  `Cmd/Ctrl+Shift+ArrowUp`/`ArrowDown` moves an action up/down within its sibling list.
+5.  All changes are persisted to the `data` JSONB column.
+
+**Prerequisites:** Story 3.6.
+
+### Story 3.8: Implement Action Completion with Timestamps
 
 As a user,
 I want to mark an action as complete and have the system record exactly when I did it,
 So that the system knows when to eventually clear it.
 
 **Acceptance Criteria:**
-1.  Marking an item sets `is_completed: true`.
+1.  Marking an item sets `completed: true`.
 2.  Marking an item records the current timestamp in `completed_at`.
-3.  State is persisted to the `data` JSONB column.
+3.  A parent action cannot be marked complete if it has uncompleted sub-actions.
+4.  State is persisted to the `data` JSONB column.
 
-**Prerequisites:** Story 3.5.
+**Prerequisites:** Story 3.7.
 
-### Story 3.7: Implement "Next Day Clearing" Logic with Grace Period Support
+### Story 3.9: Implement "Next Day Clearing" Logic with Grace Period Support
 
 As a user,
 I want completed actions to remain visible today, and then move to my "End of Day Summary" or auto-archive on the next day,
@@ -368,9 +398,9 @@ So that I get a fresh start but still have a chance to review/journal my achieve
 3.  **Auto-Archive:** If the grace period is skipped (user didn't open app yesterday), the items are automatically archived/hidden.
 4.  **Tree Preservation:** Parents with active children remain visible in the main list.
 
-**Prerequisites:** Story 3.6, Story 3.1 (Timezone).
+**Prerequisites:** Story 3.8, Story 3.1 (Timezone).
 
-### Story 3.8: Teleport Completed Actions to Journal (Markdown)
+### Story 3.10: Teleport Completed Actions to Journal (Markdown)
 
 As a user,
 I want my "cleared" actions to appear as a checklist in my Journal for that day,
@@ -381,9 +411,9 @@ So that I have a text-based record of what I did.
 2.  It appends a Markdown line: `- [x] Action Description` to the content.
 3.  This applies to the `data` update in `journal_entries`.
 
-**Prerequisites:** Story 3.7, Epic 4 (Journal).
+**Prerequisites:** Story 3.9, Epic 4 (Journal).
 
-### Story 3.9: Implement Action Deletion
+### Story 3.11: Implement Action Deletion
 
 As a user,
 I want to delete an action (and all its sub-actions),
@@ -396,7 +426,7 @@ So that I can remove mistakes or tasks I no longer need to do.
 
 **Prerequisites:** Story 3.5.
 
-### Story 3.10: Implement Action Text Editing
+### Story 3.12: Implement Action Text Editing
 
 As a user,
 I want to edit the text description of an existing action,

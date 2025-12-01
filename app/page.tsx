@@ -1,8 +1,9 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { BackstorySection } from "@/components/landing/BackstorySection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
+import { PsychologySection } from "@/components/landing/PsychologySection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { CTASection } from "@/components/landing/CTASection";
 import type { Metadata } from 'next';
@@ -19,6 +20,7 @@ export default function LandingPage() {
       <ProblemSection />
       <BackstorySection />
       <BeforeAfterSection />
+      <PsychologySection />
       <FeaturesSection />
       <CTASection />
     </div>

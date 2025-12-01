@@ -82,6 +82,7 @@ This document provides a comprehensive overview of the **Supabase (PostgreSQL)**
   "id": "uuid",
   "description": "Buy Milk",
   "completed": true,
+  "is_public": true,
   "completed_at": "2023-10-27T10:00:00Z",
   "children": [ ...recursive nodes... ]
 }

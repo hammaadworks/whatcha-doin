@@ -1,0 +1,140 @@
+# Full Landing Page Copy for whatcha-doin
+
+## Hero Section
+
+**"So... whatcha doin'?"**
+
+The app that helps you become the person you keep imagining --- by
+stacking **Identity × Discipline × Consistency**, one tiny action at a
+time.
+
+Inspired by the iconic Phineas & Ferb question that always expects
+greatness.
+
+> "Small actions, done consistently, turn ambition into identity."
+
+**CTA:** Start Your Identity Run
+
+## Problem Section
+
+**Ambition isn't your problem --- your system is.**
+
+You're not unmotivated. You're just stuck in the "ambitious
+underachiever" loop:
+
+-   Big goals → overwhelming\
+-   One broken streak → vibe gone\
+-   Too many apps → no emotional connection\
+-   Waiting for the perfect moment → never starts
+
+whatcha-doin resets the whole game by helping you build identity, not
+pressure.
+
+> "Identity drives habits. Habits drive identity. We make the loop work
+> for you."
+
+## Backstory Section
+
+**Born from an iconic question.**
+
+Every episode, Isabella walks up with that curious smile and asks:\
+**"Whatcha doin'?"**
+
+Phineas always had an answer --- not because he was perfect but because
+he always had *something* cooking.
+
+whatcha-doin captures that same spark: curious, creative, always
+building --- even if it's tiny.
+
+> "Your life is a series. Your habits are the episodes. Your identity is
+> the arc."
+
+## Before / After Section
+
+**Your identity shift starts small.**
+
+### Before
+
+-   Overthinking → no action\
+-   Streak breaks → momentum gone\
+-   Big goals → burnout\
+-   Productivity apps → too complex
+
+### After
+
+-   Tiny habits → daily identity XP\
+-   Two-Day Rule → consistency made human\
+-   Action chips → calm visual clarity\
+-   Journaling → auto-documented growth
+
+You go from "trying to be disciplined" to *being* a disciplined person.
+
+## Psychology Section
+
+**The science behind why whatcha-doin works.**
+
+### Identity Anchoring
+
+You align each habit with the identity you want.
+
+### Micro-Commitments
+
+Tiny actions create compounding momentum.
+
+### Positive Urgency
+
+Yesterday fades at midnight --- alive, rhythmic, motivating.
+
+### Intensity Logging
+
+Track effort, not perfection.
+
+### Automatic Journaling
+
+Your story writes itself.
+
+> "You are what you repeatedly do. We help you make that your
+> superpower."
+
+## Features Section
+
+**Your identity-building toolkit.**
+
+### Two-Day Rule
+
+Miss one day? Cool. Miss two? Streak resets --- sustainably.
+
+### Action Chips
+
+Drag. Drop. Done. Brain-friendly productivity.
+
+### Intensity Slider
+
+100% and 20% both count. Effort matters.
+
+### Auto-Journal Feed
+
+Your growth, captured seamlessly.
+
+### Public Profile
+
+Your "Life Resume" --- streaks, habits, reflections.
+
+### Motivational Widget
+
+Quotes that actually hit.
+
+## CTA Section
+
+**It's build-your-identity o'clock.**
+
+You've imagined the best version of you long enough.\
+Here's the simplest way to start --- today, in the tiniest way.
+
+Identity is built daily.\
+Today is ready when you are.
+
+**CTA:** Start Building Your Identity
+
+> "A year from now, they'll ask how you did it.\
+> You'll say: 'I just didn't miss two days.'"

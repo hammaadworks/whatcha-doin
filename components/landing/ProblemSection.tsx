@@ -1,42 +1,80 @@
 "use client";
 
-import React from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { DotPattern } from "@/components/ui/dot-pattern";
+import { XCircle, AlertTriangle, ZapOff, Hourglass } from "lucide-react";
 
-export const ProblemSection = () => {
+const problems = [
+  {
+    icon: AlertTriangle,
+    title: "Big goals → Overwhelming",
+    description: "You stare at the mountain instead of taking the first step.",
+  },
+  {
+    icon: ZapOff,
+    title: "One broken streak → Vibe gone",
+    description: "Miss a day, feel like a failure, quit everything. The classic crash.",
+  },
+  {
+    icon: XCircle,
+    title: "Too many apps → No connection",
+    description: "Just check-boxes without the emotional 'why' behind them.",
+  },
+  {
+    icon: Hourglass,
+    title: "Waiting for 'Perfect' → Never starts",
+    description: "Monday? Next month? New Year? The loop never ends.",
+  },
+];
+
+export function ProblemSection() {
   return (
-    <section className="relative py-24 px-4 overflow-hidden w-full">
-       {/* Background: DotPattern */}
-       <div className="absolute inset-0 w-full h-full">
-            <DotPattern className="opacity-50 dark:opacity-30 text-primary/30" width={24} height={24} cx={1} cy={1} cr={1} />
-       </div>
-       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background pointer-events-none" />
+    <section className="py-24 px-4 w-full bg-background relative overflow-hidden border-t border-border/40">
+      <div className="max-w-5xl mx-auto space-y-16">
+        <div className="text-center space-y-4">
+          <BlurFade delay={0.2} inView>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
+              Ambition isn&apos;t your problem — <br />
+              <span className="text-primary">your system is.</span>
+            </h2>
+          </BlurFade>
+          <BlurFade delay={0.3} inView>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              You&apos;re not unmotivated. You&apos;re just stuck in the &quot;ambitious underachiever&quot; loop.
+            </p>
+          </BlurFade>
+        </div>
 
-       <div className="relative z-10 mx-auto max-w-3xl text-center space-y-12">
-           <BlurFade delay={0.2} inView>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  The Struggle is Real: Ambitious, But Stuck?
-              </h2>
-           </BlurFade>
-           <div className="space-y-6 text-xl md:text-2xl font-light leading-relaxed text-muted-foreground">
-               <BlurFade delay={0.4} inView>
-                   <p>You&apos;ve got main character energy, fam, with dreams that hit different. But low-key, that to-do list? It&apos;s been on read.</p>
-               </BlurFade>
-               <BlurFade delay={0.6} inView>
-                   <p>Caught in that <span className="text-foreground font-medium">&apos;all-or-nothing&apos;</span> trap, getting ghosted by motivation, and those little slip-ups? They&apos;re living rent-free in your head, keeping you in a cycle of &apos;ugh&apos;.</p>
-               </BlurFade>
-               <BlurFade delay={0.8} inView>
-                   <p>One missed day feels like a whole vibe killer. Suddenly, the momentum&apos;s gone, the motivation&apos;s dead, and your progress? Poof, vanished like a bad TikTok trend.</p>
-               </BlurFade>
-               <BlurFade delay={1.0} inView>
-                   <p>But what if consistency wasn&apos;t about being perfect 24/7, but just showing up? What if every tiny flex, every imperfect step, was actually building the icon you&apos;re meant to be?</p>
-               </BlurFade>
-               <BlurFade delay={1.2} inView>
-                   <p className="text-primary font-semibold pt-4 text-2xl md:text-3xl">Fr, it&apos;s time to switch up the narrative. To redefine &apos;doing&apos; and drop the cap about your potential.</p>
-               </BlurFade>
-           </div>
-       </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {problems.map((item, idx) => (
+            <BlurFade key={idx} delay={0.4 + idx * 0.1} inView>
+              <div className="flex items-start space-x-4 p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/20 transition-colors">
+                <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            </BlurFade>
+          ))}
+        </div>
+
+        <BlurFade delay={0.8} inView>
+          <div className="text-center max-w-3xl mx-auto space-y-6">
+            <p className="text-2xl font-medium text-foreground">
+              whatcha-doin resets the whole game by helping you build <span className="text-primary font-bold">identity</span>, not pressure.
+            </p>
+            <blockquote className="border-l-4 border-primary pl-6 py-2 text-lg italic text-muted-foreground text-left mx-auto max-w-xl">
+              "Identity drives habits. Habits drive identity. We make the loop work for you."
+            </blockquote>
+          </div>
+        </BlurFade>
+      </div>
     </section>
   );
-};
+}

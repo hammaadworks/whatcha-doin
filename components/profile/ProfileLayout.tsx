@@ -28,7 +28,7 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ username, bio, isOwner, t
             )}
 
             {/* Main card content with its own padding and z-index */}
-            <div className="relative z-10 p-4 sm:p-6 md:p-8 lg:p-12">
+            <div className="relative z-10 pt-16 sm:p-6 md:p-8 lg:p-12">
                 <h1 className="text-4xl font-extrabold text-center text-primary mb-2 mt-4">
                     {isOwner ? `Welcome, ${username}!` : username}
                 </h1>

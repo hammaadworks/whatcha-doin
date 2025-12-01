@@ -111,61 +111,22 @@ This section details the specific functionalities of the application, derived fr
 
 ### FR-3: Action Management (Formerly Todos)
 - **FR-3.1:** Users must be able to create a new "Action" (formerly todo) with a text description. This system replaces the traditional todo list with an "Actions" section.
-- **FR-3.2:** The "Actions" system must support **unlimited deep nesting** of sub-actions. Users can create nested structures (e.g., Action A -> a1 -> a1.1) to organize complex tasks.
-- **FR-3.3:** When creating or editing an action, users must be able to mark it as "public" or "private" via a `🌐/🔒` privacy toggle. This privacy setting applies to the specific action node.
-- **FR-3.4:** Users must be able to mark any action node (parent or child) as complete.
+- **FR-3.2:** The "Actions" system must support **unlimited deep nesting** of sub-actions. Users can create nested structures (e.g., Action A -> a1 -> a1.1) to organize complex tasks. Keyboard shortcuts (`Tab` for indent, `Shift+Tab` for outdent) will be available for efficient manipulation of the hierarchy.
+- **FR-3.3:** When creating or editing an action, users must be able to mark it as "public" or "private" via a `🌐/🔒` privacy toggle. This privacy setting applies to the specific action node, with the following propagation rules:
+    - If a parent action is private, all its children (and their descendants) *must* also be private. Toggling a private parent to public will also make its children public.
+    - If a child action is made public, all its ancestors (up to the root) *must* also become public to maintain visibility.
+- **FR-3.4:** Users must be able to mark any action node (parent or child) as complete. A parent action cannot be marked complete if it has uncompleted sub-actions.
 - **FR-3.5:** Users must be able to delete an action. Deleting a parent action deletes all its children.
 - **FR-3.6 (Next Day Clearing Logic):** "Actions" have a specific lifecycle for clearing completed items from the view.
     - **FR-3.6.1:** Completed action items remain visible in the UI for the remainder of the day they were completed (until midnight local time).
     - **FR-3.6.2:** On the "next day" (after midnight), completed items are automatically cleared (hidden/archived) from the active "Actions" view.
     - **FR-3.6.3:** Crucially, this clearing applies to individual nodes. If a parent Action "A" has sub-actions "a1" (completed today) and "a2" (not completed), on the next day, "a1" will be cleared, but "A" and "a2" will remain visible. "A" remains visible because it still contains active children.
     - **FR-3.6.4:** If a user unmarks an item before the day ends, it remains active.
-- **FR-3.7:** The data persistence for Actions must use a NoSQL-style structure (JSONB) to support the unlimited nesting requirement efficiently.
-
-### FR-4: Main Interface & Core Logic
-- **FR-4.1:** The main user interface for an authenticated user, located at their `/[username]` route, must display three primary columns for managing habits: "Today", "Yesterday", and "The Pile".
-    - On desktop, this will be a two-row layout: Top row with "Today" and "Yesterday" side-by-side, and a full-width "The Pile" on the bottom. Interaction will be `Drag-and-Drop`.
-    - On mobile, this will be a single-column, stacked layout: "Today", then "Yesterday", then "The Pile". Interaction will be `Tap-to-Move`.
-    All columns must sort their habit chips according to the following three-level order: 1. Public habits first, 2. by highest streak count (descending), 3. by name (ascending). "The Pile" column has a special sorting order: 1. "Lively" habits first, then 2. Public habits, 3. by highest last streak (descending), and 4. by name (ascending).
-- **FR-4.2:** The daily state change occurs at 12:00 am in the user's **preferred local timezone** (as set in FR-1.6). At this time, any habits completed the previous day appear in the "Yesterday" column.
-- **FR-4.3:** Users must be able to drag a habit from "Yesterday" to "Today" to mark it as complete for the current day and continue its active streak.
--   **FR-4.4 (The "Grace Period"):** If a user opens the app for the first time on a new day and has pending habits from the previous day, they must be presented with a dedicated "End of Day Summary" screen. This screen specifically addresses habits from the *immediately preceding* day. Habits missed for days prior to the immediate previous day will have already transitioned to "Lively" or "Junked" states as per the "Two-Day Rule".
-    - **FR-4.4.1:** This screen must allow the user to mark pending habits from the previous day as complete.
-    - **FR-4.4.2:** From this screen, the user must be able to add a new or existing habit to the previous day's record.
-    - **FR-4.4.3:** After confirming the summary, the daily state change cycle runs with the corrected data.
-- **FR-4.5 (The True "Two-Day Rule"):** A habit's streak is only broken after two consecutive missed days. This is managed through a new two-stage process in "The Pile".
-- **FR-4.6 (Miss Day 1: "Lively" State):** If a habit in the "Yesterday" column is not completed, it moves to "The Pile" at midnight and enters a **"Lively"** state for 24 hours.
-    - **FR-4.6.1:** If a user moves a "Lively" habit to "Today", its original streak **continues uninterrupted**.
-- **FR-4.7 (Miss Day 2: "Junked" State):** If a "Lively" habit is not rescued from The Pile within 24 hours, it transitions to a permanent **"Junked"** state.
-    - **FR-4.7.1:** When a habit becomes "Junked", its `current_streak` is reset to zero, and that value is saved as the `last_streak`.
-    - **FR-4.7.2:** If a user moves a "Junked" habit to "Today", its streak resets to 1.
-- **FR-4.8 (Junked Days Counter):** Once a habit is in the "Junked" state, the UI must display a counter indicating how many days it has been neglected (e.g., "-7" for 7 days).
-- **FR-4.9:** The 'Yesterday' column is read-only; habits cannot be deleted or edited from this column.
-- **FR-4.10:** Users can long-press a habit in the 'Today' column to undo the completion. This action reverts the streak count and moves the habit back to a previous column based on its state before completion: if the streak was > 1, it returns to "Yesterday"; if the streak was 1, it returns to "The Pile".
-
-### FR-5: Journaling & Data Entry
-- **FR-5.1:** When a habit or todo is marked complete, a modal must appear allowing the user to record details.
-    - **FR-5.1.1:** The modal must display the current streak count and indicate the new streak after logging (e.g., "Streak: 5 → 6").
-    - **FR-5.1.2:** The modal must include a `mood` selector designed as a "fuel meter" (semi-circular gauge) with six discrete, tappable segments (corresponding to values 0, 20, 40, 60, 80, 100) and empathetic emoji labels. This captures the user's subjective feeling.
-    - **FR-5.1.3:** For quantitative habits, the modal must display the user's completed `work` versus their `goal` (e.g., "25/30 pages"). The user will input their `work` by tapping and typing in a number field.
-    - **FR-5.1.4:** The `goal` value displayed in the modal must be editable. An "i" button next to the goal will trigger a pop-up explaining that the goal number and unit can be changed.
-    - **FR-5.1.5:** The modal must include a structured `duration` input, consisting of a number field for the value and a dropdown for the unit (limited to "minutes" and "hours").
-    - **FR-5.1.6:** The system must formally record the `goal_value`, the `work` value, the `duration_value`, the `duration_unit`, and the `goal_at_completion` (the goal active when the habit was completed).
-    - **FR-5.1.7:** The modal must include fields for free-form text `notes`.
-    - **FR-5.1.8:** Users must be able to bypass detail entry by pressing `Enter` to log the item with default values.
-    - **FR-5.1.9:** The modal must include a "Cancel" option to dismiss it without logging.
-    - **FR-5.1.10:** If a habit is re-recorded on the same day (e.g., after being undone), the completion modal must pre-fill with the last recorded `mood`, `work`, and `duration` values for that day.
-- **FR-5.2:** The system must provide a dual-view journal with distinct "Public" and "Private" sections.
-- **FR-5.3:** Notes from completed public items, along with the habit's name, mood, work, and duration, must be automatically added to the Public Journal as a line item.
-- **FR-5.4:** Notes from completed private items, along with the habit's name, mood, work, and duration, must be automatically added to the Private Journal as a line item.
-- **FR-5.5:** Users must be able to add free-form text directly to either the public or private journal using a Markdown editor.
-- **FR-5.6:** Users must be able to edit the content of any journal entry at any time.
-- **FR-5.7:** The journal view must default to showing today's entries and provide a date selector to view entries from past dates.
-
+- **FR-3.7:** The data persistence for Actions must use a NoSQL-style structure (JSONB) to support the unlimited nesting requirement efficiently. This ensures that the entire action tree can be stored and retrieved as a single document, optimizing for tree-like operations.
 
 ### FR-6: General UI & UX
 - **FR-6.1:** The application must feature a widget that displays a motivational quote.
-- **FR-6.2:** All core user actions (e.g., creating items, navigating, completing tasks) must be achievable via keyboard shortcuts.
+- **FR-6.2:** All core user actions (e.g., creating items, navigating, completing tasks) must be achievable via keyboard shortcuts. This includes navigation between actions (ArrowUp/Down), indenting/outdenting (Tab/Shift+Tab), and moving actions up/down (Cmd/Ctrl+Shift+ArrowUp/Down).
 - **FR-6.3:** The application must function as a Single Page Application (SPA), providing a fluid user experience without full-page reloads for navigation.
 - **FR-6.4:** The application must include a prominent theme switcher to allow users to toggle between a light ("Zenith" - clean, energetic, pastel gradients) and a dark ("Monolith" - sharp, focused, bold accent) theme.
 
