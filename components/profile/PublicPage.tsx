@@ -13,9 +13,10 @@ type PublicProfileViewProps = {
   publicActions: ActionNode[];
   publicHabits: Habit[];
   publicJournalEntries: JournalEntry[]; // Add publicJournalEntries
+  privateCount?: number; // Add privateCount
 };
 
-export function PublicPage({ user, publicActions, publicHabits, publicJournalEntries }: Readonly<PublicProfileViewProps>) {
+export function PublicPage({ user, publicActions, publicHabits, publicJournalEntries, privateCount = 0 }: Readonly<PublicProfileViewProps>) {
   return (
     <ProfileLayout
       username={user.username || ''}
@@ -27,6 +28,7 @@ export function PublicPage({ user, publicActions, publicHabits, publicJournalEnt
         isOwner={false}
         actions={publicActions}
         loading={false} // Always false for public page sections
+        privateCount={privateCount} // Pass privateCount
       />
       <HabitsSection
         isOwner={false}

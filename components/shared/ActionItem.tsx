@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Plus, Trash2, Edit2, X, Check } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, Edit2, X, Check, Lock, Globe } from 'lucide-react'; // Added Lock, Globe
 import { ActionsList } from './ActionsList';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { AddActionForm } from './AddActionForm';
@@ -22,6 +22,7 @@ interface ActionItemProps {
   onActionOutdented?: (id: string) => void; // New prop
   onActionMovedUp?: (id: string) => void;   // New prop
   onActionMovedDown?: (id: string) => void; // New prop
+  onActionPrivacyToggled?: (id: string) => void; // New prop
   justCompletedId?: string | null;
   level: number;
   focusedActionId: string | null; // New prop
@@ -57,6 +58,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   onActionOutdented,
   onActionMovedUp,
   onActionMovedDown,
+  onActionPrivacyToggled,
   justCompletedId,
   level,
   focusedActionId,
@@ -75,6 +77,9 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   const { total, completed } = getCompletionCounts(action);
   const progressPercentage = total > 0 ? (completed / total) * 100 : 0;
   const isDisabledForCompletion = hasChildren && !areAllChildrenCompleted(action);
+
+  // Default to true if undefined
+  const isPublic = action.is_public ?? true;
 
   useEffect(() => {
     if (isEditing && editInputRef.current) {
@@ -158,7 +163,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
           isFocused ? "border-primary-light ring-2 ring-primary-light" : "border-card-border", // Focus styling
           {
             "bg-accent/30 scale-95": justCompletedId === action.id,
-            "bg-card": !action.completed, // Default background for uncompleted
+            "bg-card": !action.completed && isPublic, // Default background for uncompleted public
+            "bg-yellow-50/50 dark:bg-yellow-900/10 border-dashed border-yellow-300 dark:border-yellow-800": !isPublic, // Private styling
             "bg-muted-foreground/10 text-muted-foreground": action.completed && !isFocused, // Gray out completed items
           }
         )}
@@ -206,11 +212,21 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             }}
             >
             {action.description}
+            {!isPublic && <Lock size={12} className="ml-2 text-yellow-600 dark:text-yellow-400 opacity-50" />}
             </Label>
         )}
 
         {/* Action Buttons (Visible on Hover) */}
         <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {onActionPrivacyToggled && (
+                <button
+                    onClick={() => onActionPrivacyToggled(action.id)}
+                    className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground"
+                    title={isPublic ? "Make Private" : "Make Public"}
+                >
+                    {isPublic ? <Globe size={14} /> : <Lock size={14} />}
+                </button>
+            )}
             {onActionUpdated && !isEditing && (
                 <button
                     onClick={() => setIsEditing(true)}
@@ -267,7 +283,12 @@ export const ActionItem: React.FC<ActionItemProps> = ({
         <div className="ml-8 mt-2">
           <AddActionForm
             onSave={(description) => {
-              onActionAdded?.(description, action.id, true); // Pass true for isPublic for sub-actions
+              // Determine if the new sub-action should be public or private
+              // If current parent is private, sub-action MUST be private.
+              // If current parent is public, sub-action defaults to public (true).
+              // addActionToTree in utils handles this enforcement, but we can also pass the correct flag here.
+              const newActionIsPublic = isPublic; 
+              onActionAdded?.(description, action.id, newActionIsPublic); 
               setIsAddingSubItem(false);
               setIsExpanded(true); 
             }}
@@ -288,6 +309,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             onActionOutdented={onActionOutdented}
             onActionMovedUp={onActionMovedUp}
             onActionMovedDown={onActionMovedDown}
+            onActionPrivacyToggled={onActionPrivacyToggled}
             justCompletedId={justCompletedId}
             level={level + 1}
             focusedActionId={focusedActionId}

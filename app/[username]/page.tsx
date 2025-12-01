@@ -27,11 +27,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   // Fetch public actions and habits for this user on the server
   let publicActions: ActionNode[] = [];
+  let privateCount = 0;
   let publicHabits: Habit[] = [];
   let publicJournalEntries: JournalEntry[] = [];
 
   try {
-    publicActions = await fetchPublicActionsServer(user.id);
+    const actionsResult = await fetchPublicActionsServer(user.id);
+    publicActions = actionsResult.actions;
+    privateCount = actionsResult.privateCount;
     publicHabits = await fetchPublicHabitsServer(user.id);
     publicJournalEntries = await fetchPublicJournalEntriesServer(user.id);
   } catch (error) {
@@ -47,6 +50,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       publicActions={publicActions}
       publicHabits={publicHabits}
       publicJournalEntries={publicJournalEntries}
+      privateCount={privateCount}
     />
   );
 }

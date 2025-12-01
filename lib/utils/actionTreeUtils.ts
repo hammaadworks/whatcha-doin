@@ -86,7 +86,12 @@ export function addActionToTree(currentTree: ActionNode[], description: string, 
 
         return nodes.map(node => {
             if (node.id === parentId) {
-                // Found the parent, add child to its children array
+                // Found the parent. 
+                // Check parent's privacy. If parent is private, child MUST be private.
+                const parentIsPublic = node.is_public ?? true;
+                const effectiveIsPublic = parentIsPublic ? isPublic : false;
+
+                // Add child to its children array
                 return {
                     ...node,
                     children: [
@@ -95,7 +100,7 @@ export function addActionToTree(currentTree: ActionNode[], description: string, 
                             id: uuidv4(),
                             description,
                             completed: false,
-                            is_public: isPublic, // Set is_public
+                            is_public: effectiveIsPublic, // Use effective privacy
                             children: [],
                             completed_at: undefined
                         }
@@ -294,6 +299,63 @@ export function moveActionDownInTree(currentTree: ActionNode[], id: string): Act
 
     siblingsArray.splice(indexInSiblings, 1); // Remove targetNode
     siblingsArray.splice(indexInSiblings + 1, 0, targetNode); // Insert one position after
+
+    return newTree;
+}
+
+/**
+ * Toggles the privacy status of an action in the tree.
+ * Enforces "Private Parent -> Private Child" rule.
+ * @param currentTree The current action tree.
+ * @param id The ID of the action to toggle.
+ * @returns A new action tree with the privacy status updated.
+ */
+export function toggleActionPrivacyInTree(currentTree: ActionNode[], id: string): ActionNode[] {
+    const newTree = deepCopyActions(currentTree);
+    const targetContext = findNodeAndContext(newTree, id);
+
+    if (!targetContext) return newTree;
+    const { node: targetNode } = targetContext;
+
+    const currentIsPublic = targetNode.is_public ?? true;
+    const newIsPublic = !currentIsPublic;
+    targetNode.is_public = newIsPublic;
+
+    if (!newIsPublic) {
+        // Turning PRIVATE: Enforce downwards.
+        const setPrivateRecursive = (n: ActionNode) => {
+            n.is_public = false;
+            n.children?.forEach(setPrivateRecursive);
+        };
+        targetNode.children?.forEach(setPrivateRecursive);
+    } else {
+        // Turning PUBLIC: Enforce upwards.
+        // We need to find all ancestors and set them to public.
+        
+        const path: ActionNode[] = [];
+        const findPath = (nodes: ActionNode[], target: string): boolean => {
+            for (const node of nodes) {
+                if (node.id === target) {
+                    path.push(node);
+                    return true;
+                }
+                if (node.children) {
+                    path.push(node);
+                    if (findPath(node.children, target)) return true;
+                    path.pop();
+                }
+            }
+            return false;
+        };
+        
+        // We search in newTree to find the path to the target node
+        if (findPath(newTree, id)) {
+            // All nodes in `path` (ancestors + target) must be public.
+            path.forEach(n => {
+                n.is_public = true;
+            });
+        }
+    }
 
     return newTree;
 }

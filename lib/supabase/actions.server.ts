@@ -29,8 +29,9 @@ export async function fetchActionsServer(userId: string, userTimezone: string = 
 /**
  * Fetches only the public actions for the specified user.
  * Does not apply "Next Day Clearing" as public view is historical.
+ * Returns filtered actions and a count of private (hidden) actions.
  */
-export async function fetchPublicActionsServer(userId: string): Promise<ActionNode[]> {
+export async function fetchPublicActionsServer(userId: string): Promise<{ actions: ActionNode[], privateCount: number }> {
   const supabase = await createServerSideClient();
   const { data, error } = await supabase
     .from('actions')
@@ -40,7 +41,7 @@ export async function fetchPublicActionsServer(userId: string): Promise<ActionNo
 
   if (error) {
     if (error.code === 'PGRST116') {
-        return [];
+        return { actions: [], privateCount: 0 };
     }
     console.error("Supabase Fetch Error (Public Actions):", JSON.stringify(error, null, 2));
     throw error;

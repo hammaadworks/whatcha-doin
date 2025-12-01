@@ -14,6 +14,7 @@ import {
   outdentActionInTree,
   moveActionUpInTree,
   moveActionDownInTree,
+  toggleActionPrivacyInTree, // Import new utility
 } from '@/lib/utils/actionTreeUtils';
 
 export const useActions = (isOwner: boolean, timezone?: string) => {
@@ -83,6 +84,10 @@ export const useActions = (isOwner: boolean, timezone?: string) => {
     save(moveActionDownInTree(actions, id));
   };
 
+  const toggleActionPrivacy = (id: string) => {
+    save(toggleActionPrivacyInTree(actions, id));
+  };
+
   return {
     actions,
     loading,
@@ -94,5 +99,6 @@ export const useActions = (isOwner: boolean, timezone?: string) => {
     outdentAction,
     moveActionUp,
     moveActionDown,
+    toggleActionPrivacy, // Return new handler
   };
 };

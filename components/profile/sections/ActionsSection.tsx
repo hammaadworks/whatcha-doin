@@ -54,7 +54,9 @@ interface ActionsSectionProps {
   onActionOutdented?: (id: string) => void;
   onActionMovedUp?: (id: string) => void;
   onActionMovedDown?: (id: string) => void;
+  onActionPrivacyToggled?: (id: string) => void; // New prop
   justCompletedId?: string | null;
+  privateCount?: number; // New prop
 }
 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
@@ -69,14 +71,29 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
   onActionOutdented,
   onActionMovedUp,
   onActionMovedDown,
+  onActionPrivacyToggled,
   justCompletedId,
+  privateCount = 0,
 }) => {
   const addActionFormRef = useRef<{ focusInput: () => void; clearInput: () => void; isInputFocused: () => boolean; isInputEmpty: () => boolean; blurInput: () => void; }>(null);
   const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
 
   const displayActions = isOwner
     ? actions
-    : mockPublicActionsData;
+    : mockPublicActionsData; // Note: This logic seems to be overridden by 'actions' passed from props in real implementation, but adhering to existing code structure. In public view 'actions' prop holds real public data.
+    
+  // Correcting the display logic: if not owner, use 'actions' prop which contains public actions (fetched in page.tsx), UNLESS it's empty/mock logic requires it.
+  // The previous code used `isOwner ? actions : mockPublicActionsData`. 
+  // Since we are now passing real public actions to this component in PublicPage, we should use `actions` directly if provided and not empty?
+  // Actually, looking at PublicPage.tsx, it passes `publicActions` to `actions`. So `actions` holds the correct data for both owner (all) and public (filtered).
+  // The `mockPublicActionsData` seems like a placeholder or fallback. 
+  // I will respect the existing logic but `actions` should be the source of truth if available.
+  
+  const actualDisplayActions = actions.length > 0 ? actions : (isOwner ? [] : mockPublicActionsData);
+  // But wait, if the user has 0 public actions, we shouldn't show mock data.
+  // Let's assume `actions` passed in is correct.
+  
+  const itemsToRender = actions; 
 
   useEffect(() => {
     if (!isOwner) return;
@@ -90,7 +107,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
           if (addActionFormRef.current.isInputFocused() && addActionFormRef.current.isInputEmpty()) {
             // If form is focused and empty, blur it and focus the first action item
             addActionFormRef.current.blurInput();
-            const flattened = flattenActionTree(displayActions);
+            const flattened = flattenActionTree(itemsToRender);
             if (flattened.length > 0) {
               setFocusedActionId(flattened[0].id); // Focus the first action item
             }
@@ -104,7 +121,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         addActionFormRef.current.clearInput();
         addActionFormRef.current.blurInput(); // Blur the input
         // Optional: move focus to the last action item if available
-        const flattened = flattenActionTree(displayActions);
+        const flattened = flattenActionTree(itemsToRender);
         if (flattened.length > 0) {
           setFocusedActionId(flattened[flattened.length - 1].id);
         }
@@ -116,9 +133,9 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOwner, displayActions]); // displayActions is now a proper dependency
+  }, [isOwner, itemsToRender]); 
 
-  const { total: overallTotal, completed: overallCompleted } = getOverallCompletionCounts(displayActions);
+  const { total: overallTotal, completed: overallCompleted } = getOverallCompletionCounts(itemsToRender);
   const overallProgressPercentage = overallTotal > 0 ? (overallCompleted / overallTotal) * 100 : 0;
 
   const isAllComplete = overallTotal > 0 && overallCompleted === overallTotal;
@@ -163,7 +180,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         </h2>
       </div>
       <ActionsList
-        actions={displayActions}
+        actions={itemsToRender}
         onActionToggled={isOwner ? onActionToggled : undefined}
         onActionAdded={isOwner ? onActionAdded : undefined}
         onActionUpdated={isOwner ? onActionUpdated : undefined}
@@ -172,11 +189,19 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         onActionOutdented={isOwner ? onActionOutdented : undefined}
         onActionMovedUp={isOwner ? onActionMovedUp : undefined}
         onActionMovedDown={isOwner ? onActionMovedDown : undefined}
+        onActionPrivacyToggled={isOwner ? onActionPrivacyToggled : undefined} // Pass handler
         justCompletedId={justCompletedId}
         focusedActionId={focusedActionId}
         setFocusedActionId={setFocusedActionId}
-        flattenedActions={flattenActionTree(displayActions)}
+        flattenedActions={flattenActionTree(itemsToRender)}
       />
+      
+      {!isOwner && privateCount > 0 && (
+        <div className="mt-6 text-center text-muted-foreground italic text-sm animate-pulse">
+          Pssst... he's working on {privateCount} more actions privately! 🤫
+        </div>
+      )}
+
       {isOwner && (
         <div className="mt-4">
           <AddActionForm
@@ -188,7 +213,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             }}
             onCancel={() => {
               addActionFormRef.current?.clearInput();
-              const flattened = flattenActionTree(displayActions);
+              const flattened = flattenActionTree(itemsToRender);
               if (flattened.length > 0) {
                 setFocusedActionId(flattened[flattened.length - 1].id);
               }

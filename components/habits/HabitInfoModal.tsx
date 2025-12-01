@@ -113,7 +113,7 @@ const HabitInfoModal: React.FC<HabitInfoModalProps> = ({
               onClick={() => {
                 setIsEditModalOpen(true);
               }}
-              size="xl"
+              size="lg"
               className="text-sm"
             >
               <Pencil className="mr-2 h-4 w-4" /> Edit
@@ -122,7 +122,7 @@ const HabitInfoModal: React.FC<HabitInfoModalProps> = ({
               <Button
                 variant="destructive"
                 onClick={handleDeleteClick}
-                size="xl" // Changed from lg to xl
+                size="lg" // Changed from lg to xl
                 className="text-sm" // Removed custom hover class
               >
                 <Trash2 className="mr-2 h-4 w-4" /> Delete

@@ -27,9 +27,10 @@ interface OwnerProfileViewProps {
   publicActions: ActionNode[];
   publicHabits: Habit[];
   publicJournalEntries: JournalEntry[];
+  privateCount?: number; // Add privateCount
 }
 
-export default function OwnerProfileView({ username, initialProfileUser, publicActions, publicHabits, publicJournalEntries }: Readonly<OwnerProfileViewProps>) {
+export default function OwnerProfileView({ username, initialProfileUser, publicActions, publicHabits, publicJournalEntries, privateCount = 0 }: Readonly<OwnerProfileViewProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user: authenticatedUser } = useAuth();
@@ -63,6 +64,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
     outdentAction,
     moveActionUp,
     moveActionDown,
+    toggleActionPrivacy, // Destructure new handler
   } = useActions(
     true,
     optimisticTimezone || profileToDisplay?.timezone || 'UTC'
@@ -85,7 +87,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
     setIsPublicPreviewMode(searchParams.get('preview') === 'true');
   }, [searchParams]);
 
-  // No longer need to fetch public data in this component as it's passed via props
+  // No longer need to fetch public data in this component as they come from props
 
   // Fetch owner's private data when not in public preview mode
   useEffect(() => {
@@ -147,6 +149,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
               publicActions={publicActions}
               publicHabits={publicHabits}
               publicJournalEntries={publicJournalEntries}
+              privateCount={privateCount} // Pass privateCount
             />
         ) : (
           <>
@@ -162,6 +165,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
               onActionOutdented={outdentAction}
               onActionMovedUp={moveActionUp}
               onActionMovedDown={moveActionDown}
+              onActionPrivacyToggled={toggleActionPrivacy} // Pass new handler
             />
             <HabitsSection
               isOwner={true}

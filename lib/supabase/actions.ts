@@ -23,7 +23,7 @@ export async function fetchActions(userId: string, userTimezone: string = 'UTC')
   return applyNextDayClearing(rawTree, userTimezone);
 }
 
-export async function fetchPublicActions(userId: string): Promise<ActionNode[]> {
+export async function fetchPublicActions(userId: string): Promise<{ actions: ActionNode[], privateCount: number }> {
   const { data, error } = await supabase
     .from('actions')
     .select('data')
@@ -32,7 +32,7 @@ export async function fetchPublicActions(userId: string): Promise<ActionNode[]> 
 
   if (error) {
     if (error.code === 'PGRST116') {
-        return [];
+        return { actions: [], privateCount: 0 };
     }
     console.error("Supabase Fetch Error (Client Public Actions):", JSON.stringify(error, null, 2));
     throw error;

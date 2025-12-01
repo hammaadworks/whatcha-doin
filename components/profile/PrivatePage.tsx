@@ -15,9 +15,10 @@ type ProfilePageClientProps = {
     publicActions: ActionNode[];
     publicHabits: Habit[];
     publicJournalEntries: JournalEntry[]; // Add publicJournalEntries
+    privateCount?: number; // Add privateCount
 };
 
-export default function PrivatePage({ username, initialProfileUser, publicActions, publicHabits, publicJournalEntries }: Readonly<ProfilePageClientProps>) {
+export default function PrivatePage({ username, initialProfileUser, publicActions, publicHabits, publicJournalEntries, privateCount = 0 }: Readonly<ProfilePageClientProps>) {
     const { user: authenticatedUser, loading: authLoading } = useAuth();
     
     // Determine if the authenticated user is the owner of this profile page
@@ -43,9 +44,16 @@ export default function PrivatePage({ username, initialProfileUser, publicAction
             publicActions={publicActions}
             publicHabits={publicHabits}
             publicJournalEntries={publicJournalEntries}
+            privateCount={privateCount} // Pass privateCount
         />;
     } else {
         // If not the owner, render the public version of the profile
-        return <PublicPage user={initialProfileUser} publicActions={publicActions} publicHabits={publicHabits} publicJournalEntries={publicJournalEntries} />;
+        return <PublicPage 
+            user={initialProfileUser} 
+            publicActions={publicActions} 
+            publicHabits={publicHabits} 
+            publicJournalEntries={publicJournalEntries} 
+            privateCount={privateCount} // Pass privateCount
+        />;
     }
 }
