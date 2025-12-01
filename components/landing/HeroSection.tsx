@@ -46,9 +46,6 @@ export function HeroSection() {
                         stacking <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400 font-extrabold">Identity × Discipline × Consistency</span>,
                         one tiny action at a time.
                     </p>
-                    <p className="text-muted-foreground/80 text-base italic">
-                        Inspired by the iconic Phineas & Ferb question that always expects greatness.
-                    </p>
                 </div>
             </BlurFade>
 
