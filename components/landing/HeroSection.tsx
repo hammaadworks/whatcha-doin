@@ -10,10 +10,10 @@ import { CoolMode } from "@/components/ui/cool-mode";
 
 export function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-background pt-8 pb-32 px-4 md:pt-12">
+    <section className="relative w-full overflow-hidden pt-8 pb-32 px-4 md:pt-12">
       {/* Gradient Blobs - Improved seamless fading */}
-      <div className="pointer-events-none absolute -top-40 -left-20 h-[500px] w-[500px] bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.15),transparent_70%)] blur-[80px]" />
-      <div className="pointer-events-none absolute top-1/2 -right-40 h-[500px] w-[500px] bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.15),transparent_70%)] blur-[80px]" />
+      <div className="pointer-events-none absolute -top-40 -left-20 h-[600px] w-[600px] bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.4),transparent_70%)] blur-[80px]" />
+      <div className="pointer-events-none absolute top-1/2 -right-40 h-[600px] w-[600px] bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.4),transparent_70%)] blur-[80px]" />
 
       <div className="z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
         
