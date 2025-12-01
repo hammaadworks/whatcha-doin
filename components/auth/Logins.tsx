@@ -98,7 +98,7 @@ export default function Logins() {
                   className="w-full h-12 text-base font-medium"
                   background="var(--primary)"
                   shimmerColor="rgba(255, 255, 255, 0.4)"
-                  style={{ color: "hsl(var(--foreground))" }}
+                  style={{ color: "hsl(var(--primary-foreground))" }}
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
