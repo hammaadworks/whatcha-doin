@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export function BackstorySection() {
   return (
-    <section className="relative py-32 px-4 w-full overflow-hidden bg-background">
+    <section className="relative py-32 px-4 w-full overflow-hidden bg-background/80 backdrop-blur-sm">
        {/* Background Pattern */}
        <div className="absolute inset-0 z-0 overflow-hidden">
           <AnimatedGridPattern

@@ -7,7 +7,7 @@ import { CoolMode } from "@/components/ui/cool-mode";
 
 export function CTASection() {
   return (
-    <section className="relative py-32 px-4 w-full overflow-hidden bg-background border-t border-border/40">
+    <section className="relative py-32 px-4 w-full overflow-hidden bg-background/80 backdrop-blur-sm border-t border-border/40">
       <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-10 max-w-4xl mx-auto">
         
         <BlurFade delay={0.2} inView>

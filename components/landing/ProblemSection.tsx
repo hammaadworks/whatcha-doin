@@ -31,7 +31,7 @@ const problems = [
 
 export function ProblemSection() {
   return (
-    <section className="py-24 px-4 w-full bg-background relative overflow-hidden border-t border-border/40">
+    <section className="py-24 px-4 w-full bg-background/80 backdrop-blur-sm relative overflow-hidden border-t border-border/40">
       <div className="max-w-5xl mx-auto space-y-16">
         <div className="text-center space-y-4">
           <BlurFade delay={0.2} inView>

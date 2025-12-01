@@ -185,7 +185,7 @@ const featuresItems = [
 
 export function ScienceAndFeaturesSection() {
   return (
-    <section className="py-24 px-4 w-full bg-background border-t border-border/40">
+    <section className="py-24 px-4 w-full bg-background/80 backdrop-blur-sm border-t border-border/40">
       <div className="max-w-6xl mx-auto space-y-16">
         
         {/* Main Section Header */}
