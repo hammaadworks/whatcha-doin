@@ -1,81 +1,88 @@
-"use client";
-
 import { BlurFade } from "@/components/ui/blur-fade";
-import { Terminal, TypingAnimation, AnimatedSpan } from "@/components/ui/terminal";
+import { Check, X } from "lucide-react";
 
 export function BeforeAfterSection() {
   return (
-    <section className="py-24 px-4 w-full bg-background/80 backdrop-blur-sm border-t border-border/40">
-      <div className="max-w-6xl mx-auto space-y-16">
-        
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <BlurFade delay={0.2} inView>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-              Your identity shift <span className="text-primary">starts small.</span>
-            </h2>
+    <section className="py-32 px-4 md:px-8 bg-muted/30">
+      <div className="max-w-6xl mx-auto">
+        <BlurFade delay={0.2} inView className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-bold font-sans tracking-tight">
+            Your identity shift starts small.
+          </h2>
+        </BlurFade>
+
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <BlurFade delay={0.4} inView className="h-full">
+            <div className="h-full bg-background p-10 rounded-3xl border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
+              <h3 className="text-2xl font-bold font-sans mb-8 text-muted-foreground">Before</h3>
+              <ul className="space-y-6 font-mono text-lg text-muted-foreground/80">
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 shrink-0">
+                    <X className="w-5 h-5" />
+                  </div>
+                  Overthinking → no action
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 shrink-0">
+                    <X className="w-5 h-5" />
+                  </div>
+                  Streak breaks → momentum gone
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 shrink-0">
+                    <X className="w-5 h-5" />
+                  </div>
+                  Big goals → burnout
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 shrink-0">
+                    <X className="w-5 h-5" />
+                  </div>
+                  Productivity apps → too complex
+                </li>
+              </ul>
+            </div>
           </BlurFade>
-          <BlurFade delay={0.3} inView>
-             <p className="text-xl text-muted-foreground">
-               You go from &quot;trying to be disciplined&quot; to <span className="text-foreground font-bold italic">being</span> a disciplined person.
-             </p>
+
+          <BlurFade delay={0.6} inView className="h-full">
+            <div className="h-full bg-background p-10 rounded-3xl border-2 border-primary/20 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 blur-[60px] rounded-full -mr-20 -mt-20 pointer-events-none group-hover:bg-primary/20 transition-colors duration-500" />
+              <h3 className="text-2xl font-bold font-sans mb-8 text-foreground">After</h3>
+              <ul className="space-y-6 font-mono text-lg">
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                    <Check className="w-5 h-5" />
+                  </div>
+                  Tiny habits → daily identity XP
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                    <Check className="w-5 h-5" />
+                  </div>
+                  Two-Day Rule → consistency made human
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                    <Check className="w-5 h-5" />
+                  </div>
+                  Action chips → calm visual clarity
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                    <Check className="w-5 h-5" />
+                  </div>
+                  Journaling → auto-documented growth
+                </li>
+              </ul>
+            </div>
           </BlurFade>
         </div>
 
-        {/* Comparison Terminals */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            
-            {/* Before Terminal */}
-            <BlurFade delay={0.4} inView>
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-destructive text-center">Before</h3>
-                    <Terminal className="min-h-[300px] border-destructive/50 bg-destructive/10 shadow-lg">
-                         <TypingAnimation delay={200}>&gt; run_old_system.sh</TypingAnimation>
-                         <AnimatedSpan delay={800} className="text-red-500">
-                            <span>ERROR: Goal (Big) out of scope. Exception: Overwhelmed.</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={1800} className="text-red-500/80">
-                            <span>WARNING: Streak-breaker detected. Vibe.exe terminated.</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={2800} className="text-red-500/80">
-                            <span>FAILURE: System too complex. User input: "Wait for perfect moment."</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={3800} className="text-red-500">
-                            <span>CRITICAL: Procrastination loop initiated. Status: Stuck.</span>
-                         </AnimatedSpan>
-                         <TypingAnimation delay={4800} className="text-destructive font-bold">
-                            &gt; System Halt. Identity: FRAGMENTED. _
-                         </TypingAnimation>
-                    </Terminal>
-                </div>
-            </BlurFade>
-
-            {/* After Terminal */}
-            <BlurFade delay={0.5} inView>
-                <div className="space-y-4">
-                     <h3 className="text-xl font-bold text-primary text-center">After</h3>
-                    <Terminal className="min-h-[300px] border-primary/50 bg-primary/10 shadow-lg">
-                         <TypingAnimation delay={200}>&gt; run_whatcha_doin.sh</TypingAnimation>
-                         <AnimatedSpan delay={800} className="text-green-500">
-                            <span>SUCCESS: tiny_habit.execute() -&gt; +10 Identity XP.</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={1800} className="text-green-500">
-                            <span>INFO: Two-Day Rule: Streak rescued. Consistency engine active.</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={2800} className="text-blue-500">
-                            <span>ACTION: chip.drag_drop_done() -&gt; Brain-friendly productivity.</span>
-                         </AnimatedSpan>
-                         <AnimatedSpan delay={3800} className="text-muted-foreground">
-                            <span>LOG: auto_journal.update() -&gt; Growth documented.</span>
-                         </AnimatedSpan>
-                         <TypingAnimation delay={4800} className="text-primary font-bold">
-                            &gt; System Optimized. Identity: DISCIPLINED. _
-                         </TypingAnimation>
-                    </Terminal>
-                </div>
-            </BlurFade>
-
-        </div>
+        <BlurFade delay={0.8} inView className="mt-20 text-center">
+          <p className="text-2xl md:text-3xl font-sans font-bold text-primary max-w-3xl mx-auto leading-tight">
+            You go from "trying to be disciplined" to <em>being</em> a disciplined person.
+          </p>
+        </BlurFade>
       </div>
     </section>
   );

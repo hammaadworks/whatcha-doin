@@ -1,88 +1,47 @@
-"use client";
-
 import { BlurFade } from "@/components/ui/blur-fade";
-import { Check, X, Zap, AlertTriangle, Layers, PlayCircle } from "lucide-react";
-import Link from "next/link";
-import { CoolMode } from "@/components/ui/cool-mode";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
-
-const problems = [
-  {
-    icon: Layers,
-    title: "Big goals → Overwhelming",
-    description: "Big goals → overwhelming", // Matching copy strictly
-  },
-  {
-    icon: Zap,
-    title: "One broken streak → vibe gone",
-    description: "One broken streak → vibe gone",
-  },
-  {
-    icon: X,
-    title: "Too many distractions → no emotional connection",
-    description: "Too many distractions → no emotional connection",
-  },
-  {
-    icon: PlayCircle,
-    title: "Waiting for the sweet perfect moment → it never starts.",
-    description: "Waiting for the sweet perfect moment → it never starts.",
-  },
-];
 
 export function ProblemSection() {
   return (
-    <section className="py-24 px-4 w-full bg-background/80 backdrop-blur-sm relative overflow-hidden border-t border-border/40">
-      <div className="max-w-5xl mx-auto space-y-16">
-        <div className="text-center space-y-4">
-          <BlurFade delay={0.2} inView>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-              For the Lazy Ambitious Underachiver <br />
-              <span className="text-primary">because ambitions isn&apos;t your problem - your system routine is.</span>
-            </h2>
-          </BlurFade>
-          <BlurFade delay={0.3} inView>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              You&apos;re not unmotivated nor lazy. You just lack discipline and a clear path. You&apos;re just stuck in the loop:
-            </p>
-          </BlurFade>
-        </div>
+    <section className="py-32 px-4 md:px-8 bg-muted/30">
+      <div className="max-w-4xl mx-auto text-center space-y-16">
+        <BlurFade delay={0.2} inView>
+          <h2 className="text-4xl md:text-6xl font-bold font-sans tracking-tight">
+            For the <span className="text-primary">Lazy Ambitious Underachiever</span>
+          </h2>
+        </BlurFade>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {problems.map((item, idx) => (
-            <BlurFade key={idx} delay={0.4 + idx * 0.1} inView>
-              <div className="flex items-center space-x-4 p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/20 transition-colors">
-                <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                  <item.icon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-foreground">
-                    {item.title}
-                  </h3>
-                </div>
-              </div>
-            </BlurFade>
-          ))}
-        </div>
+        <BlurFade delay={0.4} inView>
+          <p className="text-xl md:text-2xl font-mono text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+            Because ambitions isn't your problem — your system routine is. <br />
+            You're not unmotivated nor lazy. You just lack discipline and a clear path. You're just stuck in the loop:
+          </p>
+        </BlurFade>
+
+        <BlurFade delay={0.6} inView>
+          <ul className="text-left max-w-lg mx-auto space-y-6 font-mono text-lg md:text-xl">
+            <li className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border hover:border-primary/50 transition-colors">
+              <span className="text-primary font-bold text-2xl">→</span> Big goals → overwhelming
+            </li>
+            <li className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border hover:border-primary/50 transition-colors">
+              <span className="text-primary font-bold text-2xl">→</span> One broken streak → vibe gone
+            </li>
+            <li className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border hover:border-primary/50 transition-colors">
+              <span className="text-primary font-bold text-2xl">→</span> Too many distractions → no emotional connection
+            </li>
+            <li className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border hover:border-primary/50 transition-colors">
+              <span className="text-primary font-bold text-2xl">→</span> Waiting for the sweet perfect moment → it never starts.
+            </li>
+          </ul>
+        </BlurFade>
 
         <BlurFade delay={0.8} inView>
-          <div className="text-center max-w-3xl mx-auto space-y-6">
-            <p className="text-2xl font-medium text-foreground">
-              whatcha-doin resets the whole game by helping you build <span className="text-primary font-bold">identity</span> not pressure.
+          <div className="mt-16 p-8 md:p-12 border-2 border-dashed border-primary/20 rounded-3xl bg-background/80 backdrop-blur-sm">
+            <p className="text-2xl md:text-3xl font-sans font-bold">
+              whatcha-doin resets the whole game by helping you build <span className="text-primary">identity</span> with <em>discipline</em> and <em>consistency</em>.
             </p>
-            <blockquote className="border-l-4 border-primary pl-6 py-2 text-lg italic text-muted-foreground text-left mx-auto max-w-xl bg-secondary/10 rounded-r-lg">
-              &quot;Identity drives habits. Habits drive identity. We make the loop work for you.&quot;
+            <blockquote className="mt-8 text-lg italic text-muted-foreground font-mono">
+              "Identity drives habits. Habits drive identity. We make the loop work for you."
             </blockquote>
-            <div className="flex flex-col items-center gap-4 mt-8">
-                <Link href="/me">
-                    <CoolMode>
-                        <ShimmerButton className="shadow-2xl" background="var(--primary)">
-                            <span className="whitespace-pre-wrap text-center text-base font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-                                Redefine Yourself
-                            </span>
-                        </ShimmerButton>
-                    </CoolMode>
-                </Link>
-            </div>
           </div>
         </BlurFade>
       </div>

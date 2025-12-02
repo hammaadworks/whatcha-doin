@@ -1,140 +1,86 @@
-"use client";
-
-import React from "react";
-import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import { CalendarDays, MousePointerClick, Sliders, Rss, User, Quote } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { CalendarDays, LayoutGrid, Sliders, BookOpen, User, Lightbulb, CheckCircle } from "lucide-react"; // Added CheckCircle
-import { AnimatedSpan, Terminal, TypingAnimation } from "@/components/ui/terminal";
-import { cn } from "@/lib/utils";
 
-import { Safari } from "@/components/ui/safari";
-import { ProfileMockup } from "@/components/landing/ProfileMockup";
-import { TwoDayRuleMockup } from "@/components/landing/TwoDayRuleMockup";
-import { ActionChipsMockup } from "@/components/landing/ActionChipsMockup";
-import { IntensitySliderMockup } from "@/components/landing/IntensitySliderMockup";
-import { AutoJournalFeedMockup } from "@/components/landing/AutoJournalFeedMockup";
-import { MotivationalWidgetMockup } from "@/components/landing/MotivationalWidgetMockup";
-import { ConsistentIdentityMockup } from "@/components/landing/ConsistentIdentityMockup";
-
-// Combined items for the Features Showcase
-const showcaseItems = [
-    {
-      title: "Public Profile: Your Answer to 'Whatcha Doin'?'",
-      description: "Stop being stunned. Share your personalized profile link (`yourdomain.com/[username]`) to proudly display your streaks, habits, and progress. It's your living proof.",
-      icon: <User className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-2 lg:col-span-3 bg-card border-border/50 lg:min-h-[18rem]", // Prominent placement
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <Safari className="w-full h-full">
-                <ProfileMockup />
-              </Safari>
-          </div>
-      ),
-    },
-    {
-      title: "Two-Day Rule: Unbreakable Consistency",
-      description: "Leverage Micro-Commitments & Positive Urgency. Miss one day? Cool. Miss two? Streak resets — sustainably. No pressure, just progress.",
-      icon: <CalendarDays className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-1 lg:col-span-2 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <TwoDayRuleMockup />
-          </div>
-      ),
-    },
-    {
-      title: "Action Chips: Brain-Friendly Productivity",
-      description: "Drag. Drop. Done. Visualize your progress and manage tasks effortlessly. It's Identity Anchoring in action.",
-      icon: <LayoutGrid className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-1 lg:col-span-1 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <ActionChipsMockup />
-          </div>
-      ),
-    },
-    {
-      title: "Intensity Slider: Effort, Not Perfection",
-      description: "Track your effort (100% and 20% both count!) with Intensity Logging. Every action, no matter how small, reinforces your identity.",
-      icon: <Sliders className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-2 lg:col-span-1 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <IntensitySliderMockup />
-          </div>
-      ),
-    },
-    {
-      title: "Auto-Journal Feed: Your Story Writes Itself",
-      description: "Seamlessly capture your growth and reflections with Automatic Journaling. Your daily actions become a documented journey of becoming.",
-      icon: <BookOpen className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-1 lg:col-span-2 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <AutoJournalFeedMockup />
-          </div>
-      ),
-    },
-    {
-      title: "Motivational Widget: Daily Fuel for Identity",
-      description: "Quotes that actually hit, delivered when you need them most. Anchor your identity with consistent positive reinforcement.",
-      icon: <Lightbulb className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-1 lg:col-span-1 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <MotivationalWidgetMockup />
-          </div>
-      ),
-    },
-    {
-      title: "Your Consistent Identity",
-      description: "Every action, every streak, every reflection builds towards the person you envision. whatcha-doin is your daily architect.",
-      icon: <CheckCircle className="h-4 w-4 text-neutral-500" />,
-      className: "md:col-span-2 lg:col-span-3 bg-card border-border/50 lg:min-h-[12rem]",
-      header: (
-          <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-border">
-              <ConsistentIdentityMockup />
-          </div>
-      ),
-    },
-]
+const features = [
+  {
+    Icon: CalendarDays,
+    name: "Two-Day Rule",
+    description: "Miss one day? Cool. Miss two? Streak resets — sustainably.",
+    href: "#",
+    cta: "See how",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-1",
+  },
+  {
+    Icon: MousePointerClick,
+    name: "Action Chips",
+    description: "Drag. Drop. Done. Brain-friendly productivity.",
+    href: "#",
+    cta: "Try it",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-2",
+  },
+  {
+    Icon: Sliders,
+    name: "Intensity Slider",
+    description: "100% and 20% both count. Effort matters.",
+    href: "#",
+    cta: "Adjust now",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-2",
+  },
+  {
+    Icon: Rss,
+    name: "Auto-Journal Feed",
+    description: "Your growth, captured seamlessly.",
+    href: "#",
+    cta: "View feed",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-1",
+  },
+  {
+    Icon: User,
+    name: "Public Profile",
+    description: "Your \"Life Resume\" — streaks, habits, reflections.",
+    href: "#",
+    cta: "View demo",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-1",
+  },
+  {
+    Icon: Quote,
+    name: "Motivational Widget",
+    description: "Quotes that actually hit.",
+    href: "#",
+    cta: "Get inspired",
+    background: <div className="absolute -right-20 -top-20 opacity-60" />,
+    className: "col-span-3 md:col-span-2",
+  },
+];
 
 export function FeaturesShowcaseSection() {
   return (
-    <section className="py-24 px-4 w-full bg-background/80 backdrop-blur-sm border-t border-border/40">
-      <div className="max-w-6xl mx-auto space-y-16">
-        
-        {/* Main Section Header */}
+    <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
+      <div className="mb-20 text-center">
         <BlurFade delay={0.2} inView>
-            <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl mb-4">
-                    What&apos;s Cooking: <br className="sm:hidden" />
-                    Build Your Answer to &apos;Whatcha Doin&apos;?&apos;
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                    Discover the powerful features and the science behind how whatcha-doin helps you become unstoppable.
-                </p>
-            </div>
+          <h2 className="text-4xl md:text-6xl font-bold font-sans tracking-tight mb-6">
+            Your identity-building toolkit.
+          </h2>
         </BlurFade>
-
-        {/* Features Showcase Grid */}
         <BlurFade delay={0.4} inView>
-            <BentoGrid className="max-w-5xl mx-auto md:auto-rows-[16rem]"> {/* Adjust row height for features */}
-            {showcaseItems.map((item, i) => (
-                <BentoGridItem
-                key={item.title}
-                title={item.title}
-                description={item.description}
-                header={item.header}
-                icon={item.icon}
-                className={cn("lg:min-h-[12rem]", item.className)} // Ensure min-height to prevent squishing
-                />
-            ))}
-            </BentoGrid>
+          <p className="text-lg md:text-xl text-muted-foreground font-mono max-w-2xl mx-auto">
+            Everything you need to turn ambitions into identity, one day at a time.
+          </p>
         </BlurFade>
-
-        {/* Final CTA/Quote is handled in CTASection now */}
       </div>
+      <BlurFade delay={0.6} inView>
+        <BentoGrid>
+          {features.map((feature) => (
+            <BentoCard key={feature.name} {...feature} />
+          ))}
+        </BentoGrid>
+      </BlurFade>
     </section>
   );
 }

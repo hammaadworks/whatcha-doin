@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { DEFAULT_POST_LOGIN_REDIRECT } from "@/lib/constants";
+import { Button } from "@/components/ui/button"; // Import the Button component
 import { MagicCard } from "@/components/ui/magic-card";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -121,20 +122,17 @@ export default function Logins() {
                   <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">Check Your Inbox</h3>
                   <p className="text-muted-foreground max-w-[250px] mx-auto">
                     We&apos;ve sent a secure magic link to <span className="font-medium text-foreground">{email}</span>. Click the link in your email to instantly access your dashboard and continue building your identity.
                   </p>
                 </div>
-                <ShimmerButton
+                <Button
                   onClick={() => setIsSuccess(false)}
+                  variant="link"
                   className="mt-6 w-full h-10 text-sm"
-                  background="hsl(var(--secondary))"
-                  shimmerColor="rgba(255, 255, 255, 0.2)"
-                  style={{ color: "hsl(var(--secondary-foreground))" }}
                 >
                   Try a different email
-                </ShimmerButton>
+                </Button>
               </div>
             )}
 
