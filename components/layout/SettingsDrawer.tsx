@@ -10,70 +10,78 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { TimezoneSelector } from '@/components/profile/TimezoneSelector'; // Import TimezoneSelector
-import { useAuth } from '@/hooks/useAuth'; // Import useAuth
-import { updateUserTimezone } from '@/lib/supabase/user.client'; // Import updateUserTimezone
-import { toast } from 'react-hot-toast'; // Assuming react-hot-toast is used
+import { TimezoneSelector } from '@/components/profile/TimezoneSelector';
+import { EditProfileForm } from '@/components/profile/EditProfileForm'; // Import EditProfileForm
+import { useAuth } from '@/hooks/useAuth';
+import { updateUserTimezone } from '@/lib/supabase/user.client';
+import { toast } from 'sonner'; // Switch to sonner for consistency
 
 interface SettingsDrawerProps {
   children: React.ReactNode;
 }
 
 export function SettingsDrawer({ children }: SettingsDrawerProps) {
-  const { user, refreshUser } = useAuth(); // Get user and refreshUser from useAuth
+  const { user, refreshUser } = useAuth();
   const [isUpdatingTimezone, setIsUpdatingTimezone] = useState(false);
 
   const handleTimezoneChange = async (newTimezone: string) => {
-    console.log("handleTimezoneChange triggered. New timezone:", newTimezone); // Added log
     if (!user?.id) {
       toast.error("User not authenticated.");
-      console.error("User not authenticated. Cannot update timezone."); // Added log
       return;
     }
     if (newTimezone === user.timezone) {
-      console.log("New timezone is the same as current. No update needed."); // Added log
       return;
     }
 
     setIsUpdatingTimezone(true);
-    console.log(`Attempting to update user ${user.id} timezone to ${newTimezone}`); // Added log
     try {
-      const result = await updateUserTimezone(user.id, newTimezone);
-      console.log("updateUserTimezone result:", result); // Added log
+      await updateUserTimezone(user.id, newTimezone);
       toast.success("Timezone updated successfully!");
-      refreshUser(); // This should trigger a re-fetch of the user data including the new timezone
-      console.log("refreshUser() called after successful update."); // Added log
+      refreshUser();
     } catch (error) {
-      console.error("Failed to update timezone:", error); // Original log improved
+      console.error("Failed to update timezone:", error);
       toast.error("Failed to update timezone.");
     } finally {
       setIsUpdatingTimezone(false);
-      console.log("Finished timezone update attempt."); // Added log
     }
   };
 
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent side="right">
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Settings</SheetTitle>
           <SheetDescription>
-            Manage your application settings and preferences.
+            Manage your profile and application preferences.
           </SheetDescription>
         </SheetHeader>
-        <div className="py-4 space-y-6">
-          <section>
-            <h3 className="text-lg font-medium mb-2">Timezone</h3>
-            <TimezoneSelector
-              currentTimezone={user?.timezone || 'UTC'} // Always pass a timezone, default to UTC
-              onTimezoneChange={handleTimezoneChange}
-              // Optionally disable selector while updating
-              // disabled={isUpdatingTimezone}
-            />
-            {isUpdatingTimezone && (
-                <p className="text-sm text-muted-foreground mt-2">Updating timezone...</p>
-            )}
+        
+        <div className="py-6 space-y-8">
+          {/* Profile Section */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-medium border-b pb-2">Profile</h3>
+            <EditProfileForm />
+          </section>
+
+          {/* Preferences Section */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-medium border-b pb-2">Preferences</h3>
+            <div className="space-y-2">
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Timezone
+                </label>
+                <TimezoneSelector
+                currentTimezone={user?.timezone || 'UTC'}
+                onTimezoneChange={handleTimezoneChange}
+                />
+                {isUpdatingTimezone && (
+                    <p className="text-xs text-muted-foreground">Updating timezone...</p>
+                )}
+                <p className="text-[0.8rem] text-muted-foreground">
+                    Your timezone determines when your "Day" starts and ends.
+                </p>
+            </div>
           </section>
         </div>
       </SheetContent>
