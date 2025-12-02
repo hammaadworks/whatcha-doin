@@ -26,6 +26,7 @@ export interface Todo {
 
 export interface JournalEntry {
     id: string;
+    user_id: string;
     entry_date: string;
     content: string;
     is_public: boolean;
