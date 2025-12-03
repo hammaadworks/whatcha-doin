@@ -88,8 +88,8 @@ export default async function RootLayout({children,}: Readonly<{ children: React
             className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
         >
         <Pointer className="fill-primary" />
-        <KeyboardShortcutsProvider> {/* New wrapper */}
-            <AuthProvider>
+        <AuthProvider>
+            <KeyboardShortcutsProvider>
                 <AppHeader/>
                 <main className="flex-grow flex justify-center px-2 md:px-4 lg:px-8 pt-16 lg:pt-32 pb-4">
                     {children}
@@ -101,8 +101,8 @@ export default async function RootLayout({children,}: Readonly<{ children: React
                   richColors
                   theme="system"
                 />
-            </AuthProvider>
-        </KeyboardShortcutsProvider> {/* New wrapper */}
+            </KeyboardShortcutsProvider>
+        </AuthProvider>
         </body>
         </html>);
 }

@@ -88,7 +88,7 @@ const AppHeader = () => {
                         {user ? (
                             <UserMenuPopover 
                                 user={user}
-                                // onOpenKeyboardShortcuts={toggleShortcutsModal} // No longer needed, as the trigger is handled by the provider
+                                // onOpenKeyboardShortcuts={toggleShortcutsModal}
                             />
                         ) : (
                             <Link href="/me">

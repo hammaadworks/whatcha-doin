@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import BaseModal from './BaseModal'; // Import the new BaseModal
 import { Button } from '@/components/ui/button';
-import { Kbd } from '@/components/ui/kbd';
+// import { Kbd } from '@/components/ui/kbd'; // Kbd is no longer directly used here
+import KeyboardShortcut from './KeyboardShortcut'; // Import the new shared KeyboardShortcut component
 
 interface KeyboardShortcutsModalProps {
   children?: React.ReactNode;
@@ -13,19 +14,13 @@ interface KeyboardShortcutsModalProps {
 
 const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ children, open, onOpenChange }) => {
 
-  const [isMac, setIsMac] = useState(false);
+  // Removed isMac state and useEffect as KeyboardShortcut component handles this internally
+  // const [isMac, setIsMac] = useState(false);
+  // useEffect(() => {
+  //   setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+  // }, []);
 
-
-
-  useEffect(() => {
-
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
-
-  }, []); // Run once on mount
-
-
-
-  const modifierKey = isMac ? "⌥" : "Alt";
+  // const modifierKey = isMac ? "⌥" : "Alt"; // Removed as modifierKey is handled by KeyboardShortcut
 
   return (
     <BaseModal
@@ -38,61 +33,36 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ childre
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col space-y-2">
           <h4 className="text-sm font-semibold">Global</h4>
-                      <div className="flex items-center justify-between">
-                        <span>Open Shortcuts</span>
-                        <div className="flex space-x-1 items-center">
-                          <Kbd>{modifierKey}</Kbd>
-                          <span>+</span>
-                          <Kbd>/</Kbd>
-                        </div>
-                      </div>          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
+            <span>Open Shortcuts</span>
+            <KeyboardShortcut keys={["/"]} />
+          </div>
+          <div className="flex items-center justify-between">
             <span>View Profile</span>
-            <div className="flex space-x-1 items-center">
-              <Kbd>{modifierKey}</Kbd>
-              <span>+</span>
-              <Kbd>P</Kbd>
-            </div>
+            <KeyboardShortcut keys={["P"]} />
           </div>
           <div className="flex items-center justify-between">
             <span>View Insights</span>
-            <div className="flex space-x-1 items-center">
-              <Kbd>{modifierKey}</Kbd>
-              <span>+</span>
-              <Kbd>I</Kbd>
-            </div>
+            <KeyboardShortcut keys={["I"]} />
           </div>
         </div>
         <div className="flex flex-col space-y-2">
           <h4 className="text-sm font-semibold">Action Items (when focused)</h4>
           <div className="flex items-center justify-between">
             <span>Move Item Up</span>
-            <div className="flex space-x-1 items-center">
-              <Kbd>{modifierKey}</Kbd>
-              <span>+</span>
-              <Kbd>↑</Kbd>
-            </div>
+            <KeyboardShortcut keys={["↑"]} />
           </div>
           <div className="flex items-center justify-between">
             <span>Move Item Down</span>
-            <div className="flex space-x-1 items-center">
-              <Kbd>{modifierKey}</Kbd>
-              <span>+</span>
-              <Kbd>↓</Kbd>
-            </div>
+            <KeyboardShortcut keys={["↓"]} />
           </div>
           <div className="flex items-center justify-between">
             <span>Indent Item</span>
-            <div className="flex space-x-1">
-              <Kbd>Tab</Kbd>
-            </div>
+            <KeyboardShortcut keys={["Tab"]} />
           </div>
           <div className="flex items-center justify-between">
             <span>Outdent Item</span>
-            <div className="flex space-x-1 items-center">
-              <Kbd>Shift</Kbd>
-              <span>+</span>
-              <Kbd>Tab</Kbd>
-            </div>
+            <KeyboardShortcut keys={["Shift", "Tab"]} />
           </div>
         </div>
       </div>

@@ -23,8 +23,9 @@ export function PublicPage({ user, publicActions, publicHabits, publicJournalEnt
       bio={user.bio ?? null}
       isOwner={false}
       timezone={user.timezone} // Pass timezone
-    >
-      <ActionsSection
+      isPublicPreviewMode={false} // Dummy prop for PublicPage
+      onTogglePublicPreview={() => {}} // Dummy prop for PublicPage
+    >      <ActionsSection
         isOwner={false}
         actions={publicActions}
         loading={false} // Always false for public page sections

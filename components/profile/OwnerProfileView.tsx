@@ -15,12 +15,15 @@ import { User } from '@/hooks/useAuth';
 import { PublicPage } from '@/components/profile/PublicPage';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { fetchOwnerHabits } from '@/lib/supabase/habit';
 import { fetchPublicActions } from '@/lib/supabase/actions';
 import { fetchJournalEntries } from '@/lib/supabase/journal'; // Import fetchJournalEntries
 import { Habit, ActionNode, JournalEntry } from '@/lib/supabase/types'; // Import JournalEntry
+
+
 
 interface OwnerProfileViewProps {
   username: string;
@@ -38,6 +41,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
 
   const [optimisticTimezone, setOptimisticTimezone] = useState<string | null>(null);
   const [isPublicPreviewMode, setIsPublicPreviewMode] = useState(false);
+
   
   // No longer need states for public preview data as they come from props
   // const [publicActions, setPublicActions] = useState<ActionNode[]>([]);
@@ -102,12 +106,27 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
     }
   };
 
+
+
   // Sync isPublicPreviewMode with URL query parameter
   useEffect(() => {
     setIsPublicPreviewMode(searchParams.get('preview') === 'true');
   }, [searchParams]);
 
   // No longer need to fetch public data in this component as they come from props
+
+  // Function to toggle preview mode and update URL
+  const handleTogglePreview = useCallback((checked: boolean) => {
+    setIsPublicPreviewMode(checked);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (checked) {
+      newSearchParams.set('preview', 'true');
+    } else {
+      newSearchParams.delete('preview');
+    }
+    router.replace(`/${username}?${newSearchParams.toString()}`);
+  }, [router, searchParams, username]);
+
 
   // Fetch owner's private data when not in public preview mode
   useEffect(() => {
@@ -126,20 +145,10 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
         .catch(err => console.error("Failed to fetch owner journal entries:", err))
         .finally(() => setOwnerJournalEntriesLoading(false));
     }
-  }, [isPublicPreviewMode, authenticatedUser?.id]);
+  }, [isPublicPreviewMode, authenticatedUser?.id]); // Add isPublicPreviewMode to dependency array
 
 
-  // Function to toggle preview mode and update URL
-  const handleTogglePreview = useCallback((checked: boolean) => {
-    setIsPublicPreviewMode(checked);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (checked) {
-      newSearchParams.set('preview', 'true');
-    } else {
-      newSearchParams.delete('preview');
-    }
-    router.replace(`/${username}?${newSearchParams.toString()}`);
-  }, [router, searchParams, username]);
+
 
   if (!profileToDisplay) {
     return <div>Error: User profile not found for owner.</div>;
@@ -147,20 +156,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
 
   return (
     <div className="relative">
-      {/* Minimal Top-Left Toggle */}
-      <div className="absolute top-0 left-0 z-50 p-4 md:p-0 md:-top-12 md:left-2 flex items-center gap-2">
-        <Switch
-          id="public-preview-mode"
-          checked={isPublicPreviewMode}
-          onCheckedChange={handleTogglePreview}
-        />
-        <Label 
-          htmlFor="public-preview-mode" 
-          className="text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground transition-colors select-none"
-        >
-          {isPublicPreviewMode ? "Exit Preview" : "Public Preview"}
-        </Label>
-      </div>
+
 
       {isPublicPreviewMode ? (
           <div className="animate-in fade-in duration-300">
@@ -180,6 +176,8 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
           timezone={optimisticTimezone || profileToDisplay.timezone}
           onTimezoneChange={handleTimezoneChange}
           onBioUpdate={handleBioUpdate}
+          isPublicPreviewMode={isPublicPreviewMode}
+          onTogglePublicPreview={handleTogglePreview}
         >
             <ActionsSection
               isOwner={true}

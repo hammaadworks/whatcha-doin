@@ -10,6 +10,14 @@ import { MarkdownEditor } from '@/components/journal/MarkdownEditor';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Pencil, Check, X, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch'; // New import
+import { Label } from '@/components/ui/label'; // New import
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"; // New import
 
 interface ProfileLayoutProps {
     username: string;
@@ -18,10 +26,12 @@ interface ProfileLayoutProps {
     timezone?: string | null;
     onTimezoneChange?: (newTimezone: string) => Promise<void>;
     onBioUpdate?: (newBio: string) => Promise<void>;
+    isPublicPreviewMode: boolean; // New prop
+    onTogglePublicPreview: (checked: boolean) => void; // New prop
     children: React.ReactNode;
 }
 
-const ProfileLayout: React.FC<ProfileLayoutProps> = ({ username, bio, isOwner, timezone, onTimezoneChange, onBioUpdate, children }) => {
+const ProfileLayout: React.FC<ProfileLayoutProps> = ({ username, bio, isOwner, timezone, onTimezoneChange, onBioUpdate, isPublicPreviewMode, onTogglePublicPreview, children }) => {
     const [isEditingBio, setIsEditingBio] = useState(false);
     const [editedBio, setEditedBio] = useState(bio || '');
     const [isSavingBio, setIsSavingBio] = useState(false);
@@ -49,6 +59,38 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ username, bio, isOwner, t
 
     return (
         <div className="profile-container w-full mx-auto bg-card border border-primary shadow-lg rounded-3xl relative mt-8 mb-8 overflow-hidden">
+            {/* Public Preview Toggle - Centered Pill Tab */}
+            {isOwner && onTogglePublicPreview && (
+              // DEBUG: Check if toggle is rendered and props are correct
+              console.log("ProfileLayout: Rendering toggle. isOwner:", isOwner, "onTogglePublicPreview:", !!onTogglePublicPreview),
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50">
+
+                <div className="flex items-center gap-2 rounded-full bg-background border border-primary pr-3 pl-2 py-1 shadow-md">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <Label 
+                            htmlFor="public-preview-mode" 
+                            className="text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground transition-colors select-none whitespace-nowrap"
+                          >
+                            Public Preview
+                          </Label>
+                          <Switch
+                            id="public-preview-mode"
+                            checked={isPublicPreviewMode}
+                            onCheckedChange={onTogglePublicPreview}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-sm">
+                        <p>Toggle to preview your profile as a public user.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+            )}
             
             {/* User Clock positioned in the top right corner */}
             {timezone && (
