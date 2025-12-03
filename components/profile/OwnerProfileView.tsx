@@ -146,34 +146,45 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
   }
 
   return (
-    <>
-      <ProfileLayout
-        username={username}
-        bio={profileToDisplay.bio ?? null}
-        isOwner={true}
-        timezone={optimisticTimezone || profileToDisplay.timezone}
-        onTimezoneChange={handleTimezoneChange}
-        onBioUpdate={handleBioUpdate}
-      >
-        <div className="flex items-center space-x-2 my-4 justify-end">
-          <Label htmlFor="public-preview-mode">Public Preview</Label>
+    <div className="space-y-6">
+      {/* Public Preview Control Bar */}
+      <div className="flex items-center justify-between bg-card border rounded-lg p-4 shadow-sm">
+        <div className="flex items-center gap-2">
           <Switch
             id="public-preview-mode"
             checked={isPublicPreviewMode}
             onCheckedChange={handleTogglePreview}
           />
+          <div className="flex flex-col">
+             <Label htmlFor="public-preview-mode" className="font-medium cursor-pointer">Public Preview Mode</Label>
+             <span className="text-xs text-muted-foreground">
+               {isPublicPreviewMode 
+                 ? "You are viewing your profile as others see it. Private items are hidden." 
+                 : "Switch to see what your public visitors see."}
+             </span>
+          </div>
         </div>
+      </div>
 
-        {isPublicPreviewMode ? (
+      {isPublicPreviewMode ? (
+          <div className="animate-in fade-in duration-300">
             <PublicPage
               user={profileToDisplay}
               publicActions={publicActions}
               publicHabits={publicHabits}
               publicJournalEntries={publicJournalEntries}
-              privateCount={privateCount} // Pass privateCount
+              privateCount={privateCount}
             />
-        ) : (
-          <>
+          </div>
+      ) : (
+        <ProfileLayout
+          username={username}
+          bio={profileToDisplay.bio ?? null}
+          isOwner={true}
+          timezone={optimisticTimezone || profileToDisplay.timezone}
+          onTimezoneChange={handleTimezoneChange}
+          onBioUpdate={handleBioUpdate}
+        >
             <ActionsSection
               isOwner={true}
               actions={actions}
@@ -186,7 +197,7 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
               onActionOutdented={outdentAction}
               onActionMovedUp={moveActionUp}
               onActionMovedDown={moveActionDown}
-              onActionPrivacyToggled={toggleActionPrivacy} // Pass new handler
+              onActionPrivacyToggled={toggleActionPrivacy}
             />
             <HabitsSection
               isOwner={true}
@@ -203,9 +214,8 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
               isOwner={true}
               loading={false}
             />
-          </>
-        )}
-      </ProfileLayout>
-    </>
+        </ProfileLayout>
+      )}
+    </div>
   );
 }
