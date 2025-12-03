@@ -64,60 +64,33 @@ building, even if it's tiny.
 
 You go from "trying to be disciplined" to *being* a disciplined person.
 
-## Psychology Section
-
-**The science behind why whatcha-doin works.**
-
-### Identity Anchoring
-
-You align each habit with the identity you want.
-
-### Micro-Commitments
-
-Tiny actions create compounding momentum.
-
-### Positive Urgency
-
-Yesterday fades at midnight --- alive, rhythmic, motivating.
-
-### Intensity Logging
-
-Track effort, not perfection.
-
-### Automatic Journaling
-
-Your story writes itself.
-
-> "You are what you repeatedly do. We help you make that your
-> superpower."
-
-## Features Section
+## Science & Features Section
 
 **Your identity-building toolkit.**
 
 ### Two-Day Rule
-
 Miss one day? Cool. Miss two? Streak resets --- sustainably.
+**The Science:** The Two-Day Rule is a powerful psychological hack that prevents the 'all-or-nothing' mindset. It allows for a day of rest or imperfection without breaking the chain of consistency, which is crucial for long-term habit formation.
 
 ### Action Chips
-
 Drag. Drop. Done. Brain-friendly productivity.
+**The Science:** Action Chips turn tasks into tangible objects, reducing the cognitive load of decision-making. This visual, direct-manipulation interface makes it easier to start and complete tasks.
 
 ### Intensity Slider
-
 100% and 20% both count. Effort matters.
+**The Science:** The Intensity Slider acknowledges that effort is not always 100%. By tracking effort, you reinforce your identity as 'someone who does the thing,' even on low-energy days. This is a core tenet of identity-based habits.
 
 ### Auto-Journal Feed
-
 Your growth, captured seamlessly.
+**The Science:** Journaling is a powerful tool for self-awareness, but it's often a habit in itself. By automating the process, we lower the barrier to entry, making it easy to see your progress and connect the dots over time.
 
 ### Public Profile
+Your "Life Resume" — streaks, habits, reflections.
+**The Science:** Sharing your progress can be a powerful motivator. Your public profile acts as a 'life resume,' showcasing your dedication and consistency. It's not about comparing yourself to others, but about being accountable to your own goals.
 
-Your "Life Resume" --- streaks, habits, reflections.
-
-### Motivational Widget
-
-Quotes that actually hit.
+### Identity Anchoring
+You align each habit with the identity you want.
+**The Science:** True behavior change is identity change. By anchoring your habits to a desired identity (e.g., 'I am a writer' instead of 'I want to write'), you create a powerful feedback loop that reinforces your new self-image.
 
 ## CTA Section
 

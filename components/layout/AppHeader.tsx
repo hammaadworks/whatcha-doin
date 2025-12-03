@@ -9,16 +9,18 @@ import {KeyRound, Settings} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {usePathname} from 'next/navigation';
 import {SettingsDrawer} from '@/components/layout/SettingsDrawer';
-import KeyboardShortcutsModal from '@/components/shared/KeyboardShortcutsModal';
+// Removed KeyboardShortcutsModal import as it's now handled by the provider
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useKeyboardShortcuts } from '@/components/shared/KeyboardShortcutsProvider'; // Import the new hook
 
 const AppHeader = () => {
     const {user, loading} = useAuth();
     const pathname = usePathname();
     const [isDark, setIsDark] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
+    // Removed isKeyboardShortcutsModalOpen state
     const { scrollY } = useScroll();
+    const { toggleShortcutsModal } = useKeyboardShortcuts(); // Use the hook
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setIsScrolled(latest > 20);
@@ -75,9 +77,9 @@ const AppHeader = () => {
                         {user && (
                             <SettingsDrawer>
                                 <button
-                                    className={cn("relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-secondary/50 text-secondary-foreground transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
+                                    className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
                                 >
-                                    <Settings className="h-4 w-4" strokeWidth={2.5}/>
+                                    <Settings className="h-6 w-6" strokeWidth={2.5}/>
                                     <span className="sr-only">Settings</span>
                                 </button>
                             </SettingsDrawer>
@@ -86,10 +88,10 @@ const AppHeader = () => {
                         {user ? (
                             <UserMenuPopover 
                                 user={user}
-                                onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsModalOpen(true)}
+                                // onOpenKeyboardShortcuts={toggleShortcutsModal} // No longer needed, as the trigger is handled by the provider
                             />
                         ) : (
-                            <Link href="/logins">
+                            <Link href="/me">
                                                                 <button
                                                                     className={cn(
                                                                         "relative inline-flex h-9 items-center justify-center rounded-full text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -104,10 +106,7 @@ const AppHeader = () => {
                     </div>
                 </div>
             </motion.header>
-            <KeyboardShortcutsModal
-                open={isKeyboardShortcutsModalOpen}
-                onOpenChange={setIsKeyboardShortcutsModalOpen}
-            />
+            {/* Removed KeyboardShortcutsModal rendering from here */}
         </React.Fragment>);
 };
 

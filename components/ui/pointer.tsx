@@ -61,7 +61,7 @@ export function Pointer({
     // Always render the motion.div for the pointer, AnimatePresence is not needed if always rendered.
     <motion.div
       ref={containerRef} // Using ref here to keep consistency
-      className="pointer-events-none fixed z-[99999999] transform-[translate(-50%,-50%)]"
+      className="pointer-events-none fixed z-[9999999999999] transform-[translate(-50%,-50%)]"
       style={{
         top: y,
         left: x,

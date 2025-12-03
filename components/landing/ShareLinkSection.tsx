@@ -3,6 +3,10 @@
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Safari } from "@/components/ui/safari";
 
+import { DOMAIN_URL } from "@/lib/constants";
+
+// ... (other imports)
+
 export function ShareLinkSection() {
   return (
     <section className="py-32 px-4 md:px-8 bg-background">
@@ -19,7 +23,7 @@ export function ShareLinkSection() {
         </BlurFade>
         <BlurFade delay={0.6} inView>
           <div className="relative">
-            <Safari url="whatcha-doin.hammaadworks.com/hammaadworks" imageSrc="/images/phineas-ferb.png" />
+            <Safari url={`${DOMAIN_URL}/your_username`} imageSrc="/images/phineas-ferb.png" />
           </div>
         </BlurFade>
       </div>

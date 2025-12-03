@@ -31,7 +31,7 @@ const NotFoundLayout: React.FC<NotFoundLayoutProps> = ({
 
     // Default values now depend on isLoggedIn
     const resolvedSecondaryLinkText = secondaryLinkText ?? (isLoggedIn ? "Dashboard" : "Login");
-    const resolvedSecondaryLinkHref = secondaryLinkHref ?? (isLoggedIn && user?.username ? `/${user.username}` : "/logins");
+    const resolvedSecondaryLinkHref = secondaryLinkHref ?? (isLoggedIn && user?.username ? `/${user.username}` : "/me");
     const ResolvedSecondaryLinkIcon = SecondaryLinkIconProp ?? (isLoggedIn ? Layers : LogIn);
 
     useEffect(() => {

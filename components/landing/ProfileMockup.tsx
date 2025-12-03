@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { AUTHOR_NAME, AUTHOR_TWITTER_HANDLE } from "@/lib/constants";
 
 export function ProfileMockup({ className }: { className?: string }) {
   return (
@@ -18,8 +19,8 @@ export function ProfileMockup({ className }: { className?: string }) {
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <h4 className="text-base font-semibold mt-1">Hammaad Works</h4>
-        <p className="text-xs text-muted-foreground">@hammaadworks</p>
+        <h4 className="text-base font-semibold mt-1">{AUTHOR_NAME}</h4>
+        <p className="text-xs text-muted-foreground">{AUTHOR_TWITTER_HANDLE}</p>
         <p className="text-center text-xs mt-1 max-w-xs px-1">
           Building habits, tracking progress, and becoming unstoppable.
         </p>

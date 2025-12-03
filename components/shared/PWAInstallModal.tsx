@@ -1,6 +1,7 @@
 // components/shared/PWAInstallModal.tsx
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import BaseModal from './BaseModal'; // Import the new BaseModal
 
 interface PWAInstallModalProps {
   show: boolean;
@@ -9,23 +10,16 @@ interface PWAInstallModalProps {
 }
 
 export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ show, message, onClose }) => {
-  if (!show) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100] backdrop-blur-sm"
-      onClick={onClose}
+    <BaseModal
+      isOpen={show}
+      onClose={onClose}
+      title="Install App"
+      description={message}
+      footerContent={<Button onClick={onClose} className="w-full">Got it</Button>}
     >
-      <div
-        className="bg-card text-card-foreground p-6 rounded-xl shadow-2xl max-w-sm w-full text-center border border-border"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-lg font-semibold mb-2">Install App</h3>
-        <p className="mb-6 text-muted-foreground">{message}</p>
-        <Button onClick={onClose} className="w-full">
-          Got it
-        </Button>
-      </div>
-    </div>
+      {/* No additional children content for this modal */}
+    </BaseModal>
   );
 };
+

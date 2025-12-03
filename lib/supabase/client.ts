@@ -2,6 +2,7 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import { User, Session, AuthError } from "@supabase/supabase-js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { EMAIL } from "@/lib/constants";
 
 export function createClient() {
   // Create a supabase client
@@ -10,13 +11,13 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 
-  // If in development mode, override getSession to return a mock session
+// If in development mode, override getSession to return a mock session
     if (process.env.NEXT_PUBLIC_DEV_MODE_ENABLED === "true") {
       console.warn("DEV_MODE: Supabase session is mocked.");
   
       const mockUser: User = {
         id: "68be1abf-ecbe-47a7-bafb-46be273a2e",
-        email: "hammaadworks@gmail.com",
+        email: EMAIL,
         aud: "authenticated",
         app_metadata: {},
         user_metadata: {},
