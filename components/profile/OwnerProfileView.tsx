@@ -146,24 +146,20 @@ export default function OwnerProfileView({ username, initialProfileUser, publicA
   }
 
   return (
-    <div className="space-y-6">
-      {/* Public Preview Control Bar */}
-      <div className="flex items-center justify-between bg-card border rounded-lg p-4 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Switch
-            id="public-preview-mode"
-            checked={isPublicPreviewMode}
-            onCheckedChange={handleTogglePreview}
-          />
-          <div className="flex flex-col">
-             <Label htmlFor="public-preview-mode" className="font-medium cursor-pointer">Public Preview Mode</Label>
-             <span className="text-xs text-muted-foreground">
-               {isPublicPreviewMode 
-                 ? "You are viewing your profile as others see it. Private items are hidden." 
-                 : "Switch to see what your public visitors see."}
-             </span>
-          </div>
-        </div>
+    <div className="relative">
+      {/* Minimal Top-Left Toggle */}
+      <div className="absolute top-0 left-0 z-50 p-4 md:p-0 md:-top-12 md:left-2 flex items-center gap-2">
+        <Switch
+          id="public-preview-mode"
+          checked={isPublicPreviewMode}
+          onCheckedChange={handleTogglePreview}
+        />
+        <Label 
+          htmlFor="public-preview-mode" 
+          className="text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground transition-colors select-none"
+        >
+          {isPublicPreviewMode ? "Exit Preview" : "Public Preview"}
+        </Label>
       </div>
 
       {isPublicPreviewMode ? (
