@@ -48,10 +48,29 @@ export interface PublicProfile extends PublicUserDisplay {
 }
 
 export interface ActionNode {
-  id: string;
-  description: string;
-  completed: boolean;
-  is_public?: boolean; // Add is_public flag
-  completed_at?: string; // ISO timestamp
-  children?: ActionNode[];
+    id: string;
+    description: string;
+    completed: boolean;
+    is_public?: boolean; // Add is_public flag
+    completed_at?: string; // ISO timestamp
+    children?: ActionNode[];
+}
+
+export interface Identity {
+    id: string;
+    user_id: string;
+    title: string;
+    description: string | null;
+    is_public: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Target {
+    id: string;
+    user_id: string;
+    target_date: string | null; // YYYY-MM-01 or NULL
+    data: ActionNode[]; // Reusing ActionNode structure
+    created_at: string;
+    updated_at: string;
 }
