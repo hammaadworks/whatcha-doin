@@ -16,9 +16,10 @@ import {toast} from 'sonner';
 import {fetchOwnerHabits} from '@/lib/supabase/habit';
 import {fetchJournalEntries} from '@/lib/supabase/journal'; // Import fetchJournalEntries
 import {ActionNode, Habit, Identity, JournalEntry} from '@/lib/supabase/types'; // Import JournalEntry // Import Identity
-import {PublicPill} from '@/components/profile/PublicPill'; // Import the new component
+import {VibeSelector} from '@/components/profile/VibeSelector'; // Import the new VibeSelector component
 import IdentitySection from '@/components/profile/sections/IdentitySection'; // Import IdentitySection
 import TargetsSection from '@/components/profile/sections/TargetsSection'; // Import TargetsSection
+import BioSection from '@/components/profile/sections/BioSection';
 
 interface OwnerProfileViewProps {
     username: string;
@@ -47,7 +48,7 @@ export default function OwnerProfileView({
 
     const [optimisticTimezone, setOptimisticTimezone] = useState<string | null>(null);
 
-    const currentViewMode = (searchParams.get('view_mode') as 'edit' | 'private' | 'public') || 'edit';
+    const currentViewMode = (searchParams.get('vibe') as 'edit' | 'private' | 'public') || 'edit';
     const isReadOnly = currentViewMode !== 'edit';
 
     // States for owner's private data
@@ -66,11 +67,13 @@ export default function OwnerProfileView({
         toggleAction,
         updateActionText,
         deleteAction,
+        undoDeleteAction, // Destructure undoDeleteAction
         indentAction,
         outdentAction,
         moveActionUp,
         moveActionDown,
-        toggleActionPrivacy, // Destructure new handler
+        toggleActionPrivacy,
+        addActionAfter // Destructure new handler
     } = useActions(true, optimisticTimezone || profileToDisplay?.timezone || 'UTC');
 
     const handleTimezoneChange = async (newTimezone: string) => {
@@ -108,17 +111,17 @@ export default function OwnerProfileView({
     const handleViewModeChange = useCallback((mode: 'edit' | 'private' | 'public') => {
         const newSearchParams = new URLSearchParams(searchParams.toString());
         if (mode === 'edit') {
-            newSearchParams.delete('view_mode');
+            newSearchParams.delete('vibe');
         } else {
-            newSearchParams.set('view_mode', mode);
+            newSearchParams.set('vibe', mode);
         }
         router.replace(`/${username}?${newSearchParams.toString()}`);
     }, [router, searchParams, username]);
 
-    // Default to 'edit' mode if no view_mode is set initially
+    // Default to 'edit' mode if no vibe is set initially
     useEffect(() => {
-        if (!searchParams.get('view_mode')) {
-            router.replace(`/${username}?view_mode=edit`);
+        if (!searchParams.get('vibe')) {
+            router.replace(`/${username}?vibe=edit`);
         }
     }, [searchParams, router, username]);
 
@@ -147,8 +150,8 @@ export default function OwnerProfileView({
         return <div>Error: User profile not found for owner.</div>;
     }
 
-    return (<div className="relative pt-8">
-            <PublicPill
+    return (<div className="relative pt-8 lg:pt-4">
+            <VibeSelector
                 currentViewMode={currentViewMode}
                 onViewModeChange={handleViewModeChange}
             />
@@ -165,21 +168,29 @@ export default function OwnerProfileView({
                     />
                 </div>) : (<ProfileLayout
                     username={username}
-                    bio={profileToDisplay.bio ?? null}
                     isOwner={true} // Always true for owner's view
                     isReadOnly={isReadOnly} // Pass isReadOnly based on current view mode
                     timezone={optimisticTimezone || profileToDisplay.timezone}
                     onTimezoneChange={handleTimezoneChange}
-                    onBioUpdate={handleBioUpdate}
                 >
-                    {/* Identity and Targets Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <IdentitySection isOwner={true} isReadOnly={isReadOnly} ownerHabits={ownerHabits}/>
-                        <TargetsSection
-                            isOwner={true}
-                            isReadOnly={isReadOnly} // Pass isReadOnly
-                            timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
-                        />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div className="lg:col-span-1 h-full">
+                            <BioSection
+                                username={username}
+                                bio={profileToDisplay.bio ?? null}
+                                isOwner={true}
+                                isReadOnly={isReadOnly}
+                                onBioUpdate={handleBioUpdate}
+                            />
+                        </div>
+                        <div className="lg:col-span-1 flex flex-col gap-6">
+                             <IdentitySection isOwner={true} isReadOnly={isReadOnly} ownerHabits={ownerHabits}/>
+                             <TargetsSection
+                                isOwner={true}
+                                isReadOnly={isReadOnly} // Pass isReadOnly
+                                timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                            />
+                        </div>
                     </div>
 
                     <ActionsSection
@@ -191,11 +202,14 @@ export default function OwnerProfileView({
                         onActionAdded={addAction}
                         onActionUpdated={updateActionText}
                         onActionDeleted={deleteAction}
+                        undoDeleteAction={undoDeleteAction} // Pass undoDeleteAction
                         onActionIndented={indentAction}
                         onActionOutdented={outdentAction}
                         onActionMovedUp={moveActionUp}
                         onActionMovedDown={moveActionDown}
                         onActionPrivacyToggled={toggleActionPrivacy}
+                        onActionAddedAfter={addActionAfter} // New
+                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'} // Pass timezone
                     />
                     <HabitsSection
                         isOwner={true}

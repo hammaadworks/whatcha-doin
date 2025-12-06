@@ -1,6 +1,4 @@
-'use client';
-
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {fetchTargets, updateTargets} from '@/lib/supabase/targets';
 import {ActionNode} from '@/lib/supabase/types';
 import {useAuth} from './useAuth';
@@ -16,21 +14,23 @@ import {
     toggleActionInTree,
     toggleActionPrivacyInTree,
     updateActionTextInTree,
+    findNodeAndContext,
+    addActionAfterId, // Import addActionAfterId
+    DeletedNodeContext, // Import DeletedNodeContext
+    restoreActionInTree // Import restoreActionInTree
 } from '@/lib/utils/actionTreeUtils';
 import {processTargetLifecycle} from '@/lib/logic/targetLifecycle';
 
+// --- NEW IMPORTS ---
+import { createClient } from '@/lib/supabase/client';
+import { JournalActivityService } from '@/lib/logic/JournalActivityService';
+// --- END NEW IMPORTS ---
+
 export type TargetBucket = 'future' | 'current' | 'prev' | 'prev1';
 
-// Helper to find a node recursively
+// Helper to find a node recursively (from actionTreeUtils.ts)
 const findNode = (nodes: ActionNode[], id: string): ActionNode | null => {
-    for (const node of nodes) {
-        if (node.id === id) return node;
-        if (node.children) {
-            const found = findNode(node.children, id);
-            if (found) return found;
-        }
-    }
-    return null;
+    return findNodeAndContext(nodes, id)?.node || null;
 };
 
 export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTargets?: ActionNode[]) => {
@@ -42,6 +42,14 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
     const [prev1Targets, setPrev1Targets] = useState<ActionNode[]>([]);
 
     const [loading, setLoading] = useState(!initialTargets); // Loading if no initial data
+    // State to store deleted context, including the bucket it was deleted from
+    const [lastDeletedTargetContext, setLastDeletedTargetContext] = useState<{ context: DeletedNodeContext | null, bucket: TargetBucket | null } | null>(null);
+
+    // --- NEW SERVICE INITIALIZATION ---
+    const supabase = createClient();
+    const journalActivityService = new JournalActivityService(supabase);
+    // --- END NEW SERVICE INITIALIZATION ---
+
 
     const getBucketState = (bucket: TargetBucket) => {
         switch (bucket) {
@@ -93,60 +101,110 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         }
     };
 
-    const addTarget = (bucket: TargetBucket, description: string, parentId?: string) => {
+    const addTarget = useCallback((bucket: TargetBucket, description: string, parentId?: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on new action
         const {data} = getBucketState(bucket);
         save(bucket, addActionToTree(data, description, parentId, true));
-    };
+    }, [getBucketState, save]);
 
-    const toggleTarget = (bucket: TargetBucket, id: string) => {
+    const addTargetAfter = useCallback((bucket: TargetBucket, afterId: string, description: string, isPublic: boolean = true) => {
+        setLastDeletedTargetContext(null); // Clear undo history on new action
         const {data} = getBucketState(bucket);
-        const newTree = toggleActionInTree(data, id);
-        if (newTree === data) {
+        save(bucket, addActionAfterId(data, afterId, description, isPublic));
+    }, [getBucketState, save]);
+
+    const toggleTarget = useCallback((bucket: TargetBucket, id: string) => {
+        const {data: oldTreeData} = getBucketState(bucket);
+        const oldTargetNode = findNode(oldTreeData, id); // Get old state
+        
+        const newTree = toggleActionInTree(oldTreeData, id);
+        if (newTree === oldTreeData) {
             toast.error("Complete sub-targets first!");
             return;
         }
-        save(bucket, newTree);
-    };
 
-    const updateTargetText = (bucket: TargetBucket, id: string, newText: string) => {
+        const newTargetNode = findNode(newTree, id); // Get new state
+
+        // --- NEW JOURNAL LOGIC (Start) ---
+        if (user && newTargetNode && oldTargetNode?.completed !== newTargetNode.completed) {
+            journalActivityService.logActivity(
+                user.id,
+                new Date(), // Log for today
+                {
+                    id: newTargetNode.id,
+                    type: 'target',
+                    description: newTargetNode.description,
+                    is_public: newTargetNode.is_public ?? false,
+                    status: newTargetNode.completed ? 'completed' : 'uncompleted',
+                }
+            );
+        }
+        // --- NEW JOURNAL LOGIC (End) ---
+        setLastDeletedTargetContext(null); // Clear undo history on toggle
+        save(bucket, newTree);
+    }, [getBucketState, save, user, journalActivityService]);
+
+    const updateTargetText = useCallback((bucket: TargetBucket, id: string, newText: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on update
         const {data} = getBucketState(bucket);
         save(bucket, updateActionTextInTree(data, id, newText));
-    };
+    }, [getBucketState, save]);
 
-    const deleteTarget = (bucket: TargetBucket, id: string) => {
+    const deleteTarget = useCallback((bucket: TargetBucket, id: string) => {
         const {data} = getBucketState(bucket);
-        save(bucket, deleteActionFromTree(data, id));
-    };
+        const { tree: newTree, deletedContext } = deleteActionFromTree(data, id);
+        setLastDeletedTargetContext({ context: deletedContext, bucket: bucket }); // Store for undo
+        save(bucket, newTree);
+        return deletedContext; // Return for UI to trigger toast
+    }, [getBucketState, save]);
 
-    const indentTarget = (bucket: TargetBucket, id: string) => {
+    const undoDeleteTarget = useCallback(() => {
+        if (lastDeletedTargetContext?.context && lastDeletedTargetContext?.bucket) {
+            const { context, bucket } = lastDeletedTargetContext;
+            const { data: currentBucketData } = getBucketState(bucket);
+            save(bucket, restoreActionInTree(currentBucketData, context));
+            setLastDeletedTargetContext(null); // Clear after undo
+            toast.success("Target restored!");
+        } else {
+            toast.error("Nothing to undo!");
+        }
+    }, [lastDeletedTargetContext, getBucketState, save]);
+
+    const indentTarget = useCallback((bucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on indent
         const {data} = getBucketState(bucket);
         save(bucket, indentActionInTree(data, id));
-    };
+    }, [getBucketState, save]);
 
-    const outdentTarget = (bucket: TargetBucket, id: string) => {
+    const outdentTarget = useCallback((bucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on outdent
         const {data} = getBucketState(bucket);
         save(bucket, outdentActionInTree(data, id));
-    };
+    }, [getBucketState, save]);
 
-    const moveTargetUp = (bucket: TargetBucket, id: string) => {
+    const moveTargetUp = useCallback((bucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on move
         const {data} = getBucketState(bucket);
         save(bucket, moveActionUpInTree(data, id));
-    };
+    }, [getBucketState, save]);
 
-    const moveTargetDown = (bucket: TargetBucket, id: string) => {
+    const moveTargetDown = useCallback((bucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on move
         const {data} = getBucketState(bucket);
         save(bucket, moveActionDownInTree(data, id));
-    };
+    }, [getBucketState, save]);
 
-    const toggleTargetPrivacy = (bucket: TargetBucket, id: string) => {
+    const toggleTargetPrivacy = useCallback((bucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on privacy toggle
         const {data} = getBucketState(bucket);
         save(bucket, toggleActionPrivacyInTree(data, id));
-    };
+    }, [getBucketState, save]);
 
     // Simple move: Removes from Source, Adds to Dest (Root)
     // Does NOT preserve children for now (simplified) or deep position.
     // Actually, reusing addActionToTree adds as a new node.
-    const moveTargetToBucket = (fromBucket: TargetBucket, toBucket: TargetBucket, id: string) => {
+    const moveTargetToBucket = useCallback((fromBucket: TargetBucket, toBucket: TargetBucket, id: string) => {
+        setLastDeletedTargetContext(null); // Clear undo history on move between buckets
         const source = getBucketState(fromBucket);
         const dest = getBucketState(toBucket);
 
@@ -154,8 +212,8 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         if (!node) return;
 
         // Remove from source
-        const newSourceTree = deleteActionFromTree(source.data, id);
-        save(fromBucket, newSourceTree);
+        const { tree: newSourceTree } = deleteActionFromTree(source.data, id);
+        save(fromBucket, newSourceTree); // Pass the tree part
 
         // Add to dest (as new root node with same description)
         // NOTE: This loses children and completion status/timestamps.
@@ -163,7 +221,7 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         // For now, we'll just create a new one.
         save(toBucket, addActionToTree(dest.data, node.description, undefined, true));
         toast.success("Moved target!");
-    };
+    }, [getBucketState, save]);
 
     return {
         buckets: {
@@ -174,11 +232,14 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         toggleTarget,
         updateTargetText,
         deleteTarget,
+        undoDeleteTarget, // Expose undo function
+        lastDeletedTargetContext, // Expose deleted context
         indentTarget,
         outdentTarget,
         moveTargetUp,
         moveTargetDown,
         toggleTargetPrivacy,
+        addTargetAfter, // Expose new function
         moveTargetToBucket
     };
 };

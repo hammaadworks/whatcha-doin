@@ -11,6 +11,9 @@ import {Skeleton} from '@/components/ui/skeleton'; // Import Skeleton
 import {completeHabit, deleteHabit, updateHabit} from '@/lib/supabase/habit'; // Import update/delete/complete functions
 import {toast} from 'sonner';
 import {CompletionData} from '@/components/habits/HabitCompletionModal';
+import {PlusCircle} from 'lucide-react'; // New import
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip"; // New import
+import {HabitCreatorModal} from '@/components/habits/HabitCreatorModal'; // New import
 
 interface HabitsSectionProps {
     isOwner: boolean;
@@ -54,6 +57,14 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
         }
     };
 
+    const [isCreateHabitModalOpen, setIsCreateHabitModalOpen] = useState(false);
+
+    const handleCreateHabit = () => {
+        setIsCreateHabitModalOpen(false);
+        toast.success('Habit created!');
+        // TODO: Implement habit refresh logic here, e.g., call a prop function like onHabitCreated from OwnerProfileView
+    };
+
     const handleHabitComplete = async (habitId: string, data: CompletionData) => {
         try {
             await completeHabit(habitId, data);
@@ -87,8 +98,27 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
     }
 
     return (<div className="section mb-10">
-            <h2 className="text-2xl font-extrabold border-b border-primary pb-4 mb-6 text-foreground">Habits</h2>
-
+            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
+                <h2 className="text-2xl font-extrabold text-primary">Habits</h2>
+                {isOwner && !isReadOnly && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="bg-card hover:bg-primary/20 hover:text-primary border-border hover:border-primary shadow-sm"
+                                    onClick={() => setIsCreateHabitModalOpen(true)}
+                                    title="Add New Habit"
+                                >
+                                    <PlusCircle className="h-4 w-4"/>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Add New Habit</TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+            </div>
             {isOwner ? (<>
                 {/* Mobile Layout */}
                 <div className="md:hidden flex flex-col gap-4">
@@ -139,7 +169,7 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
                                                         onHabitDeleted={!isReadOnly ? handleHabitDelete : noopOnHabitDeleted}
                                                         onHabitCompleted={!isReadOnly ? handleHabitComplete : noopOnHabitCompleted}
                                                         columnId="pile"/>)) :
-                                <p className="text-muted-foreground text-sm">The Pile is empty.</p>}
+                                <p className="text-muted-foreground text-sm">No habits from yesterday.</p>}
                         </div>
                         {hasMoreHabits && (<Button
                             variant="ghost"
@@ -207,6 +237,14 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
                 <div className="habit-grid flex flex-wrap gap-4">
                     {habits.filter(h => h.is_public).map((habit) => (<HabitChipPublic key={habit.id} habit={habit}/>))}
                 </div>)}
+
+            {isOwner && !isReadOnly && (
+                <HabitCreatorModal
+                    isOpen={isCreateHabitModalOpen}
+                    onClose={() => setIsCreateHabitModalOpen(false)}
+                    onHabitCreated={handleCreateHabit}
+                />
+            )}
         </div>);
 };
 

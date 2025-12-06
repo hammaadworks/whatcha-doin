@@ -1,5 +1,5 @@
 import {fetchActions, updateActions} from '@/lib/supabase/actions';
-import {fetchJournalEntryByDate, upsertJournalEntry} from '@/lib/supabase/journal';
+
 import {getStartOfTodayInTimezone} from '@/lib/date';
 import {ActionNode} from '@/lib/supabase/types';
 import {format} from 'date-fns';
@@ -14,53 +14,11 @@ export async function processActionLifecycle(userId: string, timezone: string) {
     // 2. Identify items to clear
     const {cleanedTree, itemsToJournal} = extractCompletedItems(actions, startOfToday);
 
-    if (itemsToJournal.length > 0) {
-        // Group by date to minimize journal calls
-        const byDate: Record<string, ActionNode[]> = {};
-        itemsToJournal.forEach(item => {
-            const date = item.completed_at ? item.completed_at.split('T')[0] : getCurrentDateISO(timezone);
-            if (!byDate[date]) byDate[date] = [];
-            byDate[date].push(item);
-        });
-
-        // Write to Journal
-        for (const [date, items] of Object.entries(byDate)) {
-            // Determine privacy based on the item's public status.
-            // Since actions can be mixed public/private, we might need to split them into two entries per day?
-            // Or checking the Journal schema: `UNIQUE (user_id, entry_date, is_public)`.
-            // So we can have one Public entry and one Private entry for the same date.
-            // We should split items by privacy.
-
-            const publicItems = items.filter(i => i.is_public !== false); // Default to public if undefined
-            const privateItems = items.filter(i => i.is_public === false);
-
-            if (publicItems.length > 0) {
-                await appendToJournal(userId, date, true, publicItems);
-            }
-            if (privateItems.length > 0) {
-                await appendToJournal(userId, date, false, privateItems);
-            }
-        }
-
-        // 3. Update Actions DB (Remove cleaned items)
+    // 3. Update Actions DB (Remove cleared items from the active tree)
+    if (itemsToJournal.length > 0) { // Only update if something was actually cleared
         await updateActions(userId, cleanedTree);
-        console.log(`Cleared ${itemsToJournal.length} actions.`);
+        console.log(`Cleared ${itemsToJournal.length} actions from active list.`);
     }
-}
-
-async function appendToJournal(userId: string, date: string, isPublic: boolean, items: ActionNode[]) {
-    const existingEntry = await fetchJournalEntryByDate(userId, date, isPublic);
-    let content = existingEntry?.content || '';
-
-    if (content) content += '\n';
-    content += `### Completed Actions (${isPublic ? 'Public' : 'Private'})\n`;
-    items.forEach(item => {
-        content += `- [x] ${item.description}\n`;
-    });
-
-    await upsertJournalEntry({
-        user_id: userId, entry_date: date, is_public: isPublic, content: content
-    });
 }
 
 // Reuse logic from targetLifecycle? 

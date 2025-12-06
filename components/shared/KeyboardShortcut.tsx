@@ -4,16 +4,15 @@ import React, { useState, useEffect } from 'react';
 
 interface KeyboardShortcutProps {
   keys: string[];
-  // isMac: boolean; // Will derive this internally
-  // isMobile: boolean; // Will derive this internally
+  showModifier?: boolean; // Optional prop to show/hide modifier
 }
 
-const KeyboardShortcut: React.FC<KeyboardShortcutProps> = ({ keys }) => {
+const KeyboardShortcut: React.FC<KeyboardShortcutProps> = ({ keys, showModifier = true }) => {
   const [isMac, setIsMac] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+    setIsMac(typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768); // Assuming 768px as mobile breakpoint
     };
@@ -30,10 +29,14 @@ const KeyboardShortcut: React.FC<KeyboardShortcutProps> = ({ keys }) => {
 
   return (
     <span className="ml-2 inline-flex items-center gap-1 text-xs text-muted-foreground">
-      <kbd className="kbd kbd-sm bg-muted px-1 py-0.5 rounded-sm">
-        {modifier}
-      </kbd>
-      {plusSign} {/* Display the plus sign */}
+      {showModifier && (
+        <>
+          <kbd className="kbd kbd-sm bg-muted px-1 py-0.5 rounded-sm">
+            {modifier}
+          </kbd>
+          {plusSign}
+        </>
+      )}
       {keys.map((key, index) => (
         <React.Fragment key={index}>
           <kbd className="kbd kbd-sm bg-muted px-1 py-0.5 rounded-sm">

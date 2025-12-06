@@ -36,7 +36,7 @@ export const BioEditorModal: React.FC<BioEditorModalProps> = ({isOpen, onClose, 
     };
 
     return (<Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="w-[95vw] max-w-4xl h-[90vh] flex flex-col p-0 sm:p-6 overflow-hidden">
+            <DialogContent className="w-[95vw] h-[95vh] max-w-none sm:max-w-none flex flex-col p-4 sm:p-6 overflow-hidden rounded-xl border shadow-2xl">
                 <DialogHeader className="px-6 pt-6 sm:px-0 sm:pt-0">
                     <DialogTitle className="text-2xl font-bold text-primary">Edit Bio</DialogTitle>
                 </DialogHeader>
@@ -46,6 +46,7 @@ export const BioEditorModal: React.FC<BioEditorModalProps> = ({isOpen, onClose, 
                         value={bio}
                         onChange={setBio}
                         className="h-full border rounded-md overflow-y-auto resize-none"
+                        fullHeight
                     />
                 </div>
 

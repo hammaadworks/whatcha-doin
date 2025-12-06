@@ -8,6 +8,7 @@ import JournalSection from '@/components/profile/sections/JournalSection';
 import MotivationsSection from '@/components/profile/sections/MotivationsSection';
 import IdentitySection from '@/components/profile/sections/IdentitySection'; // Import
 import TargetsSection from '@/components/profile/sections/TargetsSection'; // Import
+import BioSection from '@/components/profile/sections/BioSection';
 
 type PublicProfileViewProps = {
     user: PublicUserDisplay; publicActions: ActionNode[]; publicHabits: Habit[]; publicJournalEntries: JournalEntry[]; // Add publicJournalEntries
@@ -27,22 +28,36 @@ export function PublicPage({
                            }: Readonly<PublicProfileViewProps>) {
     return (<ProfileLayout
             username={user.username || ''}
-            bio={user.bio ?? null}
             isOwner={false}
             timezone={user.timezone} // Pass timezone
         >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <IdentitySection
-                    isOwner={false}
-                    isReadOnly={true}
-                    identities={publicIdentities} // Need to update IdentitySection to accept this
-                    ownerHabits={[]} // Not used in read-only
-                />
+            {/* Top row: Bio and Identity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <BioSection
+                        username={user.username || ''}
+                        bio={user.bio ?? null}
+                        isOwner={false}
+                        isReadOnly={true}
+                    />
+                </div>
+                <div>
+                    <IdentitySection
+                        isOwner={false}
+                        isReadOnly={true}
+                        identities={publicIdentities}
+                        ownerHabits={[]}
+                    />
+                </div>
+            </div>
+
+            {/* Middle row: Targets */}
+            <div className="mb-8">
                 <TargetsSection
                     isOwner={false}
                     isReadOnly={true}
                     timezone={user.timezone || 'UTC'}
-                    targets={publicTargets} // Need to update TargetsSection to accept this
+                    targets={publicTargets}
                 />
             </div>
 
@@ -51,6 +66,7 @@ export function PublicPage({
                 actions={publicActions}
                 loading={false} // Always false for public page sections
                 privateCount={privateCount} // Pass privateCount
+                timezone={user.timezone || 'UTC'} // Pass timezone prop
             />
             <HabitsSection
                 isOwner={false}

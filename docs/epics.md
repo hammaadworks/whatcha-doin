@@ -509,23 +509,19 @@ So that I don't have to re-enter the same information for my journal.
 ### Story 4.7: Implement "Next Day Clearing" Logic with Delete-on-Journal (Actions & Targets)
 
 As a user,
-I want completed actions and targets to be removed from my active lists and permanently saved to my journal on the next
-day (in my local timezone),
-So that my active lists stay clean and the journal serves as a permanent record.
+I want completed actions and targets to be removed from my active lists on the next day (in my local timezone),
+So that my active lists stay clean, and their real-time completion records are preserved in the journal's `activity_log`.
 
 **Acceptance Criteria:**
 
 1. **Detection:** The system identifies actions/targets where `completed_at` is before "Start of Today" (User Timezone).
-2. **Teleportation:** These identified items are formatted as text (e.g., `- [x] Description`) and appended to the
-   `content` of the `journal_entries` row for their completion date.
-3. **Deletion:** After successful journaling, the completed nodes are **permanently deleted** from the `actions` or
-   `targets` JSONB tree in the database.
-4. **Ghosting:** If a deleted action node has active children, the parent node is preserved in a "ghost" state (visible
+2. **Deletion:** These identified items are **permanently deleted** from the `actions` or `targets` JSONB tree in the database. The previous "teleportation" to `journal_entries.content` is now obsolete as activities are logged in real-time to `journal_entries.activity_log`.
+3. **Ghosting:** If a deleted action node has active children, the parent node is preserved in a "ghost" state (visible
    but cleared) to maintain the tree structure.
-5. This logic correctly processes both actions and targets according to their respective lifecycles.
+4. This logic correctly processes both actions and targets according to their respective lifecycles.
 
 **Prerequisites:** Story 3.8 (Action Completion with Timestamps), Story 3.1 (Timezone Management), Story 9.5 (Targets
-UI), and the `journal_entries` table schema.
+UI), and the `journal_entries` table schema with the `activity_log` JSONB column.
 
 ### Story 4.8: Implement Teleport-to-Journal Animation
 

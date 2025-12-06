@@ -3,7 +3,8 @@
 import React, {useEffect, useState} from 'react';
 import ReactMarkdown from 'react-markdown';
 import {JournalEntry} from '@/lib/supabase/types';
-import {Calendar as CalendarIcon, Check, Globe, Loader2, Lock} from 'lucide-react';
+import {Calendar as CalendarIcon, Check, Globe, Loader2, Lock, Plus} from 'lucide-react';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {Button} from '@/components/ui/button';
 import {Skeleton} from '@/components/ui/skeleton';
 import {Tabs, TabsList, TabsTrigger} from '@/components/ui/tabs';
@@ -86,11 +87,10 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
     // (Handled by initial state and TabsTrigger disabling)
 
     return (<div className="section mb-10">
-            <div
-                className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-primary pb-4 mb-6 gap-4">
-                <h2 className="text-2xl font-extrabold text-foreground">Journal</h2>
+            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
+                <h2 className="text-2xl font-extrabold text-primary">Journal</h2>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex items-center gap-2"> {/* Wrapper for date picker and new add button */}
                     {/* Date Picker */}
                     <Popover>
                         <PopoverTrigger asChild>
@@ -123,6 +123,28 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                             />
                         </PopoverContent>
                     </Popover>
+
+                    {isOwner && !isReadOnly && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="bg-card hover:bg-primary/20 hover:text-primary border-border hover:border-primary shadow-sm"
+                                        onClick={() => {
+                                            setSelectedDate(new Date());
+                                            if (isOwner) setActiveTab('private');
+                                        }}
+                                        title="Add New Journal Entry"
+                                    >
+                                        <Plus className="h-4 w-4"/>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Add New Journal Entry</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
                 </div>
             </div>
 

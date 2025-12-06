@@ -278,8 +278,14 @@ users, habits, todos, and journal entries.
     * `data`: JSONB column containing the nested list of target items (same structure as Actions).
     * `created_at`, `updated_at`.
     * Constraint: `UNIQUE(user_id, target_date)` (One record per month per user + one future record).
-* **Journal Entries:** Will store daily reflections and aggregated notes from completed items (e.g., `entry_id`,
-  `user_id`, `entry_date`, `content`, `is_public`, `created_at`).
+* **Journal Entries:** Will store daily reflections and real-time activity logs.
+    * `id`: Unique identifier.
+    * `user_id`: **FK** to `users`.
+    * `entry_date`: The logical date of the entry (e.g. '2023-10-27').
+    * `content`: Markdown content for user's free-form reflections.
+    * `is_public`: Visibility flag for `content` and `activity_log`.
+    * `activity_log`: **JSONB** column storing an array of structured activity objects (actions, habits, targets) completed/uncompleted in real-time. This is the source of truth for daily accomplishments.
+    * `created_at`, `updated_at`.
 * **Relationships:** Foreign keys will establish relationships between users and their habits, todos, and journal
   entries. Sub-todos will have a self-referencing relationship.
 
@@ -583,12 +589,9 @@ each choice.
 
 * **ADR 018: Target and Action Lifecycle (Delete-on-Journal)**
     * **Decision:** Actions and Targets will adhere to a strict "Lightweight" data policy. Once an item is completed and
-      the "day has passed" (Next Day Clearing), it is strictly **deleted** from the structured database tables/JSONB and
-      converted into a static text entry in the User's Journal.
+      the "day has passed" (Next Day Clearing), it is strictly **deleted** from the structured database tables/JSONB. Their real-time completion records are now permanently stored in the `journal_entries.activity_log` (JSONB), and the `content` field in `journal_entries` is reserved for the user's free-form daily notes.
     * **Rationale:** This decision prioritizes database performance and minimizes storage bloat for the recursive JSONB
-      structures. It aligns with the user's desire to have a "clean slate" and use the Journal as the permanent record
-      of achievement. It also simplifies the mental model: "If it's in the list, it's active (or just finished). If it's
-      history, it's in the Journal."
+      structures. It aligns with the user's desire to have a "clean slate" and uses the `activity_log` as the immutable, permanent record of achievement, while keeping `content` for personal reflection. It also simplifies the mental model: "If it's in the list, it's active (or just finished). If it's history, it's in the `activity_log`."
 
 ---
 

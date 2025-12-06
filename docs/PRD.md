@@ -68,9 +68,7 @@ This is the focused feature set required to deliver the core identity-building e
   layout ("Today", "Yesterday", "The Pile") with drag-and-drop functionality. The "Two-Day Rule" governs streak
   management, and a visible streak counter is displayed on each habit.
 - **Core "Todos" System:** Create, edit, and delete one-off "todos", also with a public/private flag.
-    - **Journal System:** A dual-view journal with "Public" and "Private" tabs. It automatically aggregates notes from
-      completed items into the correct tab. Users can also add free-form text and edit any journal entry at any time.
-      The main UI shows today's entry by default, with a date selector to view past entries.
+    - **Journal System:** A dual-view journal with "Public" and "Private" tabs. Each entry now features a **read-only "Daily Activity Log"** that automatically captures timestamped details of completed Habits, Actions, and Targets in real-time. This log is stored in a dedicated JSONB column, ensuring immutability of activity records. Below this, users can add free-form text and edit their personal reflections at any time. The main UI shows today's entry by default, with a date selector to view past entries.
     - **Daily Interaction:** A recording modal appears upon completion of any habit or todo to log an effort score,
       duration, and notes.
     - **Content & Profile:** A motivational quote widget. A shareable public profile (accessible via `/[username]`) that
@@ -206,8 +204,7 @@ above.
 - **FR-3.6 (Next Day Clearing & Teleport Logic):** "Actions" and "Targets" share a specific lifecycle for clearing
   completed items to ensure a lightweight database and focused UI.
     - **FR-3.6.1:** Completed items remain visible in the UI for the remainder of the day they were completed.
-    - **FR-3.6.2:** On the "next day" (after midnight), completed items are processed by the "Teleport" logic: they are
-      formatted as text notes and appended to the user's Journal Entry for the date of completion.
+    - **FR-3.6.2:** On the "next day" (after midnight), completed items are processed by the "Teleport" logic: they are **permanently deleted** from the structured "Actions" or "Targets" database storage, as their real-time completion records are already present in the journal's `activity_log`.
     - **FR-3.6.3:** Once successfully journaled, the completed items are **permanently deleted** from the structured "
       Actions" or "Targets" database storage. This frees up space and keeps the active lists clean.
     - **FR-3.6.4:** If a parent node is deleted/cleared but has active children, the parent structure is preserved (

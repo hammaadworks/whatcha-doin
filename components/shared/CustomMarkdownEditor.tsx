@@ -26,7 +26,7 @@ function isGroupCommand(command: commands.ICommand): command is commands.IComman
     return (command as any).group !== undefined && Array.isArray((command as any).group);
 }
 
-export function CustomMarkdownEditor({ value, onChange, className, placeholder, readOnly, minHeight = 200 }: CustomMarkdownEditorProps) {
+export function CustomMarkdownEditor({ value, onChange, className, placeholder, readOnly, minHeight = 200, fullHeight = false }: CustomMarkdownEditorProps & { fullHeight?: boolean }) {
   const isMobile = useMediaQuery('(max-width: 768px)'); // Detect screens smaller than 768px
   const [viewMode, setViewMode] = useState<ViewMode>(
     readOnly ? 'edit' : (isMobile ? 'edit' : 'split')
@@ -119,6 +119,8 @@ export function CustomMarkdownEditor({ value, onChange, className, placeholder, 
   );
 
   React.useEffect(() => {
+    if (fullHeight || readOnly) return; // Skip auto-height if fullHeight or readOnly
+
     const adjustHeight = () => {
       if (editorRef.current) {
         const textarea = editorRef.current.querySelector('textarea');
@@ -141,11 +143,11 @@ export function CustomMarkdownEditor({ value, onChange, className, placeholder, 
       window.removeEventListener('resize', adjustHeight);
       observer.disconnect();
     };
-  }, [value, minHeight, editorRef]);
+  }, [value, minHeight, editorRef, fullHeight, readOnly]);
 
 
   return (
-    <div ref={editorRef} style={{ height: editorHeight }} className={cn("flex flex-col w-full border rounded-md overflow-hidden", className)} data-color-mode={theme}>
+    <div ref={editorRef} style={readOnly || fullHeight ? (fullHeight ? {height: '100%'} : undefined) : { height: editorHeight }} className={cn("flex flex-col w-full border rounded-md overflow-hidden", className)} data-color-mode={theme}>
       {/* Toolbar */}
       {!readOnly && (
         <div className="flex items-center justify-between p-2 border-b bg-muted/30">
@@ -169,34 +171,40 @@ export function CustomMarkdownEditor({ value, onChange, className, placeholder, 
 
       {/* Content */}
       <div className={cn("flex-1 overflow-hidden relative")}> {/* Removed h-full from here to allow dynamic height */}
-        {(readOnly || viewMode === 'edit') && ( // Always render editor if readOnly or in edit mode
-          <MDEditor
-            value={value}
-            onChange={handleOnChange}
-            className="w-full h-full"
-            textareaProps={{
-                placeholder: placeholder,
-                style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
-            }}
-            commands={toolbarCommands} // Use original commands
-            commandsFilter={customCommandsFilter}
-            preview="edit" // Always show only editor in this mode
-          />
-        )}
-        {isMobile && viewMode === 'split' && renderMarkdownPreview(value)}
-        {!isMobile && viewMode === 'split' && ( // Show split view for large screens
-           <MDEditor
-              value={value}
-              onChange={handleOnChange}
-              className="w-full h-full"
-              textareaProps={{
-                placeholder: placeholder,
-                style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
-              }}
-              commands={toolbarCommands} // Use original commands
-              commandsFilter={customCommandsFilter}
-              preview="live" // Show split view
-           />
+        {readOnly ? (
+           renderMarkdownPreview(value)
+        ) : (
+           <>
+            {(viewMode === 'edit') && ( // Always render editor if readOnly or in edit mode
+              <MDEditor
+                value={value}
+                onChange={handleOnChange}
+                className="w-full h-full"
+                textareaProps={{
+                    placeholder: placeholder,
+                    style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
+                }}
+                commands={toolbarCommands} // Use original commands
+                commandsFilter={customCommandsFilter}
+                preview="edit" // Always show only editor in this mode
+              />
+            )}
+            {isMobile && viewMode === 'split' && renderMarkdownPreview(value)}
+            {!isMobile && viewMode === 'split' && ( // Show split view for large screens
+               <MDEditor
+                  value={value}
+                  onChange={handleOnChange}
+                  className="w-full h-full"
+                  textareaProps={{
+                    placeholder: placeholder,
+                    style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
+                  }}
+                  commands={toolbarCommands} // Use original commands
+                  commandsFilter={customCommandsFilter}
+                  preview="live" // Show split view
+               />
+            )}
+           </>
         )}
       </div>
     </div>

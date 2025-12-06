@@ -152,6 +152,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  input, textarea, [contenteditable] {
+    caret-color: var(--primary);
+    caret-shape: block;
+  }
+}
+
+/* Utility to restore native cursor for scrollable areas where custom cursor breaks interaction */
+.force-native-cursor, .force-native-cursor * {
+  cursor: auto !important;
 }
 
 /* Keyframe Animations for Motivational Quote Card */

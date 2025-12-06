@@ -24,6 +24,16 @@ export interface Todo {
     created_at: string;
 }
 
+export type ActivityLogEntry = {
+  id: string; // UUID of the original item (ActionNode.id, HabitCompletion.id, TargetNode.id)
+  type: 'action' | 'habit' | 'target';
+  description: string;
+  timestamp: string; // ISO 8601 UTC string
+  status: 'completed' | 'uncompleted';
+  is_public: boolean;
+  details?: Record<string, any>; // Flexible for habit mood/notes, target progress, etc.
+};
+
 export interface JournalEntry {
     id: string;
     user_id: string;
@@ -31,6 +41,27 @@ export interface JournalEntry {
     content: string;
     is_public: boolean;
     created_at: string;
+    activity_log: ActivityLogEntry[]; // New field
+    updated_at: string; // Add updated_at as it's in the skeleton JournalEntry
+}
+
+// Placeholder for Supabase Database type - should ideally be generated.
+export interface Database {
+  public: {
+    Tables: {
+      journal_entries: {
+        Row: JournalEntry; // Assuming JournalEntry structure matches the database table row
+        Insert: Omit<JournalEntry, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<JournalEntry, 'id' | 'created_at'>>;
+      };
+      // Add other tables as needed for Supabase types to be correct
+      // For now, this minimal definition helps JournalActivityService compile
+    };
+    Views: {};
+    Functions: {};
+    Enums: {};
+    CompositeTypes: {};
+  };
 }
 
 export interface PublicUserDisplay {

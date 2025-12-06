@@ -24,7 +24,7 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({username, isOwne
 
     return (<div className="section mb-10">
             <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-                <h2 className="text-2xl font-extrabold">Motivations</h2>
+                <h2 className="text-2xl font-extrabold text-primary">Motivations</h2>
                 {/* The YTD button is a display/navigation element, not an editing one, so it can remain regardless of isReadOnly */}
                 <Button variant="outline">
                     YTD

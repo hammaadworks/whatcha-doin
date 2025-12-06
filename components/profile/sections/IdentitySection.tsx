@@ -1,8 +1,7 @@
-'use client';
-
 import React, {useEffect, useState} from 'react';
 import {Button} from '@/components/ui/button';
-import {Plus} from 'lucide-react';
+import {Plus, UserPlus} from 'lucide-react';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {IdentityCard} from '@/components/profile/identity/IdentityCard';
 import {CreateIdentityModal} from '@/components/profile/identity/CreateIdentityModal';
 import {IdentityDetailsModal} from '@/components/profile/identity/IdentityDetailsModal';
@@ -105,6 +104,7 @@ export default function IdentitySection({
             setLinkedHabits(habits);
         } catch (error) {
             console.error("Failed to fetch linked habits", error);
+            // Optionally, handle error state for linked habits
         }
     };
 
@@ -139,12 +139,26 @@ export default function IdentitySection({
     if (!isOwner && identities.length === 0) return null;
 
     return (<div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-primary">Identity</h2>
+            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
+                <h2 className="text-2xl font-extrabold text-primary">Identity</h2>
                 {isOwner && !isReadOnly && ( // Conditional rendering for "New Identity" button
-                    <Button onClick={() => setIsCreateModalOpen(true)} size="sm">
-                        <Plus className="h-4 w-4 mr-1"/> New Identity
-                    </Button>)}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="bg-card hover:bg-primary/20 hover:text-primary border-border hover:border-primary shadow-sm"
+                                    onClick={() => setIsCreateModalOpen(true)}
+                                    title="Add New Identity"
+                                >
+                                    <UserPlus className="h-4 w-4"/>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Add New Identity</TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
             </div>
 
             <div className="grid grid-cols-1 gap-4">
