@@ -138,10 +138,10 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({ currentTimez
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            // variant="outline" // Removed as styling is handled by className
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between text-xs h-9 bg-background/50 hover:bg-accent/50 transition-colors border-input/60" 
+            className="w-full justify-between text-xs h-9 bg-background/80 text-muted-foreground hover:bg-accent/50 transition-colors border-input/60" 
           >
             <span className="truncate">
                 {timezoneOptions.find(option => option.id === currentTimezone)?.label || "Select timezone..."}

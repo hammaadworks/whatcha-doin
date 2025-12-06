@@ -78,7 +78,7 @@ export const useActions = (isOwner: boolean, timezone: string = 'UTC') => {
         save(addActionAfterId(actions, afterId, description, isPublic));
     };
 
-    const toggleAction = (id: string) => {
+    const toggleAction = async (id: string) => {
         const oldActionNode = findNodeAndContext(actions, id)?.node; // Get old state
         const newActionsTree = toggleActionInTree(actions, id);
         
@@ -91,7 +91,7 @@ export const useActions = (isOwner: boolean, timezone: string = 'UTC') => {
 
         // --- NEW JOURNAL LOGIC (Start) ---
         if (user && newActionNode && oldActionNode?.completed !== newActionNode.completed) {
-            journalActivityService.logActivity(
+            await journalActivityService.logActivity(
                 user.id,
                 new Date(), // Log for today
                 {
@@ -113,8 +113,21 @@ export const useActions = (isOwner: boolean, timezone: string = 'UTC') => {
         save(updateActionTextInTree(actions, id, newText));
     };
 
-    const deleteAction = (id: string) => {
+    const deleteAction = async (id: string) => {
         const { tree: newTree, deletedContext } = deleteActionFromTree(actions, id);
+        
+        // --- NEW JOURNAL LOGIC (Start) ---
+        if (user && deletedContext && deletedContext.node.completed && deletedContext.node.completed_at) {
+            await journalActivityService.removeActivity(
+                user.id,
+                new Date(deletedContext.node.completed_at),
+                deletedContext.node.id,
+                'action',
+                deletedContext.node.is_public ?? false
+            );
+        }
+        // --- NEW JOURNAL LOGIC (End) ---
+
         setLastDeletedContext(deletedContext); // Store for undo
         save(newTree);
         return deletedContext; // Return for UI to trigger toast

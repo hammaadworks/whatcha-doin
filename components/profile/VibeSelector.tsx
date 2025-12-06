@@ -34,8 +34,8 @@ export const VibeSelector: React.FC<VibeSelectorProps> = ({currentViewMode, onVi
                                     className={cn(
                                         buttonClass,
                                         currentViewMode === option.id
-                                            ? "bg-primary text-primary-foreground" // Theme highlighted
-                                            : "text-muted-foreground hover:bg-muted"
+                                            ? "bg-primary text-primary-foreground hover:bg-primary/90" // Selected: dim hover
+                                            : "bg-background/80 text-muted-foreground hover:bg-accent/50" // Unselected: light hover (UserClock based)
                                     )}
                                     onClick={() => onViewModeChange(option.id as 'edit' | 'private' | 'public')}
                                 >

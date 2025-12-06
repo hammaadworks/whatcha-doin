@@ -127,7 +127,7 @@ const AppHeader = ({ themeTogglerRef }: AppHeaderProps) => {
                         {user && (
                             <button
                                 onClick={toggleSettingsModal} // Call toggleSettingsModal directly
-                                className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
+                                className={cn("relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-muted-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
                             >
                                 <Settings className="h-6 w-6" strokeWidth={2.5}/>
                                 <span className="sr-only">Settings</span>

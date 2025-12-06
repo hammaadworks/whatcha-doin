@@ -18,6 +18,7 @@ interface TargetsSectionProps {
     isReadOnly?: boolean; // Add isReadOnly prop
     timezone: string;
     targets?: ActionNode[]; // Optional targets prop
+    onActivityLogged?: () => void; // New prop
 }
 
 // Helper to recursively count total and completed actions for a given list of ActionNodes
@@ -45,7 +46,8 @@ export default function TargetsSection({
                                            isOwner,
                                            isReadOnly = false,
                                            timezone,
-                                           targets: propTargets
+                                           targets: propTargets,
+                                           onActivityLogged
                                        }: TargetsSectionProps) {
     const {
         buckets,
@@ -190,7 +192,7 @@ export default function TargetsSection({
         return (<div className="mt-4">
                 <ActionsList
                     actions={actions}
-                    onActionToggled={canEdit ? (id) => toggleTarget(bucket, id) : undefined}
+                    onActionToggled={canEdit ? async (id) => { await toggleTarget(bucket, id); onActivityLogged?.(); } : undefined}
                     onActionAdded={canEdit ? (desc, parentId) => addTarget(bucket, desc, parentId) : undefined}
                     onActionUpdated={canEdit ? (id, text) => updateTargetText(bucket, id, text) : undefined}
                     onActionDeleted={canEdit ? (id) => handleDeleteTarget(bucket, id) : undefined} // Use local handler

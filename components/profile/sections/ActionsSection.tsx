@@ -51,7 +51,7 @@ interface ActionsSectionProps {
     onActionToggled?: (id: string) => void;
     onActionAdded?: (description: string, parentId?: string, isPublic?: boolean) => void; // Updated signature
     onActionUpdated?: (id: string, newText: string) => void;
-    onActionDeleted?: (id: string) => DeletedNodeContext | null; // Updated to return context
+    onActionDeleted?: (id: string) => Promise<DeletedNodeContext | null>; // Updated to return Promise
     undoDeleteAction?: () => void; // Add undo function prop
     onActionIndented?: (id: string) => void;
     onActionOutdented?: (id: string) => void;
@@ -94,10 +94,10 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
 
     // Handle delete action and show undo toast
-    const handleDeleteAction = (id: string) => {
+    const handleDeleteAction = async (id: string) => {
         if (!onActionDeleted) return;
         
-        const deleted = onActionDeleted(id);
+        const deleted = await onActionDeleted(id);
         if (deleted && undoDeleteAction) {
             const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const shortcutKey = isMac ? '⌘Z' : 'Ctrl+Z';

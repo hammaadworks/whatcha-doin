@@ -1,14 +1,21 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import remarkBreaks from 'remark-breaks'; // Import remarkBreaks
+import remarkBreaks from 'remark-breaks';
 import { cn } from '@/lib/utils';
-import { Columns, Edit, Eye } from 'lucide-react'; // Only keep icons used for the toggle button
+import { 
+    Bold, Italic, Strikethrough, Code, Link as LinkIcon, 
+    List, ListOrdered, Quote, Heading1, Image as ImageIcon, 
+    Columns, Eye, EyeOff, Maximize2, Sparkles, FileText
+} from 'lucide-react';
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useTheme } from 'next-themes';
-import { useMediaQuery } from '@/hooks/useMediaQuery'; // Import the hook
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Separator } from '@/components/ui/separator';
 
 interface CustomMarkdownEditorProps {
   value: string;
@@ -16,197 +23,311 @@ interface CustomMarkdownEditorProps {
   className?: string;
   placeholder?: string;
   readOnly?: boolean;
-  minHeight?: number; // Added minHeight prop
+  minHeight?: number;
+  fullHeight?: boolean;
 }
 
-type ViewMode = 'edit' | 'split'; // Renamed 'split' to represent split or preview on mobile
+type ViewMode = 'edit' | 'split' | 'preview';
 
-// Type guard to check if a command is a group command
-function isGroupCommand(command: commands.ICommand): command is commands.ICommand & { group: commands.ICommand[] } {
-    return (command as any).group !== undefined && Array.isArray((command as any).group);
-}
-
-export function CustomMarkdownEditor({ value, onChange, className, placeholder, readOnly, minHeight = 200, fullHeight = false }: CustomMarkdownEditorProps & { fullHeight?: boolean }) {
-  const isMobile = useMediaQuery('(max-width: 768px)'); // Detect screens smaller than 768px
-  const [viewMode, setViewMode] = useState<ViewMode>(
-    readOnly ? 'edit' : (isMobile ? 'edit' : 'split')
-  );
+export function CustomMarkdownEditor({ 
+    value, 
+    onChange, 
+    className, 
+    placeholder, 
+    readOnly, 
+    minHeight = 200, 
+    fullHeight = false 
+}: CustomMarkdownEditorProps) {
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const [viewMode, setViewMode] = useState<ViewMode>(readOnly ? 'preview' : 'edit');
   const { theme } = useTheme();
-  const editorRef = useRef<HTMLDivElement>(null); // Ref for the MDEditor container
+  const editorRef = useRef<HTMLDivElement>(null);
   const [editorHeight, setEditorHeight] = useState(minHeight);
 
-  // Force edit view if readOnly, and adjust default for mobile
-  React.useEffect(() => {
+  // Sync view mode with readOnly prop
+  useEffect(() => {
     if (readOnly) {
-      setViewMode('edit');
-    } else if (isMobile && viewMode === 'split') {
-      // If switched to mobile and in split mode, go to edit
-      setViewMode('edit');
+      setViewMode('preview');
     }
-  }, [readOnly, isMobile, viewMode]); // Added viewMode to dependencies
+  }, [readOnly]);
 
-  const handleOnChange = (value?: string) => {
-    onChange(value || '');
-  }
-
-  const customCommandsFilter = (command: commands.ICommand, isExtra: boolean): false | commands.ICommand => {
-    // Filter out the fullscreen command
-    if (command.name === 'fullscreen') {
-      return false;
-    }
-    return command;
-  };
-
-  const getCustomCommands = (cmds: commands.ICommand[]): commands.ICommand[] => {
-    return cmds.map(cmd => {
-      let newCmd: commands.ICommand = { ...cmd };
-      // If it's a group command, recurse into its group array
-      if (isGroupCommand(newCmd)) {
-        newCmd.group = getCustomCommands(newCmd.group);
-      }
-      // If it's an individual command and has a custom icon, apply it
-      if (newCmd.name) { // Use original icons
-        // newCmd.icon = customIconMap[newCmd.name]; // No custom icons for now
-      }
-      return newCmd;
-    });
-  };
-
-  // Define the toolbar commands using the commands object
-  const toolbarCommands: commands.ICommand[] = [
-    commands.bold,
-    commands.italic,
-    commands.strikethrough,
-    commands.hr,
-    commands.group(
-      [commands.title1, commands.title2, commands.title3, commands.title4, commands.title5, commands.title6],
-      {
-        name: 'title',
-        groupName: 'title',
-        buttonProps: { 'aria-label': 'Insert title' }
-      }
-    ),
-    commands.divider,
-    commands.link,
-    commands.quote,
-    commands.code,
-    commands.codeBlock,
-    commands.image,
-    commands.orderedListCommand,
-    commands.unorderedListCommand,
-  ];
-
-  const renderMarkdownPreview = (content: string) => (
-    <div className="w-full h-full overflow-auto p-4 prose dark:prose-invert max-w-none">
-      <ReactMarkdown
-        remarkPlugins={[remarkBreaks]}
-        rehypePlugins={[rehypeHighlight]}
-        components={{
-            a: ({node, ...props}) => <a {...props} className="text-primary hover:underline font-medium transition-colors" target="_blank" rel="noopener noreferrer" />,
-            p: ({node, ...props}) => <p {...props} className="mb-2 last:mb-0" />,
-            strong: ({node, ...props}) => <strong {...props} className="text-primary font-bold" />,
-            h1: ({node, ...props}) => <h1 {...props} className="text-primary text-3xl font-bold mt-6 mb-2" />,
-            h2: ({node, ...props}) => <h2 {...props} className="text-primary text-2xl font-bold mt-5 mb-2" />,
-            h3: ({node, ...props}) => <h3 {...props} className="text-primary text-xl font-bold mt-4 mb-2" />,
-            h4: ({node, ...props}) => <h4 {...props} className="text-primary text-lg font-bold mt-3 mb-1" />,
-            h5: ({node, ...props}) => <h5 {...props} className="text-primary text-base font-bold mt-2 mb-1" />,
-            h6: ({node, ...props}) => <h6 {...props} className="text-primary text-sm font-bold mt-1 mb-1" />,
-        }}
-      >
-        {content || '*No content*'}
-      </ReactMarkdown>
-    </div>
-  );
-
-  React.useEffect(() => {
-    if (fullHeight || readOnly) return; // Skip auto-height if fullHeight or readOnly
+  // Adjust height for non-fullHeight mode
+  useEffect(() => {
+    if (fullHeight || readOnly || viewMode === 'preview') return;
 
     const adjustHeight = () => {
       if (editorRef.current) {
         const textarea = editorRef.current.querySelector('textarea');
         if (textarea) {
-          textarea.style.height = 'auto'; // Temporarily set to auto
+          textarea.style.height = 'auto';
           const newHeight = textarea.scrollHeight;
           setEditorHeight(Math.max(newHeight, minHeight));
         }
       }
     };
 
-    adjustHeight(); // Initial adjustment
-    const observer = new MutationObserver(adjustHeight); // Adjust on DOM changes (e.g., paste)
+    adjustHeight();
+    // Observe changes
+    const observer = new MutationObserver(adjustHeight);
     if (editorRef.current) {
       observer.observe(editorRef.current, { childList: true, subtree: true, attributes: true });
     }
-    window.addEventListener('resize', adjustHeight); // Adjust on window resize
+    window.addEventListener('resize', adjustHeight);
 
     return () => {
       window.removeEventListener('resize', adjustHeight);
       observer.disconnect();
     };
-  }, [value, minHeight, editorRef, fullHeight, readOnly]);
+  }, [value, minHeight, fullHeight, readOnly, viewMode]);
 
+
+  // --- Text Insertion Logic for Custom Toolbar ---
+  const insertText = useCallback((before: string, after: string = '') => {
+    if (!editorRef.current) return;
+    const textarea = editorRef.current.querySelector('textarea');
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const previousValue = textarea.value;
+    const selectedText = previousValue.substring(start, end);
+
+    const newValue = 
+        previousValue.substring(0, start) + 
+        before + selectedText + after + 
+        previousValue.substring(end);
+
+    onChange(newValue);
+
+    // Restore focus and selection
+    setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + before.length, end + before.length);
+    }, 0);
+  }, [onChange]);
+
+  const insertBlock = useCallback((prefix: string) => {
+    if (!editorRef.current) return;
+    const textarea = editorRef.current.querySelector('textarea');
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
+    
+    const newValue = 
+        textarea.value.substring(0, lineStart) + 
+        prefix + 
+        textarea.value.substring(lineStart);
+    
+    onChange(newValue);
+    
+    setTimeout(() => {
+        textarea.focus();
+        // Move cursor to end of inserted prefix
+        textarea.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
+    }, 0);
+  }, [onChange]);
+
+
+  const ToolbarButton = ({ icon: Icon, label, onClick, active = false }: { icon: any, label: string, onClick: () => void, active?: boolean }) => (
+    <Tooltip>
+        <TooltipTrigger asChild>
+            <Button
+                variant={active ? "secondary" : "ghost"}
+                size="icon"
+                className={cn("h-8 w-8", active && "bg-muted text-foreground")}
+                onClick={onClick}
+                type="button"
+            >
+                <Icon className="h-4 w-4" />
+            </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+            <p>{label}</p>
+        </TooltipContent>
+    </Tooltip>
+  );
+
+  const renderMarkdownPreview = (content: string) => (
+    <div className={cn(
+        "w-full h-full overflow-auto p-6 prose dark:prose-invert max-w-none bg-card/50",
+        fullHeight ? "min-h-full" : "min-h-[200px]"
+    )}>
+      {content ? (
+          <ReactMarkdown
+            remarkPlugins={[remarkBreaks]}
+            rehypePlugins={[rehypeHighlight]}
+            components={{
+                a: ({node, ...props}) => <a {...props} className="text-primary hover:underline font-medium transition-colors" target="_blank" rel="noopener noreferrer" />,
+                p: ({node, ...props}) => <p {...props} className="mb-4 leading-relaxed last:mb-0" />,
+                strong: ({node, ...props}) => <strong {...props} className="text-primary font-bold" />,
+                h1: ({node, ...props}) => <h1 {...props} className="text-foreground text-3xl font-extrabold mt-8 mb-4 tracking-tight border-b pb-2" />,
+                h2: ({node, ...props}) => <h2 {...props} className="text-foreground text-2xl font-bold mt-6 mb-3 tracking-tight" />,
+                h3: ({node, ...props}) => <h3 {...props} className="text-foreground text-xl font-semibold mt-5 mb-2" />,
+                blockquote: ({node, ...props}) => <blockquote {...props} className="border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-4" />,
+                ul: ({node, ...props}) => <ul {...props} className="list-disc pl-6 space-y-1 my-4" />,
+                ol: ({node, ...props}) => <ol {...props} className="list-decimal pl-6 space-y-1 my-4" />,
+                code: ({node, ...props}) => {
+                    // @ts-ignore
+                    const isInline = props.inline || !String(props.children).includes('\n');
+                    return isInline 
+                        ? <code {...props} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary font-medium" /> 
+                        : <code {...props} className="block bg-muted/50 p-4 rounded-lg text-sm font-mono overflow-x-auto my-4" />
+                }
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+      ) : (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50 italic">
+             <Sparkles className="h-8 w-8 mb-2" />
+             <p>Nothing here yet...</p>
+          </div>
+      )}
+    </div>
+  );
 
   return (
-    <div ref={editorRef} style={readOnly || fullHeight ? (fullHeight ? {height: '100%'} : undefined) : { height: editorHeight }} className={cn("flex flex-col w-full border rounded-md overflow-hidden", className)} data-color-mode={theme}>
-      {/* Toolbar */}
-      {!readOnly && (
-        <div className="flex items-center justify-between p-2 border-b bg-muted/30">
-        <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
-          <button
-            onClick={() => setViewMode(viewMode === 'edit' ? 'split' : 'edit')}
+    <TooltipProvider>
+        <div 
+            ref={editorRef} 
             className={cn(
-              "p-1.5 rounded-md transition-colors",
-              viewMode === 'edit' ? "bg-background shadow-sm" : "hover:bg-background/50 text-muted-foreground"
-            )}
-            title={viewMode === 'edit' ? (isMobile ? "Show Preview" : "Show Split View") : "Show Edit View"}
-          >
-            {viewMode === 'edit' ? (isMobile ? <Eye className="h-4 w-4" /> : <Columns className="h-4 w-4" />) : <Edit className="h-4 w-4" />}
-          </button>
-        </div>
-        <div className="text-xs text-muted-foreground px-2">
-          Markdown Supported
-        </div>
-      </div>
-      )}
+                "group flex flex-col w-full rounded-xl border border-input bg-background shadow-sm overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary",
+                fullHeight ? "h-full" : undefined,
+                className
+            )} 
+            style={!fullHeight && !readOnly && viewMode !== 'preview' ? { height: editorHeight + 50 } : undefined} // +50 for toolbar approx
+            data-color-mode={theme}
+        >
+        {/* Custom Toolbar */}
+        {!readOnly && (
+            <div className="flex items-center justify-between p-1.5 border-b bg-muted/20 backdrop-blur-sm shrink-0">
+                <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide pr-2">
+                    {/* Formatting */}
+                    <div className="flex items-center gap-0.5">
+                        <ToolbarButton icon={Bold} label="Bold" onClick={() => insertText('**', '**')} />
+                        <ToolbarButton icon={Italic} label="Italic" onClick={() => insertText('*', '*')} />
+                        <ToolbarButton icon={Strikethrough} label="Strikethrough" onClick={() => insertText('~~', '~~')} />
+                    </div>
+                    
+                    <Separator orientation="vertical" className="h-6 mx-1" />
+                    
+                    {/* Elements */}
+                    <div className="flex items-center gap-0.5">
+                        <ToolbarButton icon={Heading1} label="Heading" onClick={() => insertBlock('# ')} />
+                        <ToolbarButton icon={Quote} label="Quote" onClick={() => insertBlock('> ')} />
+                        <ToolbarButton icon={Code} label="Code Block" onClick={() => insertText('```\n', '\n```')} />
+                    </div>
 
-      {/* Content */}
-      <div className={cn("flex-1 overflow-hidden relative")}> {/* Removed h-full from here to allow dynamic height */}
-        {readOnly ? (
-           renderMarkdownPreview(value)
-        ) : (
-           <>
-            {(viewMode === 'edit') && ( // Always render editor if readOnly or in edit mode
-              <MDEditor
-                value={value}
-                onChange={handleOnChange}
-                className="w-full h-full"
-                textareaProps={{
-                    placeholder: placeholder,
-                    style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
-                }}
-                commands={toolbarCommands} // Use original commands
-                commandsFilter={customCommandsFilter}
-                preview="edit" // Always show only editor in this mode
-              />
-            )}
-            {isMobile && viewMode === 'split' && renderMarkdownPreview(value)}
-            {!isMobile && viewMode === 'split' && ( // Show split view for large screens
-               <MDEditor
-                  value={value}
-                  onChange={handleOnChange}
-                  className="w-full h-full"
-                  textareaProps={{
-                    placeholder: placeholder,
-                    style: { minHeight: minHeight, height: 'auto' } // Ensure textarea can grow
-                  }}
-                  commands={toolbarCommands} // Use original commands
-                  commandsFilter={customCommandsFilter}
-                  preview="live" // Show split view
-               />
-            )}
-           </>
+                    <Separator orientation="vertical" className="h-6 mx-1" />
+
+                    {/* Lists & Links */}
+                    <div className="flex items-center gap-0.5">
+                        <ToolbarButton icon={List} label="Bullet List" onClick={() => insertBlock('- ')} />
+                        <ToolbarButton icon={ListOrdered} label="Numbered List" onClick={() => insertBlock('1. ')} />
+                        <ToolbarButton icon={LinkIcon} label="Link" onClick={() => insertText('[', '](url)')} />
+                        <ToolbarButton icon={ImageIcon} label="Image" onClick={() => insertText('![alt text](', ')')} />
+                    </div>
+                </div>
+
+                {/* View Toggles */}
+                <div className="flex items-center gap-1 pl-2 border-l bg-background/50 rounded-lg ml-auto">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                type="button"
+                                className={cn(
+                                    "h-7 px-2 text-xs gap-1.5 rounded-md transition-colors flex items-center justify-center",
+                                    viewMode === 'edit'
+                                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                )}
+                                onClick={() => setViewMode('edit')}
+                            >
+                                <FileText className="h-3.5 w-3.5" />
+                                <span className={cn("hidden sm:inline", viewMode !== 'edit' && "sr-only lg:not-sr-only")}>Write</span>
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Edit Mode</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                type="button"
+                                className={cn(
+                                    "h-7 px-2 text-xs gap-1.5 rounded-md transition-colors items-center justify-center hidden sm:flex",
+                                    viewMode === 'split'
+                                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                )}
+                                onClick={() => setViewMode('split')}
+                            >
+                                <Columns className="h-3.5 w-3.5" />
+                                <span className={cn("hidden lg:inline", viewMode !== 'split' && "sr-only lg:not-sr-only")}>Split</span>
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Split View</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                type="button"
+                                className={cn(
+                                    "h-7 px-2 text-xs gap-1.5 rounded-md transition-colors flex items-center justify-center",
+                                    viewMode === 'preview'
+                                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                )}
+                                onClick={() => setViewMode('preview')}
+                            >
+                                <Eye className="h-3.5 w-3.5" />
+                                <span className={cn("hidden sm:inline", viewMode !== 'preview' && "sr-only lg:not-sr-only")}>Preview</span>
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Preview Mode</TooltipContent>
+                    </Tooltip>
+                </div>
+            </div>
         )}
-      </div>
-    </div>
+
+        {/* Content Area */}
+        <div className={cn(
+            "flex-1 overflow-hidden relative grid bg-card",
+            viewMode === 'split' ? "grid-cols-2 divide-x" : "grid-cols-1",
+            fullHeight ? "h-full" : "min-h-[200px]" // Ensure this container fills height if fullHeight is true
+        )}>
+            {/* Editor Pane */}
+            <div className={cn(
+                "relative h-full flex flex-col",
+                viewMode === 'preview' ? "hidden" : "block"
+            )}>
+                 <MDEditor
+                    value={value}
+                    onChange={(val) => onChange(val || '')}
+                    className="w-full h-full border-none !shadow-none"
+                    visibleDragbar={false}
+                    hideToolbar={true}
+                    height="100%" // Explicitly set height to 100%
+                    preview="edit"
+                    textareaProps={{
+                        placeholder: placeholder || "Start writing...",
+                        className: "focus:outline-none !font-mono !text-sm leading-relaxed p-4 h-full" // Ensure textarea fills height
+                    }}
+                 />
+            </div>
+
+            {/* Preview Pane */}
+            <div className={cn(
+                "relative h-full overflow-hidden bg-muted/10",
+                viewMode === 'edit' ? "hidden" : "block",
+                viewMode === 'preview' && "col-span-1"
+            )}>
+                {renderMarkdownPreview(value)}
+            </div>
+        </div>
+        </div>
+    </TooltipProvider>
   );
 }

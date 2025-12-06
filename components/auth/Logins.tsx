@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {createClient} from "@/lib/supabase/client";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -58,6 +58,18 @@ export default function Logins() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [clientTimezone, setClientTimezone] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Detect client's timezone when the component mounts
+        try {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            setClientTimezone(timezone);
+        } catch (e) {
+            console.error("Could not detect client timezone:", e);
+            setClientTimezone("UTC"); // Fallback to UTC
+        }
+    }, []);
 
     const handleLogins = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -73,7 +85,7 @@ export default function Logins() {
 
         const {data, error} = await supabase.auth.signInWithOtp({
             email, options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=${DEFAULT_POST_LOGIN_REDIRECT}`,
+                emailRedirectTo: `${window.location.origin}/auth/callback?timezone=${clientTimezone || 'UTC'}&next=${DEFAULT_POST_LOGIN_REDIRECT}`,
             },
         });
 

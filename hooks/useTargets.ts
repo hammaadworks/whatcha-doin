@@ -113,7 +113,7 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         save(bucket, addActionAfterId(data, afterId, description, isPublic));
     }, [getBucketState, save]);
 
-    const toggleTarget = useCallback((bucket: TargetBucket, id: string) => {
+    const toggleTarget = useCallback(async (bucket: TargetBucket, id: string) => {
         const {data: oldTreeData} = getBucketState(bucket);
         const oldTargetNode = findNode(oldTreeData, id); // Get old state
         
@@ -127,7 +127,7 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
 
         // --- NEW JOURNAL LOGIC (Start) ---
         if (user && newTargetNode && oldTargetNode?.completed !== newTargetNode.completed) {
-            journalActivityService.logActivity(
+            await journalActivityService.logActivity(
                 user.id,
                 new Date(), // Log for today
                 {

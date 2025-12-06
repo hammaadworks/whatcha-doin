@@ -38,19 +38,18 @@ export default function BioSection({
 
     return (
         <div className="bio-container w-full relative h-full mb-10"> {/* Added mb-10 for section spacing */}
-            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6 px-6 pt-6">
+            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6 px-6">
                 <h2 className="text-2xl font-extrabold text-primary">Bio</h2>
                 {isOwner && onBioUpdate && !isReadOnly && ( // Repositioned edit button here
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="bg-card hover:bg-primary/20 hover:text-primary border-border hover:border-primary shadow-sm"
-                                    onClick={() => setIsBioModalOpen(true)}
-                                    title="Edit Bio"
-                                >
+                                                                 <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-muted-foreground ring-offset-background transition-colors ring-2 ring-primary hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                                    onClick={() => setIsBioModalOpen(true)}
+                                                                    title="Edit Bio"                                >
                                     <Pencil className="h-4 w-4"/>
                                 </Button>
                             </TooltipTrigger>

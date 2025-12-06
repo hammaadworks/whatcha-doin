@@ -35,7 +35,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`w-full max-w-full !w-[calc(100vw-2rem)] max-h-[80vh] overflow-y-auto mx-auto p-0 ${className || ''}`}>
-        <DialogHeader className="px-4 pt-4">
+        <DialogHeader className="px-4 pt-10">
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription className="mt-1">{description}</DialogDescription>}
           {/* The DialogClose is typically provided by DialogContent itself, so removing explicit add */}

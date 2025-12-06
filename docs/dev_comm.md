@@ -113,7 +113,7 @@ I have implemented major components of **Epic 4: Journaling & Data Entry**, brin
 *   **Action Lifecycle:** Created `lib/logic/actionLifecycle.ts` to handle the "Next Day Clearing" logic for Actions.
     *   Completed actions older than the start of the current day (User Timezone) are automatically moved to the Journal as text and deleted from the active Actions list.
     *   This ensures the database remains lightweight and the UI uncluttered.
-*   **Automation:** Updated `hooks/useActions.ts` to run this lifecycle check automatically on component mount for the owner.
+    *   **Automation:** Updated `hooks/useActions.ts` to run this lifecycle check automatically on component mount for the owner.
 
 ### 3. Journal System Enhancements (Stories 4.9 - 4.13)
 *   **Dual-View Journal:** Updated `JournalSection.tsx` to feature tabs for **Private Journal** and **Public Journal**.
@@ -149,7 +149,6 @@ I have refined the UI of the Journal Section to match the high-quality design st
 ### 4. Documentation
 *   Updated `docs/ux-design-specification.md` to reflect the "Full-screen Immersive Edit Modal" for Bio and Markdown support in the Journal.
 *   Verified all changes with `npx tsc --noEmit`.
-# Developer Communication Log
 
 ## 2025-12-05 - Gemini Agent (Real-Time Activity Journaling Strategy)
 
@@ -267,3 +266,26 @@ Addressed several critical bugs and implemented new keyboard shortcuts and UI en
 *   **Global Undo (`Ctrl+Z`):** As discussed, a true "undo all over the app" (`Ctrl+Z`) remains a complex architectural undertaking and has not been implemented. The current undo is specific to deleted items via the toast.
 
 This comprehensive update addresses all feedback and significantly enhances the interactive experience of the application.
+
+## 2025-12-06 - Gemini Agent (Journal Autosave & UI Refinement)
+
+### Summary
+I have significantly improved the user experience of the Journal section by implementing an autosave feature and refining its UI, aligning it with the application's design standards.
+
+### Key Changes:
+
+1.  **Autosave Functionality:**
+    *   Removed the manual "Save entry" button and its associated `Ctrl/Cmd + S` hotkey.
+    *   Implemented an efficient autosave mechanism for journal entries, triggered after a short debounce period (1 second) of user inactivity.
+    *   Autosave only occurs if the user has edit permissions and the content has changed since the last load or save.
+
+2.  **Autosave User Feedback:**
+    *   Introduced clear UI feedback for the autosave status ("Saving...", "Saved!", "Autosave Error") displayed prominently next to the journal tabs.
+
+3.  **Journal Tab UI Refinement:**
+    *   Refactored the "Private Journal" and "Public Journal" tab toggle to adopt the visual design and interaction patterns of the `VibeSelector` component (`@components/profile/VibeSelector.tsx`).
+    *   This includes the use of `Tooltip` components for descriptive labels, consistent styling (icons, hover effects, selected state), and a unified container with the autosave feedback.
+    *   The "Private Journal" tab is now always visible but disabled if the user does not have edit permissions.
+
+### Impact:
+These changes streamline the journaling process, eliminating the need for manual saving and providing real-time feedback, thereby enhancing the overall flow and user satisfaction.

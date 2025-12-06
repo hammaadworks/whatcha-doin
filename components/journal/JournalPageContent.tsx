@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Lock, Globe, Save, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Lock, Globe, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { cn } from '@/lib/utils';
@@ -10,8 +11,10 @@ import { fetchJournalEntryByDate, upsertJournalEntry } from '@/lib/supabase/jour
 import { CustomMarkdownEditor as MarkdownEditor } from '@/components/shared/CustomMarkdownEditor';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { JournalEntry, ActivityLogEntry } from '@/lib/supabase/types'; // Import JournalEntry and ActivityLogEntry
+
 
 interface JournalPageContentProps {
   profileUserId: string;
@@ -43,9 +46,10 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
   const [content, setContent] = useState('');
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]); // New state for activity log
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const lastSavedContentRef = useRef('');
   
-  const [dbContent, setDbContent] = useState('');
+  const debouncedContent = useDebounce(content, 1000); // Debounce content for 1 second
 
   const isPublic = activeTab === 'public';
   const canEdit = isOwner;
@@ -59,7 +63,7 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
         
         const newContent = entry?.content || '';
         setContent(newContent);
-        setDbContent(newContent);
+        lastSavedContentRef.current = newContent;
         setActivityLog(entry?.activity_log || []); // Set the activity log
       } catch (error) {
         console.error(error);
@@ -73,7 +77,7 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
 
   const saveEntry = useCallback(async (currentContent: string) => {
     if (!canEdit) return;
-    setIsSaving(true);
+    setAutosaveStatus('saving');
     try {
       const dateStr = format(date, 'yyyy-MM-dd');
       await upsertJournalEntry({
@@ -82,34 +86,26 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
         is_public: isPublic,
         content: currentContent,
       });
-      setDbContent(currentContent);
-      toast.success('Saved');
+      lastSavedContentRef.current = currentContent;
+      setAutosaveStatus('saved');
+      // Briefly show "Saved!" then revert to idle
+      setTimeout(() => setAutosaveStatus('idle'), 2000);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to save');
-    } finally {
-      setIsSaving(false);
+      toast.error('Failed to autosave');
+      setAutosaveStatus('error');
     }
   }, [date, isPublic, profileUserId, canEdit]);
 
-  const handleManualSave = () => {
-    saveEntry(content);
-  };
-
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        if (canEdit && content !== dbContent) {
-            handleManualSave();
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canEdit, content, dbContent, handleManualSave]);
+    // Only trigger autosave if content has changed due to user input
+    // (i.e., debouncedContent is different from the last saved content from the DB)
+    // and if the current user has edit permissions.
+    if (canEdit && debouncedContent !== lastSavedContentRef.current) {
+      saveEntry(debouncedContent);
+    }
+  }, [debouncedContent, canEdit, saveEntry]);
 
-  const hasUnsavedChanges = content !== dbContent;
 
   const actions = activityLog.filter(item => item.type === 'action');
   const habits = activityLog.filter(item => item.type === 'habit');
@@ -145,52 +141,85 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
                     </PopoverContent>
                 </Popover>
 
-                {/* Tabs */}
-                <div className="flex items-center bg-muted rounded-lg p-1">
-                    {isOwner && (
-                         <button
-                            onClick={() => setActiveTab('private')}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-                                activeTab === 'private' 
-                                    ? "bg-background text-foreground shadow-sm" 
-                                    : "text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            <Lock className="h-3 w-3" />
-                            Private
-                        </button>
-                    )}
-                    <button
-                        onClick={() => setActiveTab('public')}
-                        className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-                            activeTab === 'public' 
-                                ? "bg-background text-foreground shadow-sm" 
-                                    : isOwner ? "text-muted-foreground hover:text-foreground" : "bg-background text-foreground shadow-sm cursor-default"
-                        )}
-                        disabled={!isOwner}
-                    >
-                        <Globe className="h-3 w-3" />
-                        Public
-                    </button>
-                </div>
-            </div>
+                <TooltipProvider>
+                    <div className="flex items-center bg-card rounded-full p-2 shadow-md border border-primary gap-x-4">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('private')}
+                                    className={cn(
+                                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
+                                        "ring-2 ring-primary ring-offset-background", // Added solid ring styles
+                                        activeTab === 'private'
+                                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                            : "bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground" // Adjusted for solid ring non-active state
+                                    )}
+                                    disabled={!isOwner} // Disable if not owner
+                                >
+                                    <Lock className="h-4 w-4" />
+                                    <span className={cn(
+                                        "ml-2",
+                                        activeTab === 'private' ? "inline-block" : "hidden",
+                                        "lg:inline-block"
+                                    )}>
+                                        Private
+                                    </span>
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Private Journal</p>
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('public')}
+                                    className={cn(
+                                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
+                                        "ring-2 ring-primary ring-offset-background", // Added solid ring styles
+                                        activeTab === 'public'
+                                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                            : "bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground" // Adjusted for solid ring non-active state
+                                    )}
+                                    disabled={!isOwner && activeTab === 'private'} // Disable if not owner and public tab is active
+                                >
+                                    <Globe className="h-4 w-4" />
+                                    <span className={cn(
+                                        "ml-2",
+                                        activeTab === 'public' ? "inline-block" : "hidden",
+                                        "lg:inline-block"
+                                    )}>
+                                        Public
+                                    </span>
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Public Journal</p>
+                            </TooltipContent>
+                        </Tooltip>
 
-             {/* Save Status / Button */}
-             {canEdit && (
-                 <div className="flex items-center gap-2">
-                     {hasUnsavedChanges && <span className="text-xs text-muted-foreground">Unsaved changes</span>}
-                     <Button 
-                        onClick={handleManualSave} 
-                        disabled={isSaving || !hasUnsavedChanges}
-                        size="sm"
-                     >
-                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-                        Save
-                     </Button>
-                 </div>
-             )}
+                        {/* Autosave Status Feedback */}
+                        {canEdit && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground ml-4">
+                                {autosaveStatus === 'saving' && (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <span>Saving...</span>
+                                    </>
+                                )}
+                                {autosaveStatus === 'saved' && (
+                                    <span>Saved!</span>
+                                )}
+                                {autosaveStatus === 'error' && (
+                                    <span className="text-destructive">Autosave Error</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </TooltipProvider>
+            </div>
         </div>
 
         {/* Activity Log Section (Read-Only) */}

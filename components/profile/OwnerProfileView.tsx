@@ -137,14 +137,33 @@ export default function OwnerProfileView({
                 .finally(() => setOwnerHabitsLoading(false));
 
             // Fetch owner journal entries
-            setOwnerJournalEntriesLoading(true);
-            fetchJournalEntries(authenticatedUser.id)
-                .then(setOwnerJournalEntries)
-                .catch(err => console.error("Failed to fetch owner journal entries:", err))
-                .finally(() => setOwnerJournalEntriesLoading(false));
+            refreshJournalEntries();
         }
     }, [currentViewMode, authenticatedUser?.id]);
 
+    const refreshJournalEntries = async () => {
+        if (!authenticatedUser?.id) return;
+        setOwnerJournalEntriesLoading(true);
+        try {
+            const entries = await fetchJournalEntries(authenticatedUser.id);
+            setOwnerJournalEntries(entries);
+        } catch (error) {
+            console.error("Failed to fetch owner journal entries:", error);
+        } finally {
+            setOwnerJournalEntriesLoading(false);
+        }
+    };
+
+    const handleActionToggled = async (id: string) => {
+        await toggleAction(id);
+        await refreshJournalEntries();
+    };
+
+    const handleActionDeleted = async (id: string) => {
+        const deletedContext = await deleteAction(id);
+        await refreshJournalEntries();
+        return deletedContext;
+    };
 
     if (!profileToDisplay) {
         return <div>Error: User profile not found for owner.</div>;
@@ -189,6 +208,7 @@ export default function OwnerProfileView({
                                 isOwner={true}
                                 isReadOnly={isReadOnly} // Pass isReadOnly
                                 timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                                onActivityLogged={refreshJournalEntries} // Refresh journal on target toggle
                             />
                         </div>
                     </div>
@@ -198,10 +218,10 @@ export default function OwnerProfileView({
                         isReadOnly={isReadOnly} // Pass isReadOnly
                         actions={actions}
                         loading={actionsLoading}
-                        onActionToggled={toggleAction}
+                        onActionToggled={handleActionToggled} // Use wrapped handler
                         onActionAdded={addAction}
                         onActionUpdated={updateActionText}
-                        onActionDeleted={deleteAction}
+                        onActionDeleted={handleActionDeleted} // Use wrapped handler
                         undoDeleteAction={undoDeleteAction} // Pass undoDeleteAction
                         onActionIndented={indentAction}
                         onActionOutdented={outdentAction}
@@ -216,6 +236,7 @@ export default function OwnerProfileView({
                         isReadOnly={isReadOnly} // Pass isReadOnly
                         habits={ownerHabits}
                         loading={ownerHabitsLoading}
+                        onActivityLogged={refreshJournalEntries} // Refresh journal on habit completion
                     />
                     <JournalSection
                         isOwner={true}

@@ -1,6 +1,7 @@
 'use client';
 
-import React, {useRef, useEffect, useCallback} from 'react';
+import {useRef, useEffect, useCallback} from 'react';
+import {useMediaQuery} from '@/hooks/useMediaQuery'; // Import useMediaQuery
 import {MovingBorder} from '@/components/ui/moving-border';
 import {UserClock} from './UserClock';
 import {useAuth} from '@/hooks/useAuth';
@@ -27,8 +28,15 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({
     const { user: viewer } = useAuth();
     const usernameRef = useRef<HTMLHeadingElement>(null); // Ref for the username heading
     const { setUsernameSticky, setStickyUsername } = useUiStore(); // Zustand store actions
+    const isLargeScreen = useMediaQuery('(min-width: 1024px)'); // Define large screen breakpoint
 
     useEffect(() => {
+        if (!isLargeScreen) {
+            setUsernameSticky(false);
+            setStickyUsername(null);
+            return;
+        }
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 setUsernameSticky(!entry.isIntersecting);

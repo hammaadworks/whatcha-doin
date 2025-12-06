@@ -20,9 +20,10 @@ interface HabitsSectionProps {
     isReadOnly?: boolean; // Add isReadOnly prop
     habits?: Habit[]; // Add habits prop
     loading: boolean; // Add loading prop
+    onActivityLogged?: () => void; // New prop for journal refresh
 }
 
-const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = false, habits: propHabits, loading}) => {
+const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = false, habits: propHabits, loading, onActivityLogged}) => {
     const habits = propHabits ? propHabits : (isOwner ? mockHabitsData : mockPublicHabitsData);
 
     const todayHabits = habits.filter(h => h.pile_state === 'today');
@@ -69,6 +70,7 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
         try {
             await completeHabit(habitId, data);
             toast.success('Habit completed! 🔥');
+            onActivityLogged?.(); // Trigger journal refresh
         } catch (error) {
             console.error('Failed to complete habit:', error);
             toast.error('Failed to complete habit');
@@ -104,13 +106,12 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({isOwner, isReadOnly = fals
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="bg-card hover:bg-primary/20 hover:text-primary border-border hover:border-primary shadow-sm"
-                                    onClick={() => setIsCreateHabitModalOpen(true)}
-                                    title="Add New Habit"
-                                >
+                                                                 <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-muted-foreground ring-offset-background transition-colors ring-2 ring-primary hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                                    onClick={() => setIsCreateHabitModalOpen(true)}
+                                                                    title="Add New Habit"                                >
                                     <PlusCircle className="h-4 w-4"/>
                                 </Button>
                             </TooltipTrigger>
