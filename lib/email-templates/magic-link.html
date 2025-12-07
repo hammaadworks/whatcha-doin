@@ -17,6 +17,7 @@
             --bg-color: #f0f2f5; /* Light mode body background */
             --content-bg: #ffffff; /* Light mode content block background */
             --text-color: #212529; /* Light mode main text color */
+            --cta-color: #ffffff; /* Light mode main text color */
             --primary-color: #FF6B6B; /* Light mode primary button/link color (Zenith) */
             --footer-text-color: #495057; /* Light mode footer text color */
             --logo-light-display: inline-block;
@@ -28,6 +29,7 @@
                 --bg-color: #161616; /* Dark mode body background (Monolith) */
                 --content-bg: #222222; /* Dark mode content block background (Monolith) */
                 --text-color: #E0E0E0; /* Dark mode main text color (Monolith) */
+                --cta-color: #212529; /* Dark mode main text color (Monolith) */
                 --primary-color: #00F5A0; /* Dark mode primary button/link color (Monolith) */
                 --footer-text-color: #CCCCCC; /* Dark mode footer text color (Monolith) */
                 --logo-light-display: none;
@@ -53,7 +55,7 @@
             font-family: Arial, sans-serif;
             font-size: 16px;
             font-weight: bold;
-            color: #ffffff; /* White text, consistent for both themes for the button */
+            color: var(--cta-color) !important; /* White text, consistent for both themes for the button */
             background-color: var(--primary-color); /* Themed primary color */
             border-radius: 8px; /* Rounded corners */
             padding: 12px 24px;
@@ -102,7 +104,7 @@
                                 Your secure magic link is ready. Click below to access your whatcha-doin account. Build in public, share your journey, and let your success be the testimony of whatcha-doin, consistently, one habit at a time. <br/> No waiting, just <b>enter your prime and make it happen!</b>
                             </p>
                             <!-- CTA Button -->
-                            <a href="{{ .ConfirmationURL }}" class="button" style="color: #ffffff !important;">
+                            <a href="{{ .ConfirmationURL }}" class="button">
                                 &nbsp;Let's Go!&nbsp;
                             </a>
                             <!-- End CTA Button -->
