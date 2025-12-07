@@ -15,7 +15,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
         <TooltipProvider> {/* Wrap with TooltipProvider */}
             <SettingsDrawer isOpen={isSettingsOpen} onOpenChange={toggleSettingsModal} children={null} />
             <AppHeader themeTogglerRef={themeTogglerRef}/>
-            <main className="flex-grow flex justify-center px-2 md:px-4 lg:px-8 pt-16 lg:pt-32 pb-4">
+            <main className="flex-grow flex justify-center px-2 md:px-4 lg:px-8 pt-16 lg:pt-28 pb-2 md:pb-4">
                 {children}
             </main>
             <AppFooter/>

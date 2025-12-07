@@ -95,6 +95,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+            suppressHydrationWarning={true}
         >
         <Pointer className="fill-primary" />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

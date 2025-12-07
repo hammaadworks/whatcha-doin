@@ -6,6 +6,7 @@ import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
 import { PsychologySection } from "@/components/landing/PsychologySection";
 import { AISection } from "@/components/landing/AISection";
 import { FeaturesShowcaseSection } from "@/components/landing/FeaturesShowcaseSection";
+import PWASection from "@/components/landing/PWASection"; // Import PWASection
 import { StillUnsureSection } from "@/components/landing/StillUnsureSection";
 import { CTASection } from "@/components/landing/CTASection";
 import type { Metadata } from 'next';
@@ -26,6 +27,7 @@ export default function LandingPage() {
         <PsychologySection />
         <AISection />
         <FeaturesShowcaseSection />
+        <PWASection /> {/* Render the PWASection here */}
         <StillUnsureSection />
         <CTASection />
       </div>
