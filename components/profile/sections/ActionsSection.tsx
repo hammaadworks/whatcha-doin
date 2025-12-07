@@ -7,6 +7,7 @@ import {Skeleton} from '@/components/ui/skeleton';
 import {ActionsList} from '@/components/shared/ActionsList';
 import {AddActionForm} from '@/components/shared/AddActionForm';
 import {DeletedNodeContext} from '@/lib/utils/actionTreeUtils';
+import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper';
 
 // Helper to recursively count total and completed actions
 const getOverallCompletionCounts = (nodes: ActionNode[]): { total: number; completed: number } => {
@@ -60,6 +61,7 @@ interface ActionsSectionProps {
     justCompletedId?: string | null;
     privateCount?: number; // New prop
     timezone: string; // Add timezone prop
+    isCollapsible?: boolean;
 }
 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
@@ -80,7 +82,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                            onActionAddedAfter,
                                                            justCompletedId,
                                                            privateCount = 0,
-                                                           timezone // Destructure timezone prop
+                                                           timezone, // Destructure timezone prop
+                                                           isCollapsible = false,
                                                        }) => {
     const addActionFormRef = useRef<{
         focusInput: () => void;
@@ -189,22 +192,29 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         </div>);
     }
 
-    return (<div className="section mb-10">
-        <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-            <h2 className="text-2xl font-extrabold text-primary">Actions</h2>
-            <div className="flex items-center gap-3">
-                {overallTotal > 0 && (<CircularProgress
-                    progress={overallProgressPercentage}
-                    size={36}
-                    strokeWidth={3}
-                    color="text-primary"
-                    bgColor="text-muted-foreground"
-                                                showTickOnComplete={isAllComplete}
-                                            >                    {!isAllComplete && (
-                        <span className="text-xs text-muted-foreground">{overallCompleted}/{overallTotal}</span>)}
-                </CircularProgress>)}
-            </div>
-        </div>
+    return (
+        <CollapsibleSectionWrapper
+            title="Actions"
+            isCollapsible={isCollapsible}
+            rightElement={
+                <div className="flex items-center gap-3">
+                    {overallTotal > 0 && (
+                        <CircularProgress
+                            progress={overallProgressPercentage}
+                            size={36}
+                            strokeWidth={3}
+                            color="text-primary"
+                            bgColor="text-muted-foreground"
+                            showTickOnComplete={isAllComplete}
+                        >
+                            {!isAllComplete && (
+                                <span className="text-xs text-muted-foreground">{overallCompleted}/{overallTotal}</span>
+                            )}
+                        </CircularProgress>
+                    )}
+                </div>
+            }
+        >
         <ActionsList
             actions={itemsToRender}
             onActionToggled={isOwner && !isReadOnly ? onActionToggled : undefined}
@@ -248,7 +258,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                     autoFocusOnMount={false}
                 />
             </div>)}
-    </div>);
+    </CollapsibleSectionWrapper>);
 };
 
 export default ActionsSection;

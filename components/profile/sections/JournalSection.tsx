@@ -3,7 +3,17 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import ReactMarkdown from 'react-markdown';
 import {JournalEntry, ActivityLogEntry} from '@/lib/supabase/types';
-import {Calendar as CalendarIcon, Globe, Loader2, Lock, CheckCircle2, Target, Zap, Clock} from 'lucide-react';
+import {
+    Calendar as CalendarIcon,
+    Globe,
+    Loader2,
+    Lock,
+    CheckCircle2,
+    Target,
+    Zap,
+    Clock,
+    CloudCheck
+} from 'lucide-react';
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {Button} from '@/components/ui/button';
 import {Skeleton} from '@/components/ui/skeleton';
@@ -17,12 +27,14 @@ import {cn} from '@/lib/utils';
 import {useAuth} from '@/hooks/useAuth';
 import {ShineBorder} from "@/components/ui/shine-border";
 import {useDebounce} from '@/hooks/useDebounce';
+import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper';
 
 interface JournalSectionProps {
     isOwner: boolean;
     isReadOnly?: boolean;
     journalEntries: JournalEntry[];
     loading: boolean;
+    isCollapsible?: boolean;
 }
 
 const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
@@ -84,15 +96,16 @@ const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
     )
 }
 
-const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading}) => {
+const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading, isCollapsible = false}) => {
     const {user} = useAuth();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [activeTab, setActiveTab] = useState<'private' | 'public'>(isOwner ? 'private' : 'public');
     const [entryContent, setEntryContent] = useState('');
     const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
-    const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'processing' | 'saving' | 'saved' | 'error'>('saved');
     const lastSavedContentRef = useRef('');
-    const debouncedContent = useDebounce(entryContent, 5000);
+    const debouncedProcessing = useDebounce(entryContent, 1000);
+    const debouncedSaving = useDebounce(entryContent, 5000);
     const mainDatePickerButtonRef = useRef<HTMLButtonElement>(null);
     const [isMainDatePickerOpen, setIsMainDatePickerOpen] = useState(false);
 
@@ -116,6 +129,7 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
         setEntryContent(newContent);
         setActivityLog(entry?.activity_log || []);
         lastSavedContentRef.current = newContent;
+        setAutosaveStatus('saved'); // When a new entry is loaded, it is "saved"
     }, [selectedDate, activeTab, journalEntries, getCurrentEntry]);
 
     const saveEntry = useCallback(async (currentContent: string) => {
@@ -132,7 +146,6 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
 
             lastSavedContentRef.current = currentContent;
             setAutosaveStatus('saved');
-            // Removed setTimeout to keep "Saved!" persistent until next change
         } catch (error) {
             console.error('Failed to save journal:', error);
             setAutosaveStatus('error');
@@ -140,28 +153,40 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
         }
     }, [user, isReadOnly, selectedDate, activeTab]);
 
+    // Processing state effect (1s debounce)
+    useEffect(() => {
+        if (isOwner && !isReadOnly && debouncedProcessing !== lastSavedContentRef.current) {
+             if (autosaveStatus !== 'saving') {
+                 setAutosaveStatus('processing');
+             }
+        }
+    }, [debouncedProcessing, isOwner, isReadOnly, lastSavedContentRef]); // removed autosaveStatus from deps to avoid loops
+
+    // Saving effect (5s debounce)
     useEffect(() => {
         // Only save if content changed from what's in DB (lastSavedContentRef)
         // and user is owner/not read-only
-        if (isOwner && !isReadOnly && debouncedContent !== lastSavedContentRef.current) {
-            saveEntry(debouncedContent);
+        if (isOwner && !isReadOnly && debouncedSaving !== lastSavedContentRef.current) {
+            saveEntry(debouncedSaving);
         }
-    }, [debouncedContent, isOwner, isReadOnly, saveEntry]);
+    }, [debouncedSaving, isOwner, isReadOnly, saveEntry]);
 
     // Sort logs by timestamp descending (newest first)
     const sortedLogs = [...activityLog].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     if (loading) {
-        return (<div className="section mb-10">
-                <h2 className="text-2xl font-extrabold border-b border-primary pb-4 mb-6 text-foreground">Journal</h2>
+        return (
+            <CollapsibleSectionWrapper title="Journal" isCollapsible={isCollapsible}>
                 <Skeleton className="h-64 w-full"/>
-            </div>);
+            </CollapsibleSectionWrapper>
+        );
     }
 
-    return (<div className="section mb-10">
-            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-                <h2 className="text-2xl font-extrabold text-primary">Journal</h2>
-
+    return (
+        <CollapsibleSectionWrapper
+            title="Journal"
+            isCollapsible={isCollapsible}
+            rightElement={
                 <div className="flex items-center gap-2"> {/* Wrapper for date picker and new add button */}
                     {/* Date Picker */}
                     <Popover open={isMainDatePickerOpen} onOpenChange={setIsMainDatePickerOpen}>
@@ -206,9 +231,10 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                         </PopoverContent>
                     </Popover>
                 </div>
-            </div>
-
+            }
+        >
             <div className="w-full">
+                {isOwner && (
                 <TooltipProvider>
                     <div className="flex items-center justify-between gap-4 mb-4 w-full">
                         <div className="flex-1 flex items-center bg-card rounded-full p-1 shadow-md border border-primary gap-1">
@@ -225,7 +251,7 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                                                 : "hover:bg-accent/50 text-muted-foreground"
                                         )}
                                     >
-                                        <Lock className="h-4 w-4 mr-2" />
+                                        <Lock className="h-4 w-4 mr-2"/>
                                         <span>Private Journal</span>
                                     </button>
                                 </TooltipTrigger>
@@ -246,7 +272,7 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                                                 : "hover:bg-accent/50 text-muted-foreground"
                                         )}
                                     >
-                                        <Globe className="h-4 w-4 mr-2" />
+                                        <Globe className="h-4 w-4 mr-2"/>
                                         <span>Public Journal</span>
                                     </button>
                                 </TooltipTrigger>
@@ -258,40 +284,78 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
 
                         {/* Autosave Status Feedback */}
                         {isOwner && !isReadOnly && (
-                            <div className="flex items-center justify-end gap-2 text-sm font-medium shrink-0 min-w-[100px]">
+                            <div
+                                className="flex items-center justify-end gap-2 text-sm font-medium shrink-0 min-w-[100px] text-muted-foreground">
+                                {autosaveStatus === 'processing' && (
+                                    <div className="flex items-center gap-2 text-muted-foreground/80">
+                                        <span className="relative flex h-2 w-2">
+                                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 duration-[1000ms]"></span>
+                                           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary/50"></span>
+                                        </span>
+                                        <span>Processing...</span>
+                                    </div>
+                                )}
                                 {autosaveStatus === 'saving' && (
-                                    <div className="flex items-center gap-2 text-primary animate-pulse">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    <div className="flex items-center gap-2 text-primary">
+                                        <span className="relative flex h-2 w-2">
+                                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 duration-300"></span>
+                                           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                        </span>
                                         <span>Saving...</span>
                                     </div>
                                 )}
-                                {autosaveStatus === 'saved' && (
-                                    <div className="flex items-center gap-2 text-primary">
-                                        <div className="h-2 w-2 rounded-full bg-primary" />
+                                {(autosaveStatus === 'saved' || autosaveStatus === 'idle') && (
+                                    <div className="flex items-center gap-2 text-primary/80">
+                                        <CloudCheck className="h-4 w-4"/>
                                         <span>Saved</span>
                                     </div>
                                 )}
                                 {autosaveStatus === 'error' && (
-                                    <span className="text-destructive">Error saving</span>
+                                    <span className="text-destructive">Error</span>
                                 )}
                             </div>
                         )}
                     </div>
                 </TooltipProvider>
+                )}
 
-                <div className="bg-card border border-card-border rounded-xl p-6 relative mb-4">
+                <div 
+                    className={cn(
+                        "rounded-xl p-6 relative mb-4 overflow-hidden transition-all duration-500",
+                        activeTab === 'private' 
+                            ? "bg-primary/[0.03] dark:bg-primary/[0.1] border-2 border-primary/20 dark:border-primary/30" // Private: Warm/Theme Tint (Dark mode boosted)
+                            : "bg-blue-500/[0.03] dark:bg-blue-900/[0.2] border-2 border-blue-500/20 dark:border-blue-400/30" // Public: Cool/Blue Tint (Dark mode boosted)
+                    )}
+                    style={{
+                        backgroundImage: activeTab === 'private'
+                            ? `radial-gradient(hsl(var(--primary) / 0.15) 1px, transparent 1px)` // Dot Pattern (slightly higher opacity for visibility)
+                            : `linear-gradient(to right, hsl(var(--foreground) / 0.07) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--foreground) / 0.07) 1px, transparent 1px)`, // Grid Pattern
+                        backgroundSize: '24px 24px'
+                    }}
+                >
                     {isOwner && !isReadOnly ? (
-                        <div className="h-full flex flex-col gap-4">
+                        <div className={cn("h-full flex flex-col gap-4 relative z-10", 
+                            activeTab === 'private' ? "caret-primary" : "caret-blue-500 dark:caret-blue-400" // Caret Color Cue
+                        )}>
                             <CustomMarkdownEditor
                                 value={entryContent}
                                 onChange={setEntryContent}
-                                placeholder={`Write your ${activeTab} thoughts for today...`}
-                                className="min-h-[200px] border-none shadow-none focus-visible:ring-0 p-0 text-base leading-relaxed"
-                                fullHeight
+                                placeholder={activeTab === 'private' ? "Private thoughts..." : "Public thoughts..."}
+                                className="min-h-[200px] border-none shadow-none focus-visible:ring-0 p-0 text-base leading-relaxed bg-transparent"
+                                textareaClassName={activeTab === 'private' ? "caret-primary !text-foreground" : "caret-blue-500 dark:caret-blue-400 !text-foreground"}
+                                watermark={
+                                    <div className="opacity-[0.05] dark:opacity-[0.08] flex items-center justify-center w-full h-full">
+                                        {activeTab === 'private' ? (
+                                            <Lock className="w-1/3 h-auto max-w-[12rem] min-w-[4rem] text-primary" />
+                                        ) : (
+                                            <Globe className="w-1/3 h-auto max-w-[12rem] min-w-[4rem] text-blue-500 dark:text-blue-400" />
+                                        )}
+                                    </div>
+                                }
                             />
                         </div>
                     ) : (
-                        <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none text-left leading-relaxed break-words">
+                        <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none text-left leading-relaxed break-words relative z-10">
                             {entryContent ? (
                                 <ReactMarkdown>{entryContent}</ReactMarkdown>
                             ) : (
@@ -328,7 +392,7 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                     )}
                 </div>
             </div>
-        </div>);
+        </CollapsibleSectionWrapper>);
 };
 
 export default JournalSection;

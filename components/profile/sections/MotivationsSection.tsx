@@ -1,50 +1,80 @@
 'use client';
 
-import React from 'react';
-import {Button} from '@/components/ui/button';
-import {Skeleton} from '@/components/ui/skeleton'; // Import Skeleton
-
+import React, { useState, useCallback, useRef } from 'react';
+import { SparklesText } from '@/components/ui/sparkles-text';
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from "framer-motion";
 
 interface MotivationsSectionProps {
     username: string;
     isOwner: boolean;
-    isReadOnly?: boolean; // Add isReadOnly prop
-    loading: boolean; // Add loading prop
+    isReadOnly?: boolean; 
+    loading: boolean;
 }
 
-const MotivationsSection: React.FC<MotivationsSectionProps> = ({username, isOwner, isReadOnly = false, loading}) => {
-    const motivationalQuote = "The journey of a thousand miles begins with a single step."; // Example quote
+const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading}) => {
+    const [isInteracting, setIsInteracting] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    if (loading) {
-        return (<div className="section mb-10">
-                <h2 className="text-2xl font-extrabold border-b border-primary pb-4 mb-6 text-foreground">Motivation</h2>
-                <Skeleton className="h-24 w-full"/>
-            </div>);
-    }
+    const handleInteraction = useCallback(() => {
+        setIsInteracting(true);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            setIsInteracting(false);
+        }, 2000);
+    }, []);
 
-    return (<div className="section mb-10">
-            <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-                <h2 className="text-2xl font-extrabold text-primary">Motivations</h2>
-                {/* The YTD button is a display/navigation element, not an editing one, so it can remain regardless of isReadOnly */}
-                <Button
-                    className="px-4 py-2 rounded-md bg-background text-muted-foreground ring-offset-background transition-colors ring-2 ring-primary hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    if (loading) return null;
+
+    return (
+        <div 
+            className="flex flex-col items-center justify-center py-6 px-4 w-full text-center group select-none cursor-default"
+            onMouseEnter={handleInteraction}
+            onClick={handleInteraction}
+            onTouchStart={handleInteraction}
+        >
+            <div className="relative max-w-4xl">
+                 {/* Decorative large quote mark */}
+                <span className={cn(
+                    "absolute -top-10 -left-12 text-9xl font-serif leading-none select-none pointer-events-none transition-all duration-700",
+                    "text-primary/30 translate-y-0 opacity-100", // Muted color as requested
+                    isInteracting ? "scale-110 text-primary/40" : "scale-100"
+                )}>
+                    &ldquo;
+                </span>
+
+                <SparklesText
+                    className={cn(
+                        "text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed italic tracking-wide transition-all duration-500",
+                        "text-primary", // Default text color
+                        isInteracting && "text-primary", // Highlight on interaction
+                        "font-serif" 
+                    )}
+                    colors={{ first: "var(--primary)", second: "var(--accent)" }} // Use theme colors, avoid black
+                    sparklesCount={12}
+                    active={isInteracting}
                 >
-                    YTD
-                </Button>
+                    Work on your dreams as if your life depends on it. Because it does.
+                </SparklesText>
+
+                <div className="h-8 mt-4 overflow-hidden relative w-full flex justify-center">
+                    <AnimatePresence>
+                        {isInteracting && (
+                            <motion.footer
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="text-sm font-semibold tracking-widest text-muted-foreground uppercase"
+                            >
+                                — Unknown
+                            </motion.footer>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-            <div
-                className="motivational-quote-card relative overflow-hidden rounded-3xl p-10 text-center border border-primary animate-pulse-glow text-white dark:text-black"
-                style={{background: 'var(--gradient-primary)'}}>
-                <div
-                    className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%) animate-rotate-light opacity-30"></div>
-                <p className="quote-text text-3xl font-extrabold leading-tight mb-4 relative z-10 text-shadow-sm">
-                    <q>Work on your dreams as if your life depends on it. Because it does.</q>
-                </p>
-                <p className="quote-source text-lg font-semibold opacity-80 relative z-10">
-                    — Unknown
-                </p>
-            </div>
-        </div>);
+        </div>
+    );
 };
 
 export default MotivationsSection;

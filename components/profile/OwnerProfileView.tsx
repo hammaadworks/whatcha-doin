@@ -14,12 +14,13 @@ import {updateUserProfile, updateUserTimezone} from '@/lib/supabase/user.client'
 import {PublicPage} from '@/components/profile/PublicPage';
 import {toast} from 'sonner';
 import {fetchOwnerHabits} from '@/lib/supabase/habit';
-import {fetchJournalEntries} from '@/lib/supabase/journal'; // Import fetchJournalEntries
-import {ActionNode, Habit, Identity, JournalEntry} from '@/lib/supabase/types'; // Import JournalEntry // Import Identity
-import {VibeSelector} from '@/components/profile/VibeSelector'; // Import the new VibeSelector component
-import IdentitySection from '@/components/profile/sections/IdentitySection'; // Import IdentitySection
-import TargetsSection from '@/components/profile/sections/TargetsSection'; // Import TargetsSection
+import {fetchJournalEntries} from '@/lib/supabase/journal';
+import {ActionNode, Habit, Identity, JournalEntry} from '@/lib/supabase/types';
+import {VibeSelector} from '@/components/profile/VibeSelector';
+import IdentitySection from '@/components/profile/sections/IdentitySection';
+import TargetsSection from '@/components/profile/sections/TargetsSection';
 import BioSection from '@/components/profile/sections/BioSection';
+import CoreIdentitySection from '@/components/profile/sections/CoreIdentitySection';
 
 interface OwnerProfileViewProps {
     username: string;
@@ -27,9 +28,9 @@ interface OwnerProfileViewProps {
     publicActions: ActionNode[];
     publicHabits: Habit[];
     publicJournalEntries: JournalEntry[];
-    publicIdentities: (Identity & { backingCount: number })[]; // Add
-    publicTargets: ActionNode[]; // Add
-    privateCount?: number; // Add privateCount
+    publicIdentities: (Identity & { backingCount: number })[];
+    publicTargets: ActionNode[];
+    privateCount?: number;
 }
 
 export default function OwnerProfileView({
@@ -50,13 +51,12 @@ export default function OwnerProfileView({
 
     const currentViewMode = (searchParams.get('vibe') as 'edit' | 'private' | 'public') || 'edit';
     const isReadOnly = currentViewMode !== 'edit';
+    const isCollapsible = currentViewMode === 'edit';
 
-    // States for owner's private data
     const [ownerHabits, setOwnerHabits] = useState<Habit[]>([]);
     const [ownerHabitsLoading, setOwnerHabitsLoading] = useState(false);
     const [ownerJournalEntries, setOwnerJournalEntries] = useState<JournalEntry[]>([]);
     const [ownerJournalEntriesLoading, setOwnerJournalEntriesLoading] = useState(false);
-    // Motivations are static for now, so no loading state needed
 
     const profileToDisplay = authenticatedUser || initialProfileUser;
 
@@ -67,13 +67,13 @@ export default function OwnerProfileView({
         toggleAction,
         updateActionText,
         deleteAction,
-        undoDeleteAction, // Destructure undoDeleteAction
+        undoDeleteAction,
         indentAction,
         outdentAction,
         moveActionUp,
         moveActionDown,
         toggleActionPrivacy,
-        addActionAfter // Destructure new handler
+        addActionAfter
     } = useActions(true, optimisticTimezone || profileToDisplay?.timezone || 'UTC');
 
     const handleTimezoneChange = async (newTimezone: string) => {
@@ -90,14 +90,9 @@ export default function OwnerProfileView({
 
     const handleBioUpdate = async (newBio: string) => {
         if (!authenticatedUser?.id) return;
-
         try {
-            const {error} = await updateUserProfile(authenticatedUser.id, {
-                bio: newBio,
-            });
-
+            const {error} = await updateUserProfile(authenticatedUser.id, {bio: newBio});
             if (error) throw error;
-
             toast.success('Bio updated successfully');
             await refreshUser();
         } catch (error) {
@@ -107,36 +102,25 @@ export default function OwnerProfileView({
         }
     };
 
-    // Function to change view mode and update URL
     const handleViewModeChange = useCallback((mode: 'edit' | 'private' | 'public') => {
         const newSearchParams = new URLSearchParams(searchParams.toString());
-        if (mode === 'edit') {
-            newSearchParams.delete('vibe');
-        } else {
-            newSearchParams.set('vibe', mode);
-        }
+        newSearchParams.set('vibe', mode);
         router.replace(`/${username}?${newSearchParams.toString()}`);
     }, [router, searchParams, username]);
 
-    // Default to 'edit' mode if no vibe is set initially
     useEffect(() => {
         if (!searchParams.get('vibe')) {
             router.replace(`/${username}?vibe=edit`);
         }
     }, [searchParams, router, username]);
 
-
-    // Fetch owner's private data when not in public preview mode
     useEffect(() => {
         if (currentViewMode !== 'public' && authenticatedUser?.id) {
-            // Fetch owner habits
             setOwnerHabitsLoading(true);
             fetchOwnerHabits(authenticatedUser.id)
                 .then(setOwnerHabits)
                 .catch(err => console.error("Failed to fetch owner habits:", err))
                 .finally(() => setOwnerHabitsLoading(false));
-
-            // Fetch owner journal entries
             refreshJournalEntries();
         }
     }, [currentViewMode, authenticatedUser?.id]);
@@ -169,87 +153,85 @@ export default function OwnerProfileView({
         return <div>Error: User profile not found for owner.</div>;
     }
 
-    return (<div className="relative pt-8 lg:pt-4">
+    return (
+        <div className="relative pt-8 lg:pt-4 w-full max-w-6xl">
             <VibeSelector
                 currentViewMode={currentViewMode}
                 onViewModeChange={handleViewModeChange}
             />
 
-            {currentViewMode === 'public' ? (<div className="animate-in fade-in duration-300">
+            {currentViewMode === 'public' ? (
+                <div className="animate-in fade-in duration-300">
                     <PublicPage
                         user={profileToDisplay}
                         publicActions={publicActions}
                         publicHabits={publicHabits}
                         publicJournalEntries={publicJournalEntries}
-                        publicIdentities={publicIdentities} // Add
-                        publicTargets={publicTargets} // Add
+                        publicIdentities={publicIdentities}
+                        publicTargets={publicTargets}
                         privateCount={privateCount}
                     />
-                </div>) : (<ProfileLayout
+                </div>
+            ) : (
+                <ProfileLayout
                     username={username}
-                    isOwner={true} // Always true for owner's view
-                    isReadOnly={isReadOnly} // Pass isReadOnly based on current view mode
+                    isOwner={true}
+                    isReadOnly={isReadOnly}
                     timezone={optimisticTimezone || profileToDisplay.timezone}
                     onTimezoneChange={handleTimezoneChange}
                 >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div className="lg:col-span-1 h-full">
-                            <BioSection
-                                username={username}
-                                bio={profileToDisplay.bio ?? null}
-                                isOwner={true}
-                                isReadOnly={isReadOnly}
-                                onBioUpdate={handleBioUpdate}
-                            />
-                        </div>
-                        <div className="lg:col-span-1 flex flex-col gap-6">
-                             <IdentitySection isOwner={true} isReadOnly={isReadOnly} ownerHabits={ownerHabits}/>
-                             <TargetsSection
-                                isOwner={true}
-                                isReadOnly={isReadOnly} // Pass isReadOnly
-                                timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
-                                onActivityLogged={refreshJournalEntries} // Refresh journal on target toggle
-                            />
-                        </div>
-                    </div>
+                    <CoreIdentitySection
+                        isCollapsible={isCollapsible}
+                        isReadOnly={isReadOnly}
+                        username={username}
+                        profileToDisplay={profileToDisplay}
+                        ownerHabits={ownerHabits}
+                        onBioUpdate={handleBioUpdate}
+                        onActivityLogged={refreshJournalEntries}
+                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                    />
 
                     <ActionsSection
                         isOwner={true}
-                        isReadOnly={isReadOnly} // Pass isReadOnly
+                        isReadOnly={isReadOnly}
                         actions={actions}
                         loading={actionsLoading}
-                        onActionToggled={handleActionToggled} // Use wrapped handler
+                        onActionToggled={handleActionToggled}
                         onActionAdded={addAction}
                         onActionUpdated={updateActionText}
-                        onActionDeleted={handleActionDeleted} // Use wrapped handler
-                        undoDeleteAction={undoDeleteAction} // Pass undoDeleteAction
+                        onActionDeleted={handleActionDeleted}
+                        undoDeleteAction={undoDeleteAction}
                         onActionIndented={indentAction}
                         onActionOutdented={outdentAction}
                         onActionMovedUp={moveActionUp}
                         onActionMovedDown={moveActionDown}
                         onActionPrivacyToggled={toggleActionPrivacy}
-                        onActionAddedAfter={addActionAfter} // New
-                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'} // Pass timezone
+                        onActionAddedAfter={addActionAfter}
+                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                        isCollapsible={isCollapsible}
                     />
                     <HabitsSection
                         isOwner={true}
-                        isReadOnly={isReadOnly} // Pass isReadOnly
+                        isReadOnly={isReadOnly}
                         habits={ownerHabits}
                         loading={ownerHabitsLoading}
-                        onActivityLogged={refreshJournalEntries} // Refresh journal on habit completion
+                        onActivityLogged={refreshJournalEntries}
                     />
                     <JournalSection
                         isOwner={true}
-                        isReadOnly={isReadOnly} // Pass isReadOnly
+                        isReadOnly={isReadOnly}
                         journalEntries={ownerJournalEntries}
                         loading={ownerJournalEntriesLoading}
+                        isCollapsible={isCollapsible}
                     />
                     <MotivationsSection
                         username={username}
                         isOwner={true}
-                        isReadOnly={isReadOnly} // Pass isReadOnly
+                        isReadOnly={isReadOnly}
                         loading={false}
                     />
-                </ProfileLayout>)}
-        </div>);
+                </ProfileLayout>
+            )}
+        </div>
+    );
 }
