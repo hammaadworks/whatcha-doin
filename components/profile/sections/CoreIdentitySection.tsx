@@ -17,6 +17,8 @@ interface CoreIdentitySectionProps {
     onBioUpdate: (newBio: string) => Promise<void>;
     onActivityLogged: () => Promise<void>;
     timezone: string;
+    isFolded: boolean; // New prop
+    toggleFold: () => void; // New prop
 }
 
 const CoreIdentitySection: React.FC<CoreIdentitySectionProps> = ({
@@ -28,11 +30,15 @@ const CoreIdentitySection: React.FC<CoreIdentitySectionProps> = ({
                                                                                    onBioUpdate,
                                                                                    onActivityLogged,
                                                                                    timezone,
+                                                                                   isFolded, // Destructure new prop
+                                                                                   toggleFold, // Destructure new prop
                                                                                }) => {
     return (
         <CollapsibleSectionWrapper 
             title="Me" 
             isCollapsible={isCollapsible}
+            isFolded={isFolded} // Pass new prop
+            toggleFold={toggleFold} // Pass new prop
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="lg:col-span-1 h-full">

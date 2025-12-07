@@ -8,6 +8,12 @@ import { PWAInstallModal } from '@/components/shared/PWAInstallModal';
 import { LifeBuoy, Bug, Download } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
+interface RelatedApplication {
+    platform: string;
+    url?: string;
+    id?: string;
+}
+
 const AppFooter = () => {
     const {
         promptInstall,
@@ -26,9 +32,30 @@ const AppFooter = () => {
 
     const { user, loading } = useAuth(); // Call useAuth hook, corrected to 'loading'
 
+    const [isPWAInstalledFromRelatedApps, setIsPWAInstalledFromRelatedApps] = useState(false);
+
     useEffect(() => {
         setMounted(true); // Set mounted to true after initial client-side render
     }, []);
+
+    useEffect(() => {
+        const checkPWAInstallation = async () => {
+            if ('getInstalledRelatedApps' in navigator) {
+                try {
+                    const relatedApps = await (navigator as any).getInstalledRelatedApps();
+                    const installed = relatedApps.some((app: RelatedApplication) => app.platform === 'webapp' && app.url?.includes('/manifest.json'));
+                    setIsPWAInstalledFromRelatedApps(installed);
+                } catch (error) {
+                    console.error('Error checking for installed related apps:', error);
+                    setIsPWAInstalledFromRelatedApps(false);
+                }
+            }
+        };
+
+        if (mounted) {
+            checkPWAInstallation();
+        }
+    }, [mounted]);
 
     // Helper function to render the PWA button/message
     const renderPWAInstallUI = () => {
@@ -86,6 +113,17 @@ const AppFooter = () => {
                                     <Download className="h-4 w-4" />
                                     {renderPWAInstallUI()}
                                 </div>
+                            );
+                        } else if (isPWAInstalledFromRelatedApps && mounted && !loading && user) {
+                            footerItems.push(
+                                <button
+                                    key="open-pwa"
+                                    onClick={() => window.open('web+whatcha-doin://', '_self')}
+                                    className="flex items-center gap-x-1 text-primary hover:underline focus:outline-none text-sm"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    <span>Open in App</span>
+                                </button>
                             );
                         }
 

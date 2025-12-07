@@ -41,13 +41,15 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ open, o
             <h4 className="font-semibold text-sm uppercase tracking-wider">Global Navigation</h4>
           </div>
           <div className="space-y-1">
-            <ShortcutRow label="Open Shortcuts" keys={["/"]} />
             <ShortcutRow label="View Profile" keys={["P"]} />
-            <ShortcutRow label="View Insights" keys={["I"]} />
+            <ShortcutRow label="Open Shortcuts" keys={["/"]} />
             <ShortcutRow label="Open Settings" keys={["S"]} />
             <ShortcutRow label="Toggle Theme" keys={["C"]} />
             <ShortcutRow label="Add Action" keys={["A"]} />
             <ShortcutRow label="Add Target" keys={["T"]} />
+            <ShortcutRow label="Toggle 'Me' Section Fold" keys={["Shift", "M"]} />
+            <ShortcutRow label="Toggle 'Actions' Section Fold" keys={["Shift", "A"]} />
+            <ShortcutRow label="Toggle 'Journal' Section Fold" keys={["Shift", "J"]} />
           </div>
         </div>
 

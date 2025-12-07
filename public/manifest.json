@@ -20,5 +20,17 @@
   ],
   "theme_color": "#F1F3F5",
   "background_color": "#F1F3F5",
-  "display": "standalone"
+  "display": "standalone",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "/manifest.json"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+whatcha-doin",
+      "url": "/?url=%s"
+    }
+  ]
 }

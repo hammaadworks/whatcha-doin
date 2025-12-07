@@ -62,6 +62,8 @@ interface ActionsSectionProps {
     privateCount?: number; // New prop
     timezone: string; // Add timezone prop
     isCollapsible?: boolean;
+    isFolded?: boolean; // New prop, now optional
+    toggleFold?: () => void; // New prop, now optional
 }
 
 const ActionsSection: React.FC<ActionsSectionProps> = ({
@@ -84,6 +86,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                                                            privateCount = 0,
                                                            timezone, // Destructure timezone prop
                                                            isCollapsible = false,
+                                                           isFolded, // Destructure new prop
+                                                           toggleFold, // Destructure new prop
                                                        }) => {
     const addActionFormRef = useRef<{
         focusInput: () => void;
@@ -196,6 +200,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         <CollapsibleSectionWrapper
             title="Actions"
             isCollapsible={isCollapsible}
+            isFolded={isFolded} // Pass new prop
+            toggleFold={toggleFold} // Pass new prop
             rightElement={
                 <div className="flex items-center gap-3">
                     {overallTotal > 0 && (

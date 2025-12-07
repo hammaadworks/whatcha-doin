@@ -35,6 +35,8 @@ interface JournalSectionProps {
     journalEntries: JournalEntry[];
     loading: boolean;
     isCollapsible?: boolean;
+    isFolded?: boolean; // New prop, now optional
+    toggleFold?: () => void; // New prop, now optional
 }
 
 const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
@@ -96,7 +98,7 @@ const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
     )
 }
 
-const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading, isCollapsible = false}) => {
+const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading, isCollapsible = false, isFolded, toggleFold}) => {
     const {user} = useAuth();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [activeTab, setActiveTab] = useState<'private' | 'public'>(isOwner ? 'private' : 'public');
@@ -186,6 +188,8 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
         <CollapsibleSectionWrapper
             title="Journal"
             isCollapsible={isCollapsible}
+            isFolded={isFolded} // Pass new prop
+            toggleFold={toggleFold} // Pass new prop
             rightElement={
                 <div className="flex items-center gap-2"> {/* Wrapper for date picker and new add button */}
                     {/* Date Picker */}

@@ -21,6 +21,7 @@ import IdentitySection from '@/components/profile/sections/IdentitySection';
 import TargetsSection from '@/components/profile/sections/TargetsSection';
 import BioSection from '@/components/profile/sections/BioSection';
 import CoreIdentitySection from '@/components/profile/sections/CoreIdentitySection';
+import { useKeyboardShortcuts } from '@/components/shared/KeyboardShortcutsProvider'; // Import the new hook
 
 interface OwnerProfileViewProps {
     username: string;
@@ -46,6 +47,7 @@ export default function OwnerProfileView({
     const router = useRouter();
     const searchParams = useSearchParams();
     const {user: authenticatedUser, refreshUser} = useAuth();
+    const { isMeFolded, toggleMeFold, isActionsFolded, toggleActionsFold, isJournalFolded, toggleJournalFold } = useKeyboardShortcuts();
 
     const [optimisticTimezone, setOptimisticTimezone] = useState<string | null>(null);
 
@@ -189,6 +191,8 @@ export default function OwnerProfileView({
                         onBioUpdate={handleBioUpdate}
                         onActivityLogged={refreshJournalEntries}
                         timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                        isFolded={isMeFolded}
+                        toggleFold={toggleMeFold}
                     />
 
                     <ActionsSection
@@ -209,6 +213,8 @@ export default function OwnerProfileView({
                         onActionAddedAfter={addActionAfter}
                         timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
                         isCollapsible={isCollapsible}
+                        isFolded={isActionsFolded}
+                        toggleFold={toggleActionsFold}
                     />
                     <HabitsSection
                         isOwner={true}
@@ -223,6 +229,8 @@ export default function OwnerProfileView({
                         journalEntries={ownerJournalEntries}
                         loading={ownerJournalEntriesLoading}
                         isCollapsible={isCollapsible}
+                        isFolded={isJournalFolded}
+                        toggleFold={toggleJournalFold}
                     />
                     <MotivationsSection
                         username={username}
