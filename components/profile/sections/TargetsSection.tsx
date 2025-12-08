@@ -11,6 +11,7 @@ import {cn} from '@/lib/utils';
 import {Undo2} from 'lucide-react'; // Removed Check, Undo2
 import {CircularProgress} from '@/components/ui/circular-progress'; // Added CircularProgress
 import {toast} from 'sonner'; // Import sonner toast
+import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper'; // Import CollapsibleSectionWrapper
 
 interface TargetsSectionProps {
     isOwner: boolean;
@@ -18,6 +19,9 @@ interface TargetsSectionProps {
     timezone: string;
     targets?: ActionNode[]; // Optional targets prop
     onActivityLogged?: () => void; // New prop
+    isCollapsible?: boolean; // New prop
+    isFolded?: boolean; // New prop
+    toggleFold?: () => void; // New prop
 }
 
 // Helper to recursively count total and completed actions for a given list of ActionNodes
@@ -42,7 +46,8 @@ const getMonthlyTargetCompletionCounts = (nodes: ActionNode[]): { total: number;
 };
 
 export default function TargetsSection({
-                                           isOwner, isReadOnly = false, timezone, targets: propTargets, onActivityLogged
+                                           isOwner, isReadOnly = false, timezone, targets: propTargets, onActivityLogged,
+                                           isCollapsible = false, isFolded, toggleFold // Destructure new props
                                        }: TargetsSectionProps) {
     const {
         buckets, loading, addTarget, addTargetAfter, // Destructure new function
@@ -227,76 +232,85 @@ export default function TargetsSection({
     // But let's show empty state if that's desired.
     if (!isOwner && !isReadOnly) return null;
 
-    return (<div className="space-y-4">
-        <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-            <h2 className="text-2xl font-extrabold text-primary">Targets</h2>
-            <div className="flex items-center gap-3">
-                {currentMonthTotal > 0 && (<CircularProgress
-                        progress={currentMonthProgressPercentage}
-                        size={36}
-                        strokeWidth={3}
-                        color="text-primary"
-                        bgColor="text-background/80"
-                                                    showTickOnComplete={isCurrentMonthAllComplete}
-                                                >                        {!isCurrentMonthAllComplete && (<span className="text-xs text-muted-foreground">
+    return (
+        <CollapsibleSectionWrapper
+            title="Targets"
+            isCollapsible={isCollapsible}
+            isFolded={isFolded}
+            toggleFold={toggleFold}
+        >
+            <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
+                    <h2 className="text-2xl font-extrabold text-primary">Targets</h2>
+                    <div className="flex items-center gap-3">
+                        {currentMonthTotal > 0 && (<CircularProgress
+                                progress={currentMonthProgressPercentage}
+                                size={36}
+                                strokeWidth={3}
+                                color="text-primary"
+                                bgColor="text-background/80"
+                                showTickOnComplete={isCurrentMonthAllComplete}
+                            >                        {!isCurrentMonthAllComplete && (<span className="text-xs text-muted-foreground">
                                     {currentMonthCompleted}/{currentMonthTotal}
                                 </span>)}
-                    </CircularProgress>)}
+                            </CircularProgress>)}
+                    </div>
+                </div>
+
+                <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as TargetBucket)} className="w-full">
+                    <div className="w-full flex justify-center pt-4 sm:pt-0"> {/* Outer container for centering and padding */}
+                        <TabsList className="w-full flex items-center justify-between bg-card rounded-full p-2 shadow-md border border-primary gap-x-4"> {/* Inner container styling */}
+                            <TabsTrigger
+                                value="prev1"
+                                className={cn(
+                                    "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center", // VibeSelector base
+                                    "bg-background/80 text-muted-foreground hover:bg-accent/50", // VibeSelector unselected (default)
+                                    "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90", // VibeSelector selected override
+                                    "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary", // Custom active styles
+                                    "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default" // Remove focus ring, disable opacity
+                                )}
+                            >{prev1MonthLabel}</TabsTrigger>
+                            <TabsTrigger
+                                value="prev"
+                                className={cn(
+                                    "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
+                                    "bg-background/80 text-muted-foreground hover:bg-accent/50",
+                                    "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
+                                    "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
+                                    "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
+                                )}
+                            >{prevMonthLabel}</TabsTrigger>
+                            <TabsTrigger
+                                value="current"
+                                className={cn(
+                                    "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
+                                    "bg-background/80 text-muted-foreground hover:bg-accent/50",
+                                    "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
+                                    "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
+                                    "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
+                                )}
+                            >{currentMonthLabel}</TabsTrigger>
+                            <TabsTrigger
+                                value="future"
+                                className={cn(
+                                    "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
+                                    "bg-background/80 text-muted-foreground hover:bg-accent/50",
+                                    "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
+                                    "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
+                                    "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
+                                )}
+                            >Future</TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="prev1">{renderTabContent('prev1')}</TabsContent>
+                    <TabsContent value="prev">{renderTabContent('prev')}</TabsContent>
+                    <TabsContent value="current">{renderTabContent('current')}</TabsContent>
+                    <TabsContent value="future">{renderTabContent('future')}</TabsContent>
+                </Tabs>
             </div>
-        </div>
-
-        <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as TargetBucket)} className="w-full">
-        <div className="w-full flex justify-center pt-4 sm:pt-0"> {/* Outer container for centering and padding */}
-            <TabsList className="w-full flex items-center justify-between bg-card rounded-full p-2 shadow-md border border-primary gap-x-4"> {/* Inner container styling */}
-                <TabsTrigger
-                    value="prev1"
-                    className={cn(
-                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center", // VibeSelector base
-                        "bg-background/80 text-muted-foreground hover:bg-accent/50", // VibeSelector unselected (default)
-                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90", // VibeSelector selected override
-                        "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary", // Custom active styles
-                        "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default" // Remove focus ring, disable opacity
-                    )}
-                >{prev1MonthLabel}</TabsTrigger>
-                <TabsTrigger
-                    value="prev"
-                    className={cn(
-                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
-                        "bg-background/80 text-muted-foreground hover:bg-accent/50",
-                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
-                        "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
-                        "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
-                    )}
-                >{prevMonthLabel}</TabsTrigger>
-                <TabsTrigger
-                    value="current"
-                    className={cn(
-                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
-                        "bg-background/80 text-muted-foreground hover:bg-accent/50",
-                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
-                        "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
-                        "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
-                    )}
-                >{currentMonthLabel}</TabsTrigger>
-                <TabsTrigger
-                    value="future"
-                    className={cn(
-                        "px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center",
-                        "bg-background/80 text-muted-foreground hover:bg-accent/50",
-                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90",
-                        "data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-primary",
-                        "focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:cursor-default"
-                    )}
-                >Future</TabsTrigger>
-            </TabsList>
-        </div>
-
-            <TabsContent value="prev1">{renderTabContent('prev1')}</TabsContent>
-            <TabsContent value="prev">{renderTabContent('prev')}</TabsContent>
-            <TabsContent value="current">{renderTabContent('current')}</TabsContent>
-            <TabsContent value="future">{renderTabContent('future')}</TabsContent>
-        </Tabs>
-    </div>);
+        </CollapsibleSectionWrapper>
+    );
 }
 
 // Helper (duplicated from ActionsSection, ideally move to utils)

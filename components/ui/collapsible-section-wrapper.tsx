@@ -53,7 +53,10 @@ export const CollapsibleSectionWrapper: React.FC<CollapsibleSectionWrapperProps>
           </div>
           {isCollapsible && (
             <ChevronDown
-              className={cn('transition-transform duration-300 h-6 w-6 text-primary', currentIsOpen ? 'rotate-180' : '')}
+              className={cn(
+                'transition-all duration-[8000ms] h-6 w-6 text-primary', // Changed duration to 8000ms
+                currentIsOpen ? 'rotate-180 translate-y-[5px]' : 'rotate-0 translate-y-0' // Added translate-y for "going down" effect
+              )}
             />
           )}
         </div>

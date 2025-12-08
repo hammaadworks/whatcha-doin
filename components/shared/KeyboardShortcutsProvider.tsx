@@ -7,6 +7,12 @@ import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import { useTheme } from 'next-themes'; // New import for theme management
 import { AnimatedThemeTogglerRef } from '@/components/ui/animated-theme-toggler'; // New import for the ref type
 import InsightsTrigger from '@/components/shared/InsightsTrigger'; // Import InsightsTrigger
+import {
+    LOCAL_STORAGE_ME_FOLDED_KEY,
+    LOCAL_STORAGE_ACTIONS_FOLDED_KEY,
+    LOCAL_STORAGE_JOURNAL_FOLDED_KEY,
+    LOCAL_STORAGE_TARGETS_FOLDED_KEY
+} from '@/lib/constants';
 
 interface KeyboardShortcutsContextType {
     isOpen: boolean;
@@ -23,6 +29,8 @@ interface KeyboardShortcutsContextType {
     toggleActionsFold: () => void; // New toggler for 'Actions' section folding
     isJournalFolded: boolean; // New state for 'Journal' section folding
     toggleJournalFold: () => void; // New toggler for 'Journal' section folding
+    isTargetsFolded: boolean; // New state for 'Targets' section folding
+    toggleTargetsFold: () => void; // New toggler for 'Targets' section folding
 }
 
 const KeyboardShortcutsContext = createContext<KeyboardShortcutsContextType | undefined>(undefined);
@@ -31,9 +39,36 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
     const [isOpen, setIsOpen] = useState(false);
     const [isInsightsOpen, setInsightsOpen] = useState(false); // Re-added state for Insights
     const [isSettingsOpen, setSettingsOpen] = useState(false); // New state for Settings
-    const [isMeFolded, setIsMeFolded] = useState(false); // New state for 'Me' section folding
-    const [isActionsFolded, setIsActionsFolded] = useState(false); // New state for 'Actions' section folding
-    const [isJournalFolded, setIsJournalFolded] = useState(false); // New state for 'Journal' section folding
+
+    const [isMeFolded, setIsMeFolded] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem(LOCAL_STORAGE_ME_FOLDED_KEY);
+            return saved ? JSON.parse(saved) : true; // Default to folded
+        }
+        return true;
+    });
+    const [isActionsFolded, setIsActionsFolded] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem(LOCAL_STORAGE_ACTIONS_FOLDED_KEY);
+            return saved ? JSON.parse(saved) : true; // Default to folded
+        }
+        return true;
+    });
+    const [isJournalFolded, setIsJournalFolded] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem(LOCAL_STORAGE_JOURNAL_FOLDED_KEY);
+            return saved ? JSON.parse(saved) : true; // Default to folded
+        }
+        return true;
+    });
+    const [isTargetsFolded, setIsTargetsFolded] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem(LOCAL_STORAGE_TARGETS_FOLDED_KEY);
+            return saved ? JSON.parse(saved) : true; // Default to folded
+        }
+        return true;
+    });
+
     const [isMac, setIsMac] = useState(false);
     const router = useRouter(); // Initialize useRouter
     const { user } = useAuth(); // Get user from useAuth
@@ -53,15 +88,19 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
     }, []);
 
     const toggleMeFold = useCallback(() => { // New toggler for 'Me' section folding
-        setIsMeFolded((prev) => !prev);
+        setIsMeFolded((prev: boolean) => !prev);
     }, []);
 
     const toggleActionsFold = useCallback(() => { // New toggler for 'Actions' section folding
-        setIsActionsFolded((prev) => !prev);
+        setIsActionsFolded((prev: boolean) => !prev);
     }, []);
 
     const toggleJournalFold = useCallback(() => { // New toggler for 'Journal' section folding
-        setIsJournalFolded((prev) => !prev);
+        setIsJournalFolded((prev: boolean) => !prev);
+    }, []);
+
+    const toggleTargetsFold = useCallback(() => { // New toggler for 'Targets' section folding
+        setIsTargetsFolded((prev: boolean) => !prev);
     }, []);
 
     useEffect(() => {
@@ -79,6 +118,7 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
               const isMPressed = event.key === 'm' || event.key === 'M'; // New check for 'M'
               const isAPressed = event.key === 'a' || event.key === 'A'; // New check for 'A'
               const isJPressed = event.key === 'j' || event.key === 'J'; // New check for 'J'
+              const isTPressed = event.key === 't' || event.key === 'T'; // New check for 'T'
 
               if (isModifierPressed && isSlashPressed) {
                 event.preventDefault();
@@ -108,6 +148,9 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
               } else if (isModifierPressed && isShiftPressed && isJPressed) { // Alt + Shift + J
                 event.preventDefault();
                 toggleJournalFold();
+              } else if (isModifierPressed && isShiftPressed && isTPressed) { // Alt + Shift + T
+                event.preventDefault();
+                toggleTargetsFold();
               }
             };
         document.addEventListener('keydown', handleKeyPress);
@@ -115,8 +158,31 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
             console.log('KeyboardShortcutsProvider useEffect cleanup: Removing keydown listener'); // Added log
             document.removeEventListener('keydown', handleKeyPress);
         };
-    }, [user, router, theme, toggleMeFold, toggleActionsFold, toggleJournalFold, setInsightsOpen]); // Re-add setInsightsOpen to dependency array
+    }, [user, router, theme, toggleMeFold, toggleActionsFold, toggleJournalFold, toggleTargetsFold, setInsightsOpen]); // Re-add setInsightsOpen to dependency array
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(LOCAL_STORAGE_ME_FOLDED_KEY, JSON.stringify(isMeFolded));
+        }
+    }, [isMeFolded]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(LOCAL_STORAGE_ACTIONS_FOLDED_KEY, JSON.stringify(isActionsFolded));
+        }
+    }, [isActionsFolded]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(LOCAL_STORAGE_JOURNAL_FOLDED_KEY, JSON.stringify(isJournalFolded));
+        }
+    }, [isJournalFolded]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(LOCAL_STORAGE_TARGETS_FOLDED_KEY, JSON.stringify(isTargetsFolded));
+        }
+    }, [isTargetsFolded]);
 
     return (<KeyboardShortcutsContext.Provider value={{
         isOpen,
@@ -133,6 +199,8 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
         toggleActionsFold, // Provide 'Actions' section folding toggler
         isJournalFolded, // Provide 'Journal' section folding state
         toggleJournalFold, // Provide 'Journal' section folding toggler
+        isTargetsFolded, // Provide 'Targets' section folding state
+        toggleTargetsFold, // Provide 'Targets' section folding toggler
     }}>
             {children}
             <KeyboardShortcutsModal open={isOpen} onOpenChange={setIsOpen}/>

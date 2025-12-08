@@ -4,7 +4,7 @@ import React from 'react';
 import BaseModal from './BaseModal';
 import { Button } from '@/components/ui/button';
 import KeyboardShortcut from './KeyboardShortcut';
-import { Globe, ListTodo, Command } from 'lucide-react';
+import { Globe, ListTodo, Command, ChevronsUpDown } from 'lucide-react'; // Import ChevronsUpDown
 import { cn } from '@/lib/utils';
 
 interface KeyboardShortcutsModalProps {
@@ -47,16 +47,27 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ open, o
             <ShortcutRow label="Toggle Theme" keys={["C"]} />
             <ShortcutRow label="Add Action" keys={["A"]} />
             <ShortcutRow label="Add Target" keys={["T"]} />
-            <ShortcutRow label="Toggle 'Me' Section Fold" keys={["Shift", "M"]} />
-            <ShortcutRow label="Toggle 'Actions' Section Fold" keys={["Shift", "A"]} />
-            <ShortcutRow label="Toggle 'Journal' Section Fold" keys={["Shift", "J"]} />
+          </div>
+        </div>
+
+        {/* Folding Sections */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-primary border-b border-border pb-2">
+            <ChevronsUpDown className="w-4 h-4" />
+            <h4 className="font-semibold text-sm uppercase tracking-wider">Folding Sections <span className="text-xs text-muted-foreground normal-case font-normal">(Alt+Shift)</span></h4>
+          </div>
+          <div className="space-y-1">
+            <ShortcutRow label="Me Section" keys={["Shift", "M"]} />
+            <ShortcutRow label="Actions Section" keys={["Shift", "A"]} />
+            <ShortcutRow label="Journal Section" keys={["Shift", "J"]} />
+            <ShortcutRow label="Targets Section" keys={["Shift", "T"]} />
           </div>
         </div>
 
         {/* Items Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-primary border-b border-border pb-2">
-            <ListTodo className="w-4 h-4" />
+            <ListTodo className="w-4 h-4" /> {/* Revert to ListTodo for Action & Target Items */}
             <h4 className="font-semibold text-sm uppercase tracking-wider">Action & Target Items <span className="text-xs text-muted-foreground normal-case font-normal">(when focused)</span></h4>
           </div>
           <div className="space-y-1">

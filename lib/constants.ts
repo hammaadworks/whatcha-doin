@@ -21,3 +21,8 @@ export const WEBSITE_URL = "https://www.hammaadworks.com";
 export const DOMAIN_URL = "https://whatcha-doin.hammaadworks.com";
 
 export const ACTIVITIES_PER_PAGE = 10;
+
+export const LOCAL_STORAGE_ME_FOLDED_KEY = 'whatcha_me_folded';
+export const LOCAL_STORAGE_ACTIONS_FOLDED_KEY = 'whatcha_actions_folded';
+export const LOCAL_STORAGE_JOURNAL_FOLDED_KEY = 'whatcha_journal_folded';
+export const LOCAL_STORAGE_TARGETS_FOLDED_KEY = 'whatcha_targets_folded';
