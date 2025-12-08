@@ -47,7 +47,8 @@ export default function OwnerProfileView({
     const router = useRouter();
     const searchParams = useSearchParams();
     const {user: authenticatedUser, refreshUser} = useAuth();
-    const { isMeFolded, toggleMeFold, isActionsFolded, toggleActionsFold, isJournalFolded, toggleJournalFold } = useKeyboardShortcuts();
+    const { isMeFolded, toggleMeFold, isActionsFolded, toggleActionsFold, isJournalFolded, toggleJournalFold, isTargetsFolded, toggleTargetsFold } = useKeyboardShortcuts(); // Destructure new targets folding props
+
 
     const [optimisticTimezone, setOptimisticTimezone] = useState<string | null>(null);
 
@@ -118,14 +119,23 @@ export default function OwnerProfileView({
 
     useEffect(() => {
         if (currentViewMode !== 'public' && authenticatedUser?.id) {
-            setOwnerHabitsLoading(true);
-            fetchOwnerHabits(authenticatedUser.id)
-                .then(setOwnerHabits)
-                .catch(err => console.error("Failed to fetch owner habits:", err))
-                .finally(() => setOwnerHabitsLoading(false));
+            refreshHabits();
             refreshJournalEntries();
         }
     }, [currentViewMode, authenticatedUser?.id]);
+
+    const refreshHabits = async () => {
+        if (!authenticatedUser?.id) return;
+        setOwnerHabitsLoading(true);
+        try {
+            const habits = await fetchOwnerHabits(authenticatedUser.id);
+            setOwnerHabits(habits);
+        } catch (error) {
+            console.error("Failed to fetch owner habits:", error);
+        } finally {
+            setOwnerHabitsLoading(false);
+        }
+    };
 
     const refreshJournalEntries = async () => {
         if (!authenticatedUser?.id) return;
@@ -138,6 +148,10 @@ export default function OwnerProfileView({
         } finally {
             setOwnerJournalEntriesLoading(false);
         }
+    };
+
+    const handleActivityLogged = async () => {
+        await Promise.all([refreshJournalEntries(), refreshHabits()]);
     };
 
     const handleActionToggled = async (id: string) => {
@@ -189,7 +203,7 @@ export default function OwnerProfileView({
                         profileToDisplay={profileToDisplay}
                         ownerHabits={ownerHabits}
                         onBioUpdate={handleBioUpdate}
-                        onActivityLogged={refreshJournalEntries}
+                        onActivityLogged={handleActivityLogged}
                         timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
                         isFolded={isMeFolded}
                         toggleFold={toggleMeFold}
@@ -221,7 +235,16 @@ export default function OwnerProfileView({
                         isReadOnly={isReadOnly}
                         habits={ownerHabits}
                         loading={ownerHabitsLoading}
-                        onActivityLogged={refreshJournalEntries}
+                        onActivityLogged={handleActivityLogged}
+                    />
+                    <TargetsSection // This is the TargetsSection that needs folding props
+                        isOwner={true}
+                        isReadOnly={isReadOnly}
+                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
+                        onActivityLogged={refreshJournalEntries} // Targets usually don't affect habits directly but kept separate just in case
+                        isCollapsible={isCollapsible}
+                        isFolded={isTargetsFolded} // Pass isTargetsFolded
+                        toggleFold={toggleTargetsFold} // Pass toggleTargetsFold
                     />
                     <JournalSection
                         isOwner={true}

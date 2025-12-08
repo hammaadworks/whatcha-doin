@@ -2,9 +2,10 @@ import {createClient} from './client';
 import {Habit, ActivityLogEntry} from './types'; // Import ActivityLogEntry
 import {CompletionData} from '@/components/habits/HabitCompletionModal';
 import { JournalActivityService } from '@/lib/logic/JournalActivityService'; // New import for JournalActivityService
+import { PostgrestError } from '@supabase/supabase-js';
 
 // Placeholder for createHabit if it was lost, or real implementation
-export const createHabit = async (habit: Partial<Habit>): Promise<{ data: Habit | null; error: any }> => {
+export const createHabit = async (habit: Partial<Habit>): Promise<{ data: Habit | null; error: PostgrestError | null }> => {
     const supabase = createClient();
     const {data, error} = await supabase
         .from('habits')
@@ -14,7 +15,7 @@ export const createHabit = async (habit: Partial<Habit>): Promise<{ data: Habit 
     return {data, error};
 };
 
-export async function completeHabit(habitId: string, data: CompletionData): Promise<{ data: { id: string } | null; error: any }> {
+export async function completeHabit(habitId: string, data: CompletionData): Promise<{ data: { id: string } | null; error: PostgrestError | null }> {
     const supabase = createClient();
     const journalActivityService = new JournalActivityService(supabase);
 
@@ -187,6 +188,57 @@ export async function deleteHabit(habitId: string): Promise<void> {
     if (error) {
         console.error("Error deleting habit:", error);
         throw error;
+    }
+}
+
+export async function unmarkHabit(habitId: string, targetState: string): Promise<void> {
+    const supabase = createClient();
+    
+    // 1. Fetch habit
+    const { data: habit, error: habitError } = await supabase
+        .from('habits')
+        .select('*')
+        .eq('id', habitId)
+        .single();
+        
+    if (habitError || !habit) throw habitError;
+
+    // 2. Find latest completion
+    const { data: latestCompletion } = await supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('habit_id', habitId)
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+    let newStreak = habit.current_streak;
+    
+    // If we have a completion and it looks recent (e.g. created today), we delete it.
+    if (latestCompletion) {
+       // We can check if `latestCompletion.completed_at` is today.
+       const completionDate = new Date(latestCompletion.completed_at);
+       const today = new Date();
+       
+       const isSameDay = completionDate.toDateString() === today.toDateString();
+       
+       if (isSameDay) {
+           await deleteHabitCompletion(latestCompletion.id, habit.user_id);
+           newStreak = Math.max(0, newStreak - 1);
+       }
+    }
+    
+    // 3. Update habit state
+    const { error: updateError } = await supabase
+        .from('habits')
+        .update({
+            current_streak: newStreak,
+            pile_state: targetState
+        })
+        .eq('id', habitId);
+
+    if (updateError) {
+        throw updateError;
     }
 }
 

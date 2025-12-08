@@ -75,6 +75,8 @@ export const metadata: Metadata = {
 import { ThemeProvider } from "next-themes";
 import { KeyboardShortcutsProvider } from '@/components/shared/KeyboardShortcutsProvider';
 import { LayoutContent } from '@/components/layout/LayoutContent'; // New import for the client component
+import { SystemTimeProvider } from '@/components/providers/SystemTimeProvider';
+import { cookies } from 'next/headers';
 
 // ... other imports ...
 
@@ -88,6 +90,9 @@ export default async function RootLayout({children,}: Readonly<{ children: React
 
     logger.info(`RootLayout server-side user check: userId - ${user?.id}`);
 
+    const cookieStore = await cookies();
+    const simulatedDate = cookieStore.get('simulated_date')?.value;
+
     return (<html lang="en" suppressHydrationWarning>
         <head>
             <meta name="apple-mobile-web-app-title" content="whatcha-doin"/>
@@ -100,9 +105,11 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         <Pointer className="fill-primary" />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <AuthProvider>
-                <KeyboardShortcutsProvider>
-                    <LayoutContent>{children}</LayoutContent>
-                </KeyboardShortcutsProvider>
+                <SystemTimeProvider initialSimulatedDate={simulatedDate}>
+                    <KeyboardShortcutsProvider>
+                        <LayoutContent>{children}</LayoutContent>
+                    </KeyboardShortcutsProvider>
+                </SystemTimeProvider>
             </AuthProvider>
         </ThemeProvider>
         </body>

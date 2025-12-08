@@ -12,6 +12,8 @@ import {Undo2} from 'lucide-react'; // Removed Check, Undo2
 import {CircularProgress} from '@/components/ui/circular-progress'; // Added CircularProgress
 import {toast} from 'sonner'; // Import sonner toast
 import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper'; // Import CollapsibleSectionWrapper
+import { Confetti, ConfettiRef } from '@/components/ui/confetti'; // Import Confetti
+import { useConfettiColors } from '@/hooks/useConfettiColors'; // Import useConfettiColors
 
 interface TargetsSectionProps {
     isOwner: boolean;
@@ -47,16 +49,18 @@ const getMonthlyTargetCompletionCounts = (nodes: ActionNode[]): { total: number;
 
 export default function TargetsSection({
                                            isOwner, isReadOnly = false, timezone, targets: propTargets, onActivityLogged,
-                                           isCollapsible = false, isFolded, toggleFold // Destructure new props
-                                       }: TargetsSectionProps) {
-    const {
-        buckets, loading, addTarget, addTargetAfter, // Destructure new function
-        toggleTarget, updateTargetText, deleteTarget, undoDeleteTarget, // Add undoDeleteTarget
-        lastDeletedTargetContext, // Add lastDeletedTargetContext
-        indentTarget, outdentTarget, moveTargetUp, moveTargetDown, toggleTargetPrivacy, // Add this
-        moveTargetToBucket
-    } = useTargets(isOwner, timezone, propTargets); // Pass propTargets to hook
-
+                                                                                       isCollapsible = false, isFolded, toggleFold // Destructure new props
+                                                                                  }: TargetsSectionProps) {
+                                               const {
+                                                   buckets, loading, addTarget, addTargetAfter, // Destructure new function
+                                                   toggleTarget, updateTargetText, deleteTarget, undoDeleteTarget, // Add undoDeleteTarget
+                                                   lastDeletedTargetContext, // Add lastDeletedTargetContext
+                                                   indentTarget, outdentTarget, moveTargetUp, moveTargetDown, toggleTargetPrivacy, // Add this
+                                                   moveTargetToBucket
+                                               } = useTargets(isOwner, timezone, propTargets); // Pass propTargets to hook
+                                           
+                                               const confettiRef = useRef<ConfettiRef>(null); // Confetti ref
+                                               const colors = useConfettiColors(); // Confetti colors hook
     const [activeTab, setActiveTab] = useState<TargetBucket>('current');
     const [focusedActionId, setFocusedActionId] = useState<string | null>(null); // Add focus state
     const addTargetFormRef = useRef<{
@@ -159,6 +163,47 @@ export default function TargetsSection({
     const currentMonthProgressPercentage = currentMonthTotal > 0 ? (currentMonthCompleted / currentMonthTotal) * 100 : 0;
     const isCurrentMonthAllComplete = currentMonthTotal > 0 && currentMonthCompleted === currentMonthTotal;
 
+    useEffect(() => {
+        if (activeTab === 'current' && isCurrentMonthAllComplete && confettiRef.current) {
+            // Side Cannons (left)
+            confettiRef.current.fire({
+                particleCount: 150,
+                spread: 90,
+                origin: { x: 0, y: 0.7 },
+                colors: colors,
+                shapes: ['square', 'circle', 'star'],
+                disableForReducedMotion: true,
+                scalar: 1.5,
+                drift: -0.05
+            });
+            // Side Cannons (right)
+            confettiRef.current.fire({
+                particleCount: 150,
+                spread: 90,
+                origin: { x: 1, y: 0.7 },
+                colors: colors,
+                shapes: ['square', 'circle', 'star'],
+                disableForReducedMotion: true,
+                scalar: 1.5,
+                drift: 0.05
+            });
+            // Additional Fireworks from center
+            confettiRef.current.fire({
+                particleCount: 100,
+                spread: 360,
+                ticks: 80,
+                gravity: 0.5,
+                decay: 0.9,
+                startVelocity: 45,
+                origin: { x: 0.5, y: 0.3 },
+                colors: colors,
+                shapes: ['star', 'circle'],
+                disableForReducedMotion: true,
+                scalar: 1.2
+            });
+        }
+    }, [activeTab, isCurrentMonthAllComplete, colors]);
+
     // Helper (duplicated from ActionsSection, ideally move to utils)
     const flattenActionTree = (nodes: ActionNode[]): ActionNode[] => {
         let flattened: ActionNode[] = [];
@@ -239,6 +284,7 @@ export default function TargetsSection({
             isFolded={isFolded}
             toggleFold={toggleFold}
         >
+            <Confetti ref={confettiRef} manualstart={true} />
             <div className="space-y-4">
                 <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
                     <h2 className="text-2xl font-extrabold text-primary">Targets</h2>

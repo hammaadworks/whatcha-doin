@@ -8,6 +8,8 @@ import {ActionsList} from '@/components/shared/ActionsList';
 import {AddActionForm} from '@/components/shared/AddActionForm';
 import {DeletedNodeContext} from '@/lib/utils/actionTreeUtils';
 import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper';
+import { Confetti, ConfettiRef } from '@/components/ui/confetti'; // Import Confetti
+import { useConfettiColors } from '@/hooks/useConfettiColors'; // Import useConfettiColors
 
 // Helper to recursively count total and completed actions
 const getOverallCompletionCounts = (nodes: ActionNode[]): { total: number; completed: number } => {
@@ -98,6 +100,9 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     }>(null);
     const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
 
+    const confettiRef = useRef<ConfettiRef>(null); // Confetti ref
+    const colors = useConfettiColors(); // Confetti colors hook
+
     // Handle delete action and show undo toast
     const handleDeleteAction = async (id: string) => {
         if (!onActionDeleted) return;
@@ -187,6 +192,31 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
 
     const isAllComplete = overallTotal > 0 && overallCompleted === overallTotal;
 
+    useEffect(() => {
+        if (isAllComplete && confettiRef.current) {
+            // Left cannon
+            confettiRef.current.fire({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: 0, y: 0.5 }, // From left middle
+                colors: colors,
+                shapes: ['square', 'circle'],
+                disableForReducedMotion: true,
+                scalar: 1.2
+            });
+            // Right cannon
+            confettiRef.current.fire({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: 1, y: 0.5 }, // From right middle
+                colors: colors,
+                shapes: ['square', 'circle'],
+                disableForReducedMotion: true,
+                scalar: 1.2
+            });
+        }
+    }, [isAllComplete, colors]); // Trigger when completion status changes
+
     if (loading && isOwner && !isReadOnly) { // Use loading from prop
         return (<div className="p-4 space-y-3">
             <Skeleton className="h-10 w-full"/>
@@ -221,6 +251,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 </div>
             }
         >
+        <Confetti ref={confettiRef} manualstart={true} />
         <ActionsList
             actions={itemsToRender}
             onActionToggled={isOwner && !isReadOnly ? onActionToggled : undefined}

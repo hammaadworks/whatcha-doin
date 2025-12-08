@@ -58,14 +58,18 @@ application.
 **Role:** An append-only log of every time a user completes a habit. Used for history, charts, and "Grace Period"
 recovery.
 
-| Column         | Type          | Description                  |
-|:---------------|:--------------|:-----------------------------|
-| `id`           | `uuid`        | **PK**.                      |
-| `habit_id`     | `uuid`        | **FK** to `habits`.          |
-| `user_id`      | `uuid`        | **FK** to `users`.           |
-| `completed_at` | `timestamptz` | When the button was clicked. |
-| `mood_score`   | `int`         | 0-100 score (Fuel Meter).    |
-| `notes`        | `text`        | Optional reflection.         |
+| Column                | Type          | Description                                |
+|:----------------------|:--------------|:-------------------------------------------|
+| `id`                  | `uuid`        | **PK**.                                    |
+| `habit_id`            | `uuid`        | **FK** to `habits`.                        |
+| `user_id`             | `uuid`        | **FK** to `users`.                         |
+| `completed_at`        | `timestamptz` | When the button was clicked.               |
+| `mood_score`          | `int`         | 0-100 score (Fuel Meter).                  |
+| `actual_value_achieved` | `float`       | Actual value recorded (e.g., 5.5 pages).   |
+| `goal_at_completion`  | `float`       | Goal value at the time of completion.      |
+| `duration_value`      | `float`       | Duration recorded (e.g., 30 for 30 mins).  |
+| `duration_unit`       | `text`        | Unit for duration (e.g., 'minutes').       |
+| `notes`               | `text`        | Optional reflection.                       |
 
 ---
 
@@ -148,13 +152,14 @@ recovery.
 
 **Role:** Daily text entries. One entry per date per user.
 
-| Column       | Type   | Description                                        |
-|:-------------|:-------|:---------------------------------------------------|
-| `id`         | `uuid` | **PK**.                                            |
-| `user_id`    | `uuid` | **FK** to `users`.                                 |
-| `entry_date` | `date` | The logical date of the entry (e.g. '2023-10-27'). |
-| `content`    | `text` | Markdown content.                                  |
-| `is_public`  | `bool` | Default `false`.                                   |
+| Column           | Type          | Description                                                    |
+|:-----------------|:--------------|:---------------------------------------------------------------|
+| `id`             | `uuid`        | **PK**.                                                        |
+| `user_id`        | `uuid`        | **FK** to `users`.                                             |
+| `entry_date`     | `date`        | The logical date of the entry (e.g. '2023-10-27').             |
+| `content`        | `text`        | Markdown content.                                              |
+| `is_public`      | `bool`        | Default `false`.                                               |
+| `activity_log`   | `jsonb`       | **Read-only.** Stores array of structured activity objects.    |
 
 ---
 
@@ -194,16 +199,15 @@ for scale.
 
 ---
 
-## 5. Data Lifecycle Strategy (Delete-on-Journal)
+## 5. Data Lifecycle Strategy (Real-Time Activity Journaling & Next Day Clearing)
 
-For **Actions** and **Targets**, we enforce a strict "Lightweight" data policy to prevent database bloat and keep user
-lists focused.
+This document outlines the strategy for implementing real-time activity logging into the user's journal. The goal is to move from a batch-processed "Next Day Clearing" mechanism (where completed items were archived into the journal as text the following day) to an immediate, structured logging system. This new approach stores activity completions (from Actions, Habits, and Targets) in a dedicated, read-only `JSONB` column (`activity_log`) within the `journal_entries` table. This separation ensures that user-editable journal content (`content`) remains untouched while providing an accurate, timestamped record of daily accomplishments.
 
-1. **Completion:** User marks item as complete.
-2. **Next Day:** At midnight (User Timezone), the system detects "old" completed items.
-3. **Teleport:** The text of the completed item is appended to the user's Journal Entry for that date.
-4. **Delete:** The structured item is **permanently deleted** from the `actions` or `targets` JSONB tree in the
-   database.
+For **Actions** and **Targets**, we enforce a strict "Lightweight" data policy to prevent database bloat and keep user lists focused.
 
-This ensures the active `jsonb` documents remain small and performant, while the Journal serves as the permanent
-historical record.
+1.  **Completion & Real-Time Logging:** When an item (Action, Habit, Target) is marked complete, its details are immediately logged to the `activity_log` JSONB array of the relevant `journal_entry` for the current day.
+2.  **Unmarking & Deletion from Log (Actions & Targets only):** If an Action or Target is later unmarked, its corresponding entry is **deleted** from the `activity_log` (adhering to the "go big or go home" philosophy where only completed items are recorded).
+3.  **Next Day Clearing (Actions & Targets Active Lists):** Upon the "next day" (after midnight in the user's timezone), all Actions and Targets that were marked as completed on the *previous day* are **permanently deleted** from their respective active data structures (e.g., `actions.data` JSONB tree, `targets.data` JSONB tree). They will no longer appear in the UI's active lists. Their historical record is now solely within `journal_entries.activity_log`.
+4.  **Habit Lifecycle (Distinct from Actions/Targets Clearing):** Habits do not get "deleted" from their main UI sections (Today, Yesterday, The Pile) upon completion. Instead, their *state* and *location* on the board change according to the "Two-Day Rule" and "Grace Period" logic. Their completion events are logged to `activity_log` in real-time.
+
+This ensures the active `jsonb` documents for Actions and Targets remain small and performant, while the `activity_log` serves as the immediate and permanent historical record of accomplishments. The `journal_entries.content` column remains exclusively for user's free-form reflections.

@@ -5,6 +5,8 @@ import { Habit } from '@/lib/supabase/types';
 import HabitInfoModal from './HabitInfoModal';
 import { ShineBorder } from '../ui/shine-border';
 import { HabitPileState } from '@/lib/enums'; // Import HabitPileState enum
+import { Flame, Skull } from 'lucide-react';
+import { differenceInCalendarDays } from 'date-fns';
 
 interface HabitChipPublicProps {
   habit: Habit;
@@ -23,6 +25,8 @@ export const HabitChipPublic: React.FC<HabitChipPublicProps> = ({ habit, disable
       setIsInfoModalOpen(true);
     }
   };
+  
+  const daysNeglected = isJunked && habit.junked_at ? differenceInCalendarDays(new Date(), new Date(habit.junked_at)) : 0;
 
   return (
     <>
@@ -38,12 +42,21 @@ export const HabitChipPublic: React.FC<HabitChipPublicProps> = ({ habit, disable
         {/* Main content */}
         <div className="flex items-center gap-x-2">
           <span>{habit.name}</span>
-          {/* Streak Counter */}
-          <div
-            className="inline-block rounded-[0.5rem] bg-primary px-2 py-1 text-[0.9rem] font-extrabold text-primary-foreground"
-          >
-            {habit.current_streak}
-          </div>
+          
+          {isJunked ? (
+             <div className="inline-block rounded-[0.5rem] bg-destructive/20 px-2 py-1 text-[0.9rem] font-extrabold text-destructive flex items-center gap-1">
+                <Skull size={14} />
+                {daysNeglected > 0 ? `${daysNeglected}d` : ''}
+             </div>
+          ) : (
+              /* Streak Counter */
+              <div
+                className="inline-block rounded-[0.5rem] bg-primary px-2 py-1 text-[0.9rem] font-extrabold text-primary-foreground flex items-center gap-1"
+              >
+                {habit.current_streak > 3 && <Flame size={14} className="fill-current" />}
+                {habit.current_streak}
+              </div>
+          )}
         </div>
         {rightAddon} {/* Render rightAddon here */}
         {pileState !== HabitPileState.JUNKED && (

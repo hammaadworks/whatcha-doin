@@ -36,7 +36,7 @@ whatcha-doin/
 │   │   └── layout.tsx           # Layout for all user-specific routes
 │   └── layout.tsx               # Root layout
 ├── components/                  # Reusable React components (UI, shared)
-│   ├── ui/                      # shadcn/ui components (customized)
+│   ├── ui/                      # shadcn/ui components (customized, including Magic UI)
 │   ├── common/                  # General purpose components
 │   └── habits/                  # Habit-specific components (e.g., HabitCard)
 ├── lib/                         # Utility functions, helpers, Supabase client initialization
@@ -44,6 +44,7 @@ whatcha-doin/
 │   ├── utils.ts                 # General utilities
 │   └── date.ts                  # Date/time utilities (e.g., timezone handling)
 ├── hooks/                       # Custom React hooks
+│   ├── useConfettiColors.ts     # Hook to get theme-aware colors for confetti
 ├── styles/                      # Tailwind CSS configuration, global styles
 ├── public/                      # Static assets
 ├── types/                       # Global TypeScript types/interfaces
@@ -140,8 +141,8 @@ first implementation story will involve executing this command to set up the pro
 
 * **Feature-Based Organization for Routes (`app/`):** The `app/` directory will be structured primarily by feature (
   e.g., `app/habits`, `app/journal`), leveraging Next.js App Router's conventions.
-* **Hybrid Organization for Shared Elements:**
-    * `components/ui/`: For `shadcn/ui` components.
+*   **Hybrid Organization for Shared Elements:**
+    * `components/ui/`: For `shadcn/ui` and Magic UI components (customized).
     * `components/common/`: For general-purpose, reusable components.
     * `components/features/[feature-name]/`: For components specific to a feature but reusable within it.
 * **Colocation of Related Files:** Tightly coupled files (component, types, tests) will be kept together.
