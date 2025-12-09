@@ -61,11 +61,13 @@ export const CollapsibleSectionWrapper: React.FC<CollapsibleSectionWrapperProps>
           )}
         </div>
       </div>
-      {(!isCollapsible || currentIsOpen) && ( // Use currentIsOpen for content visibility
-        <div className={cn("animate-in slide-in-from-top-2 fade-in duration-300")}>
-            {children}
-        </div>
-      )}
+      {/* Conditionally apply 'hidden' class based on currentIsOpen */}
+      <div className={cn(
+        "animate-in slide-in-from-top-2 fade-in duration-300",
+        isCollapsible && !currentIsOpen && "hidden" // Hide if collapsible and not open
+      )}>
+        {children}
+      </div>
     </div>
   );
 };

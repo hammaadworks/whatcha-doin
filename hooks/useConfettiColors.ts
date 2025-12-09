@@ -3,39 +3,76 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState, useCallback } from 'react';
 
 // Helper to convert HSL(var(--primary-hsl)) to a simple HEX or RGB string
-// For now, assuming the --primary and --primary-foreground are already usable hex/rgb
-// based on app/globals.css definitions.
 function getCssVarColor(varName: string): string {
   if (typeof window === 'undefined') return ''; // For SSR
   const color = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-  // If it's `hsl(var(--some-hsl))`, we would need to parse it.
-  // But based on globals.css, it's a direct hex like #FF6B6B or #00F5A0
   return color;
+}
+
+// Helper to convert HEX to RGBA string
+function hexToRgba(hex: string, alpha: number): string {
+  let r = 0, g = 0, b = 0;
+
+  // Handle cases where hex might be invalid or empty
+  if (!hex || !hex.startsWith('#')) {
+    // If hex is invalid, return a default transparent grey
+    return `rgba(128,128,128,${alpha})`;
+  }
+
+  const cleanHex = hex.substring(1); // Remove #
+  
+  // Validate hex length
+  if (!/^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/.test(cleanHex)) {
+    console.warn(`Invalid hex color format: ${hex}. Returning default transparent grey.`);
+    return `rgba(128,128,128,${alpha})`;
+  }
+
+  const hexValue = parseInt(cleanHex, 16); // Check if valid hex parseable
+
+  if (cleanHex.length === 3) {
+    r = parseInt(cleanHex[0] + cleanHex[0], 16);
+    g = parseInt(cleanHex[1] + cleanHex[1], 16);
+    b = parseInt(cleanHex[2] + cleanHex[2], 16);
+  }
+  else if (cleanHex.length === 6) {
+    r = parseInt(cleanHex.substring(0, 2), 16);
+    g = parseInt(cleanHex.substring(2, 4), 16);
+    b = parseInt(cleanHex.substring(4, 6), 16);
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 export function useConfettiColors(): string[] {
   const { theme } = useTheme();
-  const [colors, setColors] = useState<string[]>(['#FF6B6B', '#FFFFFF']); // Default for light theme (Zenith)
+  const [colors, setColors] = useState<string[]>(['rgba(128,128,128,1.0)']); // Default to opaque grey
 
   const updateColors = useCallback(() => {
-    const primary = getCssVarColor('--primary');
-    const primaryForeground = getCssVarColor('--primary-foreground');
-    if (primary && primaryForeground) {
-      setColors([primary, primaryForeground]);
+    const primaryHex = getCssVarColor('--primary');
+    let effectivePrimaryHex = '';
+
+    // Validate fetched primary hex
+    if (primaryHex.startsWith('#') && (primaryHex.length === 7 || primaryHex.length === 4)) {
+      effectivePrimaryHex = primaryHex;
     } else {
-      // Fallback if CSS variables are not immediately available or theme changes unexpectedly
-      if (theme === 'dark') {
-        setColors(['#00F5A0', '#000000']); // Monolith defaults
-      } else {
-        setColors(['#FF6B6B', '#FFFFFF']); // Zenith defaults
-      }
+      // If fetchedPrimaryHex is invalid or empty, log a warning and use a neutral default
+      console.warn(`useConfettiColors: Invalid or empty --primary value fetched ("${primaryHex}") for theme "${theme}". Falling back to transparent grey.`);
+      effectivePrimaryHex = '#808080'; // Neutral grey to be converted to transparent
     }
-  }, [theme]);
+    console.log(`useConfettiColors: Using effectivePrimaryHex: "${effectivePrimaryHex}" for confetti in theme "${theme}".`);
+
+    // Generate opacity variations from the effective primary hex
+    const generatedColors = [
+      hexToRgba(effectivePrimaryHex, 1.0),
+      hexToRgba(effectivePrimaryHex, 0.8),
+      hexToRgba(effectivePrimaryHex, 0.6),
+      hexToRgba(effectivePrimaryHex, 0.4)
+    ];
+    setColors(generatedColors);
+
+  }, [theme]); // updateColors depends on theme
 
   useEffect(() => {
     updateColors();
-    // Listen for theme changes or CSS variable changes if needed more dynamically
-    // A simple re-run on 'theme' prop change from next-themes is usually sufficient
   }, [theme, updateColors]);
 
   return colors;

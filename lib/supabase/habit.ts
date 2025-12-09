@@ -242,3 +242,56 @@ export async function unmarkHabit(habitId: string, targetState: string): Promise
     }
 }
 
+export async function backdateHabitCompletion(habitId: string, completedAt: Date): Promise<void> {
+    const supabase = createClient();
+    const journalActivityService = new JournalActivityService(supabase);
+
+    // 1. Fetch current habit state to get user_id and name
+    const { data: habit, error: fetchError } = await supabase
+        .from('habits')
+        .select('id, user_id, name, is_public, goal_value')
+        .eq('id', habitId)
+        .single();
+
+    if (fetchError || !habit) {
+        console.error("Error fetching habit for backdated completion:", fetchError);
+        throw fetchError;
+    }
+
+    // 2. Insert completion record with the backdated time
+    const { data: newCompletion, error: insertError } = await supabase
+        .from('habit_completions')
+        .insert({
+            habit_id: habitId,
+            user_id: habit.user_id,
+            completed_at: completedAt.toISOString(),
+            goal_at_completion: habit.goal_value,
+            // Other fields are optional and can be null for debug purposes
+        })
+        .select('id')
+        .single();
+
+    if (insertError) {
+        console.error("Error inserting backdated completion:", insertError);
+        throw insertError;
+    }
+
+    // 3. Log activity for the backdated completion
+    if (newCompletion?.id) {
+        await journalActivityService.logActivity(
+            habit.user_id,
+            completedAt, // Log for the specific backdated date
+            {
+                id: newCompletion.id,
+                type: 'habit',
+                description: habit.name,
+                is_public: habit.is_public,
+                status: 'completed',
+                details: {
+                    // No specific details for backdated completion from debug panel
+                },
+            }
+        );
+    }
+}
+

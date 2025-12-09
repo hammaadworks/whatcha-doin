@@ -166,41 +166,57 @@ export default function TargetsSection({
     useEffect(() => {
         if (activeTab === 'current' && isCurrentMonthAllComplete && confettiRef.current) {
             // Side Cannons (left)
-            confettiRef.current.fire({
-                particleCount: 150,
-                spread: 90,
-                origin: { x: 0, y: 0.7 },
-                colors: colors,
-                shapes: ['square', 'circle', 'star'],
-                disableForReducedMotion: true,
-                scalar: 1.5,
-                drift: -0.05
-            });
+            setTimeout(() => { // Add 2-second delay
+                if (confettiRef.current) { // Add null check
+                    confettiRef.current.fire({
+                        particleCount: 150,
+                        spread: 90,
+                        origin: { x: 0, y: 0.7 },
+                        colors: colors,
+                        shapes: ['square', 'circle', 'star'],
+                        disableForReducedMotion: true,
+                        scalar: 1.5,
+                        drift: -0.05,
+                        ticks: 350, // Adjusted for 6s
+                        decay: 0.88 // Adjusted for 6s
+                    });
+                }
+            }, 2000); // 2-second delay
             // Side Cannons (right)
-            confettiRef.current.fire({
-                particleCount: 150,
-                spread: 90,
-                origin: { x: 1, y: 0.7 },
-                colors: colors,
-                shapes: ['square', 'circle', 'star'],
-                disableForReducedMotion: true,
-                scalar: 1.5,
-                drift: 0.05
-            });
+            setTimeout(() => { // Add 2-second delay
+                if (confettiRef.current) { // Add null check
+                    confettiRef.current.fire({
+                        particleCount: 150,
+                        spread: 90,
+                        origin: { x: 1, y: 0.7 },
+                        colors: colors,
+                        shapes: ['square', 'circle', 'star'],
+                        disableForReducedMotion: true,
+                        scalar: 1.5,
+                        drift: 0.05,
+                        ticks: 350, // Adjusted for 6s
+                        decay: 0.88 // Adjusted for 6s
+                    });
+                }
+            }, 2000); // 2-second delay
             // Additional Fireworks from center
-            confettiRef.current.fire({
-                particleCount: 100,
-                spread: 360,
-                ticks: 80,
-                gravity: 0.5,
-                decay: 0.9,
-                startVelocity: 45,
-                origin: { x: 0.5, y: 0.3 },
-                colors: colors,
-                shapes: ['star', 'circle'],
-                disableForReducedMotion: true,
-                scalar: 1.2
-            });
+            setTimeout(() => { // Add 2-second delay
+                if (confettiRef.current) { // Add null check
+                    confettiRef.current.fire({
+                        particleCount: 100,
+                        spread: 360,
+                        ticks: 350, // Adjusted for 6s
+                        gravity: 0.5,
+                        decay: 0.88, // Adjusted for 6s
+                        startVelocity: 45,
+                        origin: { x: 0.5, y: 0.3 },
+                        colors: colors,
+                        shapes: ['star', 'circle'],
+                        disableForReducedMotion: true,
+                        scalar: 1.2
+                    });
+                }
+            }, 2000); // 2-second delay
         }
     }, [activeTab, isCurrentMonthAllComplete, colors]);
 
@@ -210,7 +226,7 @@ export default function TargetsSection({
                 particleCount: isParent ? 80 : 40, // High density for parent, low for child
                 startVelocity: 25,
                 spread: 360,
-                ticks: 60,
+                ticks: 250, // Adjusted for 3s
                 origin: {
                     x: (rect.left + rect.width / 2) / window.innerWidth,
                     y: (rect.top + rect.height / 2) / window.innerHeight,
@@ -218,7 +234,8 @@ export default function TargetsSection({
                 colors: colors,
                 shapes: ['star'],
                 disableForReducedMotion: true,
-                scalar: isParent ? 1.2 : 0.8
+                scalar: isParent ? 1.2 : 0.8,
+                decay: 0.9 // Adjusted for 3s
             });
         }
     };
@@ -297,13 +314,7 @@ export default function TargetsSection({
     // But let's show empty state if that's desired.
     if (!isOwner && !isReadOnly) return null;
 
-    return (
-        <CollapsibleSectionWrapper
-            title="Monthly Targets"
-            isCollapsible={isCollapsible}
-            isFolded={isFolded}
-            toggleFold={toggleFold}
-        >
+    return (<>
             <Confetti
                 ref={confettiRef}
                 className="pointer-events-none fixed inset-0 z-[100] w-full h-full"
@@ -378,8 +389,7 @@ export default function TargetsSection({
                     <TabsContent value="current">{renderTabContent('current')}</TabsContent>
                     <TabsContent value="future">{renderTabContent('future')}</TabsContent>
                 </Tabs>
-            </div>
-        </CollapsibleSectionWrapper>
+            </div></>
     );
 }
 

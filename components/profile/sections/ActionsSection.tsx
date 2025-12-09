@@ -133,7 +133,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 particleCount: isParent ? 80 : 40, // High density for parent, low for child
                 startVelocity: 25,
                 spread: 360,
-                ticks: 60,
+                ticks: 250, // Adjusted for 3s
                 origin: {
                     x: (rect.left + rect.width / 2) / window.innerWidth,
                     y: (rect.top + rect.height / 2) / window.innerHeight,
@@ -141,7 +141,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 colors: colors,
                 shapes: ['star'],
                 disableForReducedMotion: true,
-                scalar: isParent ? 1.2 : 0.8
+                scalar: isParent ? 1.2 : 0.8,
+                decay: 0.9 // Adjusted for 3s
             });
         }
     };
@@ -214,25 +215,37 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     useEffect(() => {
         if (isAllComplete && confettiRef.current) {
             // Left cannon
-            confettiRef.current.fire({
-                particleCount: 100,
-                spread: 70,
-                origin: { x: 0, y: 0.5 }, // From left middle
-                colors: colors,
-                shapes: ['square', 'circle'],
-                disableForReducedMotion: true,
-                scalar: 1.2
-            });
+            setTimeout(() => { // Add 2-second delay
+                if (confettiRef.current) { // Add null check
+                    confettiRef.current.fire({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { x: 0, y: 0.5 }, // From left middle
+                        colors: colors,
+                        shapes: ['square', 'circle'],
+                        disableForReducedMotion: true,
+                        scalar: 1.2,
+                        ticks: 350, // Adjusted for 6s
+                        decay: 0.88 // Adjusted for 6s
+                    });
+                }
+            }, 2000); // 2-second delay
             // Right cannon
-            confettiRef.current.fire({
-                particleCount: 100,
-                spread: 70,
-                origin: { x: 1, y: 0.5 }, // From right middle
-                colors: colors,
-                shapes: ['square', 'circle'],
-                disableForReducedMotion: true,
-                scalar: 1.2
-            });
+            setTimeout(() => { // Add 2-second delay
+                if (confettiRef.current) { // Add null check
+                    confettiRef.current.fire({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { x: 1, y: 0.5 }, // From right middle
+                        colors: colors,
+                        shapes: ['square', 'circle'],
+                        disableForReducedMotion: true,
+                        scalar: 1.2,
+                        ticks: 350, // Adjusted for 6s
+                        decay: 0.88 // Adjusted for 6s
+                    });
+                }
+            }, 2000); // 2-second delay
         }
     }, [isAllComplete, colors]); // Trigger when completion status changes
 

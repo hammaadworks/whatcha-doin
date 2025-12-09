@@ -195,24 +195,22 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                     {/* Date Picker */}
                     <Popover open={isMainDatePickerOpen} onOpenChange={setIsMainDatePickerOpen}>
                         <PopoverTrigger asChild>
-                                                             <Button
-                                ref={mainDatePickerButtonRef}
-                                variant="ghost"
-                                className={cn("relative inline-flex items-center gap-2 px-4 py-2 rounded-full border border-transparent bg-background/80 backdrop-blur-sm text-sm font-medium text-muted-foreground shadow-sm hover:bg-accent/50 hover:text-muted-foreground transition-colors cursor-pointer select-none h-12 w-fit", !selectedDate && "text-muted-foreground")}
-                            >
-                                <ShineBorder
-                                    borderWidth={1}
-                                    duration={8}
-                                    shineColor={["hsl(var(--primary))", "hsl(var(--primary-foreground))"]}
-                                    className="rounded-full"
-                                />
-                                <span className="relative z-10 inline-flex items-center gap-2">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 duration-[3000ms]"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                    </span>
-                                                                     <span className="font-mono tracking-tight">
-                                                                        {selectedDate ? new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).format(selectedDate) : <span>Pick a date</span>}
+                                                                                                                                                                                                                                                    <Button
+                                                                                                                                                                                                                       ref={mainDatePickerButtonRef}
+                                                                                                                                                                                                                       variant="ghost"
+                                                                                                                                                                                                                       className={cn("relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background text-muted-foreground ring-offset-background transition-colors ring-2 ring-primary hover:bg-accent hover:text-accent-foreground dark:hover:bg-primary dark:hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 w-fit", !selectedDate && "text-muted-foreground")}
+                                                                                                                                                                                                                   >
+                                                                                                                                                                                                                       <ShineBorder
+                                                                                                                                                                                                                           borderWidth={1}
+                                                                                                                                                                                                                           duration={8}
+                                                                                                                                                                                                                           shineColor={["hsl(var(--primary))", "hsl(var(--primary-foreground))"]}
+                                                                                                                                                                                                                           className="rounded-full"
+                                                                                                                                                                                                                       />                                                                                                                                                          <span className="relative z-10 inline-flex items-center gap-2">
+                                                                                                                                                              <span className="relative flex h-2 w-2">
+                                                                                                                                                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 duration-[3000ms]"></span>
+                                                                                                                                                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                                                                                                                                              </span>
+                                                                                                                                                              <span className="font-mono tracking-tight">                                                                        {selectedDate ? new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).format(selectedDate) : <span>Pick a date</span>}
                                                                     </span>                                </span>
                             </Button>
                         </PopoverTrigger>
