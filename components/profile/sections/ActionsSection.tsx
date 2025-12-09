@@ -127,6 +127,25 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
         }
     };
 
+    const handleConfettiTrigger = (rect: DOMRect, isParent: boolean) => {
+        if (confettiRef.current) {
+            confettiRef.current.fire({
+                particleCount: isParent ? 80 : 40, // High density for parent, low for child
+                startVelocity: 25,
+                spread: 360,
+                ticks: 60,
+                origin: {
+                    x: (rect.left + rect.width / 2) / window.innerWidth,
+                    y: (rect.top + rect.height / 2) / window.innerHeight,
+                },
+                colors: colors,
+                shapes: ['star'],
+                disableForReducedMotion: true,
+                scalar: isParent ? 1.2 : 0.8
+            });
+        }
+    };
+
 
     useEffect(() => {
         if (!isOwner || isReadOnly) return; // Add isReadOnly check
@@ -251,7 +270,11 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 </div>
             }
         >
-        <Confetti ref={confettiRef} manualstart={true} />
+        <Confetti
+            ref={confettiRef}
+            className="pointer-events-none fixed inset-0 z-[100] w-full h-full"
+            manualstart={true}
+        />
         <ActionsList
             actions={itemsToRender}
             onActionToggled={isOwner && !isReadOnly ? onActionToggled : undefined}
@@ -268,6 +291,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             focusedActionId={focusedActionId}
             setFocusedActionId={setFocusedActionId}
             flattenedActions={flattenActionTree(itemsToRender)}
+            onConfettiTrigger={handleConfettiTrigger} // Pass handler
         />
 
         {!isOwner && privateCount > 0 && (

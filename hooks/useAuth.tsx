@@ -29,6 +29,16 @@ export function AuthProvider({
     const supabase = createClient();
 
     const fetchUserProfile = async (authUser: SupabaseUser): Promise<User> => {
+        // Handle Dev Mode Mock User explicitly
+        if (process.env.NEXT_PUBLIC_DEV_USER && authUser.id === "68be1abf-ecbe-47a7-bafb-46be273a2e") {
+            return {
+                ...authUser,
+                username: process.env.NEXT_PUBLIC_DEV_USER,
+                timezone: "UTC",
+                bio: "Dev Mode User"
+            };
+        }
+
         const CACHE_KEY = `${LOCAL_STORAGE_USER_PROFILE_CACHE_KEY}_${authUser.id}`;
 
         try {

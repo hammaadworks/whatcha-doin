@@ -126,6 +126,7 @@ export const useActions = (isOwner: boolean, timezone: string = 'UTC') => {
         }
         setLastDeletedContext(null); // Clear undo history on toggle
         save(newActionsTree);
+        return newActionNode; // Return new node for UI to react
     };
 
     const updateActionText = (id: string, newText: string) => {

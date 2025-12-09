@@ -175,6 +175,7 @@ export const useTargets = (isOwner: boolean, timezone: string = 'UTC', initialTa
         }
         setLastDeletedTargetContext(null); // Clear undo history on toggle
         save(bucket, newTree);
+        return newTargetNode; // Return new node for UI to react
     }, [getBucketState, save, user, journalActivityService]);
 
     const updateTargetText = useCallback((bucket: TargetBucket, id: string, newText: string) => {

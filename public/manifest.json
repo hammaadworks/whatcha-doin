@@ -1,6 +1,6 @@
 {
-  "name": "whatcha-doin",
-  "short_name": "whatcha-doin",
+  "name": "whatcha-do.in",
+  "short_name": "whatcha-do.in",
   "description": "Building consistency one habit at a time",
   "start_url": "/",
   "scope": "/",
@@ -29,7 +29,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+whatcha-doin",
+      "protocol": "web+whadoin",
       "url": "/?url=%s"
     }
   ]

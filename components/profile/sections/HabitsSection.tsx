@@ -421,6 +421,13 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({
                 onClose={() => setIsCreateHabitModalOpen(false)}
                 onHabitCreated={handleCreateHabit}
             />)}
+
+        {isOwner && !isReadOnly && process.env.NEXT_PUBLIC_DEV_USER === user?.username && (
+            <HabitDebugPanel 
+                habits={habits} 
+                onHabitUpdated={() => onActivityLogged?.()} 
+            />
+        )}
     </div>);
 };
 

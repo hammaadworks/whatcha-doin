@@ -1,6 +1,6 @@
-# Keyboard Shortcuts Guide for whatcha-doin
+# Keyboard Shortcuts Guide for whatcha-do.in
 
-This guide establishes conventions for implementing keyboard shortcuts across the *whatcha-doin* application. Adhering to these rules ensures a consistent, accessible, and non-conflicting user experience for all keyboard users, while respecting the diverse ways users interact with our app.
+This guide establishes conventions for implementing keyboard shortcuts across the *whatcha-do.in* application. Adhering to these rules ensures a consistent, accessible, and non-conflicting user experience for all keyboard users, while respecting the diverse ways users interact with our app.
 
 ---
 

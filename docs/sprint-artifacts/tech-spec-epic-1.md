@@ -9,7 +9,7 @@ Status: Draft
 
 ## Overview
 
-This technical specification details the foundational epic (Epic-1) of the "whatcha-doin" application, focusing on the core systems for user and profile management, recurring habit tracking, and one-off todo management. This epic lays the groundwork for an intuitive, keyboard-first experience aimed at empowering users to build and maintain positive routines. It encompasses the essential features that enable users to manage their daily tasks and habits, which are central to the application's vision of fostering personal growth and consistency through robust habit and todo management.
+This technical specification details the foundational epic (Epic-1) of the "whatcha-do.in" application, focusing on the core systems for user and profile management, recurring habit tracking, and one-off todo management. This epic lays the groundwork for an intuitive, keyboard-first experience aimed at empowering users to build and maintain positive routines. It encompasses the essential features that enable users to manage their daily tasks and habits, which are central to the application's vision of fostering personal growth and consistency through robust habit and todo management.
 
 ## Objectives and Scope
 

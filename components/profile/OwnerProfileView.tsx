@@ -155,8 +155,9 @@ export default function OwnerProfileView({
     };
 
     const handleActionToggled = async (id: string) => {
-        await toggleAction(id);
+        const newNode = await toggleAction(id);
         await refreshJournalEntries();
+        return newNode;
     };
 
     const handleActionDeleted = async (id: string) => {
@@ -236,15 +237,6 @@ export default function OwnerProfileView({
                         habits={ownerHabits}
                         loading={ownerHabitsLoading}
                         onActivityLogged={handleActivityLogged}
-                    />
-                    <TargetsSection // This is the TargetsSection that needs folding props
-                        isOwner={true}
-                        isReadOnly={isReadOnly}
-                        timezone={optimisticTimezone || profileToDisplay.timezone || 'UTC'}
-                        onActivityLogged={refreshJournalEntries} // Targets usually don't affect habits directly but kept separate just in case
-                        isCollapsible={isCollapsible}
-                        isFolded={isTargetsFolded} // Pass isTargetsFolded
-                        toggleFold={toggleTargetsFold} // Pass toggleTargetsFold
                     />
                     <JournalSection
                         isOwner={true}

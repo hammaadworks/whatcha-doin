@@ -21,6 +21,7 @@ interface ActionsListProps {
   focusedActionId: string | null;
   setFocusedActionId: (id: string | null) => void;
   flattenedActions: ActionNode[];
+  onConfettiTrigger?: (rect: DOMRect, isParent: boolean) => void; // New prop
 }
 
 export const ActionsList: React.FC<ActionsListProps> = ({ 
@@ -39,7 +40,8 @@ export const ActionsList: React.FC<ActionsListProps> = ({
   level = 0,
   focusedActionId,
   setFocusedActionId,
-  flattenedActions
+  flattenedActions,
+  onConfettiTrigger // Destructure new prop
 }) => {
   return (
     <div className={cn("grid grid-cols-1 gap-y-2")}>
@@ -62,6 +64,7 @@ export const ActionsList: React.FC<ActionsListProps> = ({
           focusedActionId={focusedActionId}
           setFocusedActionId={setFocusedActionId}
           flattenedActions={flattenedActions}
+          onConfettiTrigger={onConfettiTrigger} // Pass new prop
         />
       ))}
     </div>

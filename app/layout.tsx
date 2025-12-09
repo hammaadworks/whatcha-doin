@@ -27,33 +27,33 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL(DOMAIN_URL),
     title: {
-        default: "whatcha-doin | Building Consistency, One Habit at a Time", template: "%s | whatcha-doin",
+        default: "whatcha-do.in | Building Consistency, One Habit at a Time", template: "%s | whatcha-do.in",
     },
-    description: "whatcha-doin helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
-    applicationName: "whatcha-doin",
+    description: "whatcha-do.in helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
+    applicationName: "whatcha-do.in",
     creator: AUTHOR_NAME,
     publisher: AUTHOR_NAME,
     keywords: ["habit tracker", "habit building", "consistency", "goal setting", "productivity", "personal growth", "wellness", "community",],
     authors: [{name: AUTHOR_NAME, url: WEBSITE_URL}],
     openGraph: {
-        title: "whatcha-doin | Building Consistency, One Habit at a Time",
-        description: "whatcha-doin helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
+        title: "whatcha-do.in | Building Consistency, One Habit at a Time",
+        description: "whatcha-do.in helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
         url: DOMAIN_URL,
-        siteName: "whatcha-doin",
+        siteName: "whatcha-do.in",
         images: [{
             url: "/favicons/light/logo-full.png", // Primary logo for OpenGraph
-            width: 1200, height: 630, alt: "whatcha-doin logo (light)",
+            width: 1200, height: 630, alt: "whatcha-do.in logo (light)",
         }, {
             url: "/favicons/dark/logo-full.png", // Alternative logo for OpenGraph
-            width: 1200, height: 630, alt: "whatcha-doin logo (dark)",
+            width: 1200, height: 630, alt: "whatcha-do.in logo (dark)",
         },],
         locale: "en_US",
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "whatcha-doin | Building Consistency, One Habit at a Time",
-        description: "whatcha-doin helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
+        title: "whatcha-do.in | Building Consistency, One Habit at a Time",
+        description: "whatcha-do.in helps you build consistency and achieve your goals by tracking habits, visualizing progress, and connecting with a supportive community. Building consistency one habit at a time.",
         creator: AUTHOR_TWITTER_HANDLE,
         images: ["/favicons/light/logo-full.png", // Primary logo for Twitter
             "/favicons/dark/logo-full.png", // Alternative logo for Twitter
@@ -95,8 +95,8 @@ export default async function RootLayout({children,}: Readonly<{ children: React
 
     return (<html lang="en" suppressHydrationWarning>
         <head>
-            <meta name="apple-mobile-web-app-title" content="whatcha-doin"/>
-            <title>whatcha-doin | Building Consistency, One Habit at a Time</title>
+            <meta name="apple-mobile-web-app-title" content="whatcha-do.in"/>
+            <title>whatcha-do.in | Building Consistency, One Habit at a Time</title>
         </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}

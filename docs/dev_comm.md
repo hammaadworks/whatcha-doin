@@ -1,3 +1,4 @@
+# read supabase/config.toml
 make this targeted for adhd users and ambitious underachievers
 use the domain whatcha-do.in
 

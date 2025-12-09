@@ -1,5 +1,4 @@
 -- Insert test user for development
--- This user will be used when NEXT_PUBLIC_DEV_MODE_ENABLED=true
 
 -- First, insert into auth.users (this is the Supabase auth table)
 INSERT INTO auth.users (

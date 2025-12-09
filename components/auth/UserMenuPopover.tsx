@@ -15,7 +15,8 @@ interface UserMenuPopoverProps {
 }
 
 const UserMenuPopover: React.FC<UserMenuPopoverProps> = ({ user }) => {
-  const { toggleShortcutsModal } = useKeyboardShortcuts(); // Use the hook
+  // Extract isInsightsOpen and toggleInsightsModal from the hook
+  const { toggleShortcutsModal, isInsightsOpen, toggleInsightsModal } = useKeyboardShortcuts();
 
   if (!user) {
     return null;
@@ -45,6 +46,10 @@ const UserMenuPopover: React.FC<UserMenuPopoverProps> = ({ user }) => {
             Keyboard Shortcuts
             <KeyboardShortcut keys={["/"]} />
           </div>
+
+          {user?.username && ( // Conditionally render InsightsTrigger if user is logged in
+            <InsightsTrigger username={user.username} open={isInsightsOpen} onOpenChange={toggleInsightsModal} />
+          )}
 
           <div className="my-2 border-t border-border" />
           <LogoutButton />

@@ -110,7 +110,7 @@ export function SettingsDrawer({ children, isOpen, onOpenChange }: SettingsDrawe
           </section>
 
           {/* Time Travel Section (Dev Only) */}
-          {process.env.NEXT_PUBLIC_DEV_MODE_ENABLED === 'true' && user?.username === 'hammaadworks' && (
+          {process.env.NEXT_PUBLIC_DEV_USER === user?.username && (
               <section className="space-y-4 border-t pt-4 border-dashed border-yellow-500">
                   <h3 className="text-lg font-medium border-b pb-2 text-yellow-600 flex items-center gap-2">
                       🚧 Time Travel

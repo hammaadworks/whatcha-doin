@@ -86,7 +86,7 @@ const AppFooter = () => {
     };
 
     return (<footer className="text-center p-4 bg-card border-t border-card-border text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} whatcha-doin. All rights reserved.
+            &copy; {new Date().getFullYear()} whatcha-do.in | All rights reserved.
 
             <div className="flex items-center justify-center gap-x-4 mt-2">
                 {
@@ -118,7 +118,7 @@ const AppFooter = () => {
                             footerItems.push(
                                 <button
                                     key="open-pwa"
-                                    onClick={() => window.open('web+whatcha-doin://', '_self')}
+                                    onClick={() => window.open('web+whadoin://', '_self')}
                                     className="flex items-center gap-x-1 text-primary hover:underline focus:outline-none text-sm"
                                 >
                                     <Download className="h-4 w-4" />

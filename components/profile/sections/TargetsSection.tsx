@@ -204,6 +204,25 @@ export default function TargetsSection({
         }
     }, [activeTab, isCurrentMonthAllComplete, colors]);
 
+    const handleConfettiTrigger = (rect: DOMRect, isParent: boolean) => {
+        if (confettiRef.current) {
+            confettiRef.current.fire({
+                particleCount: isParent ? 80 : 40, // High density for parent, low for child
+                startVelocity: 25,
+                spread: 360,
+                ticks: 60,
+                origin: {
+                    x: (rect.left + rect.width / 2) / window.innerWidth,
+                    y: (rect.top + rect.height / 2) / window.innerHeight,
+                },
+                colors: colors,
+                shapes: ['star'],
+                disableForReducedMotion: true,
+                scalar: isParent ? 1.2 : 0.8
+            });
+        }
+    };
+
     // Helper (duplicated from ActionsSection, ideally move to utils)
     const flattenActionTree = (nodes: ActionNode[]): ActionNode[] => {
         let flattened: ActionNode[] = [];
@@ -242,6 +261,7 @@ export default function TargetsSection({
                 flattenedActions={flattened}
                 focusedActionId={focusedActionId} // Pass focusedActionId
                 setFocusedActionId={setFocusedActionId} // Pass setFocusedActionId
+                onConfettiTrigger={handleConfettiTrigger} // Pass handler
             />
 
             {canEdit && (<div className="mt-4">
@@ -279,15 +299,19 @@ export default function TargetsSection({
 
     return (
         <CollapsibleSectionWrapper
-            title="Targets"
+            title="Monthly Targets"
             isCollapsible={isCollapsible}
             isFolded={isFolded}
             toggleFold={toggleFold}
         >
-            <Confetti ref={confettiRef} manualstart={true} />
+            <Confetti
+                ref={confettiRef}
+                className="pointer-events-none fixed inset-0 z-[100] w-full h-full"
+                manualstart={true}
+            />
             <div className="space-y-4">
                 <div className="flex justify-between items-center border-b border-primary pb-4 mb-6">
-                    <h2 className="text-2xl font-extrabold text-primary">Targets</h2>
+                    <h2 className="text-2xl font-extrabold text-primary">Monthly Targets</h2>
                     <div className="flex items-center gap-3">
                         {currentMonthTotal > 0 && (<CircularProgress
                                 progress={currentMonthProgressPercentage}

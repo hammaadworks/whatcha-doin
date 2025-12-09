@@ -12,7 +12,7 @@ import { CTASection } from "@/components/landing/CTASection";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "whatcha-doin",
+  title: "whatcha-do.in",
   description: "The app that helps you become the person you keep imagining --- by stacking Identity × Discipline × Consistency, one tiny action at a time.",
 };
 

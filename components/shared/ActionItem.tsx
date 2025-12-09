@@ -11,8 +11,6 @@ import { AddActionForm } from './AddActionForm';
 import { Input } from "@/components/ui/input";
 import { ActionNode } from '@/lib/supabase/types';
 import { areAllChildrenCompleted } from '@/lib/utils/actionTreeUtils';
-import { Confetti, ConfettiRef } from '@/components/ui/confetti'; // Import Confetti
-import { useConfettiColors } from '@/hooks/useConfettiColors'; // Import useConfettiColors
 
 interface ActionItemProps {
   action: ActionNode;
@@ -31,6 +29,7 @@ interface ActionItemProps {
   focusedActionId: string | null;
   setFocusedActionId: (id: string | null) => void;
   flattenedActions: ActionNode[];
+  onConfettiTrigger?: (rect: DOMRect, isParent: boolean) => void; // New prop
 }
 
 const getCompletionCounts = (action: ActionNode): { total: number; completed: number } => {
@@ -67,7 +66,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   level,
   focusedActionId,
   setFocusedActionId,
-  flattenedActions
+  flattenedActions,
+  onConfettiTrigger // Destructure new prop
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAddingSubItem, setIsAddingSubItem] = useState(false);
@@ -76,9 +76,6 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   const editInputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
-
-  const confettiRef = useRef<ConfettiRef>(null); // Declare confettiRef
-  const colors = useConfettiColors(); // Declare colors
 
   const hasChildren = action.children && action.children.length > 0;
   const { total, completed } = getCompletionCounts(action);
@@ -217,26 +214,20 @@ export const ActionItem: React.FC<ActionItemProps> = ({
           onCheckedChange={() => {
               if (onActionToggled) {
                   // Confetti logic: only if becoming completed
-                  if (!action.completed) { // If it's about to be checked
+                  if (!action.completed && onConfettiTrigger) { // If it's about to be checked
+                      // We need the actual checkbox DOM element to get its rect
+                      // Since we have the ID, we can get it.
+                      // Or better, we can use a ref on the Checkbox if possible, but ID is fine here.
+                      // Note: shadcn Checkbox might not spread id to the button trigger directly, but usually does.
+                      // Let's try getting the element.
                       const checkboxElement = document.getElementById(action.id);
-                      if (checkboxElement && confettiRef.current) {
+                      if (checkboxElement) {
                           const rect = checkboxElement.getBoundingClientRect();
                           const isParentItem = action.children && action.children.length > 0;
-                          
-                          confettiRef.current.fire({
-                              particleCount: isParentItem ? 100 : 50, // High density for parent, low for child
-                              startVelocity: 30,
-                              spread: 360,
-                              ticks: 50,
-                              origin: {
-                                  x: rect.left / window.innerWidth + rect.width / 2 / window.innerWidth,
-                                  y: rect.top / window.innerHeight + rect.height / 2 / window.innerHeight,
-                              },
-                              shapes: ['star'] // For stars confetti
-                          });
+                          onConfettiTrigger(rect, !!isParentItem);
                       }
                   }
-                  onActionToggled(action.id); // Toggle the action AFTER confetti fires
+                  onActionToggled(action.id); // Toggle the action
               }
           }}
           disabled={isDisabledForCompletion && !action.completed}
@@ -247,18 +238,6 @@ export const ActionItem: React.FC<ActionItemProps> = ({
               "pointer-events-none": !onActionToggled
             }
           )}
-        />
-        
-        {/* Confetti component */}
-        <Confetti
-            ref={confettiRef}
-            options={{
-                colors: colors,
-                startVelocity: 30,
-                spread: 360,
-                ticks: 50
-            }}
-            manualstart={true}
         />
         
         {isEditing ? (
@@ -389,6 +368,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             focusedActionId={focusedActionId}
             setFocusedActionId={setFocusedActionId}
             flattenedActions={flattenedActions}
+            onConfettiTrigger={onConfettiTrigger} // Pass recursive prop
           />
         </div>
       )}

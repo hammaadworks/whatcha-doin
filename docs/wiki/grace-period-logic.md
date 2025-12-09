@@ -1,6 +1,6 @@
 # Grace Period & End of Day Summary Logic
 
-The "Grace Period" is a core UX pillar of *whatcha-doin*. It is an empathetic system designed for the "Ambitious Underachiever" who often logs their activity the next morning. Instead of punishing them with broken streaks immediately at midnight, we offer a "Grace Period" window.
+The "Grace Period" is a core UX pillar of *whatcha-do.in*. It is an empathetic system designed for the "Ambitious Underachiever" who often logs their activity the next morning. Instead of punishing them with broken streaks immediately at midnight, we offer a "Grace Period" window.
 
 ## Core Concept
 

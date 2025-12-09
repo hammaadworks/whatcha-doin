@@ -204,9 +204,6 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
     }}>
             {children}
             <KeyboardShortcutsModal open={isOpen} onOpenChange={setIsOpen}/>
-            {user?.username && ( // Conditionally render InsightsTrigger if user is logged in
-                <InsightsTrigger username={user.username} open={isInsightsOpen} onOpenChange={toggleInsightsModal} />
-            )}
         </KeyboardShortcutsContext.Provider>);
 };
 

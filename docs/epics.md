@@ -1,4 +1,4 @@
-# whatcha-doin - Epic Breakdown
+# whatcha-do.in - Epic Breakdown
 
 **Author:** hammaadworks
 **Date:** 2025-12-08
@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document provides the complete epic and story breakdown for whatcha-doin, decomposing the requirements from the [PRD](./PRD.md) into implementable stories.
+This document provides the complete epic and story breakdown for whatcha-do.in, decomposing the requirements from the [PRD](./PRD.md) into implementable stories.
 
 **CRITICAL ARCHITECTURAL DECISION:** The application will leverage **Supabase** for all data persistence.
 **Important Development Note:** For local development, a predefined user session is injected to bypass full authentication.

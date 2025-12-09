@@ -59,7 +59,7 @@ const PWASection = () => {
                         Experience the Power of a PWA
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Install whatcha-doin as an app on your device for a faster, more integrated, and distraction-free experience.
+                        Install whatcha-do.in as an app on your device for a faster, more integrated, and distraction-free experience.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -84,7 +84,7 @@ const PWASection = () => {
                         {user ? (
                             <>
                                 <Download className="h-5 w-5 mr-2" />
-                                {isIOS ? "Add to Home Screen" : "Install whatcha-doin App"}
+                                {isIOS ? "Add to Home Screen" : "Install whatcha-do.in App"}
                             </>
                         ) : (
                             "Log in to Install"

@@ -2,7 +2,7 @@
 
 - user_name: hammaadworks
 - communication_language: English
-- output_folder: /Users/alhamdulillah/codespace/whatcha-doin/docs
+- output_folder: /docs
 
 - Keep these three docs always updated:
 
@@ -40,4 +40,4 @@
 - All dev-ops related tasks were moved to stories after version 8.2.
 - The authenticated dashboard/profile page will be accessed via `domain/[username]`. If the user is authenticated, it shows their private dashboard. If not, it shows a login button. This is similar to GitHub's profile page behavior.
 - Always use `useAuth()` in client components to determine the authenticated user's state and loading status, ensuring consistency in development.
-- Domain = whatcha-doin.hammaadworks.com
+- Domain = https://whatcha-doin.hammaadworks.com/

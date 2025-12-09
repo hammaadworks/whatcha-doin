@@ -185,6 +185,24 @@
   100% { transform: translateX(5px); opacity: 0; }
 }
 
+@keyframes chevron-pulse {
+  0%, 50% { /* First 2s (0-2s) of 4s total - Static at initial state */
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  75% { /* Midpoint of animation phase (2s + 1s = 3s out of 4s total, or midpoint of 50-100% phase) */
+    transform: translateY(2px) scale(1.05);
+    opacity: 0.8;
+  }
+  100% { /* End of animation phase (4s) - Back to initial state */
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+.animate-chevron-pulse {
+  animation: chevron-pulse 4s ease-in-out infinite; /* Changed duration to 4s */
+}
+
 /* Global native cursor hide for custom Pointer component */
 .hide-native-cursor, .hide-native-cursor * {
     cursor: none !important;

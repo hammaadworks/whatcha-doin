@@ -1,6 +1,6 @@
 # Database Schema & Architecture Guide
 
-This document provides a comprehensive overview of the **Supabase (PostgreSQL)** database schema for *whatcha-doin*. It
+This document provides a comprehensive overview of the **Supabase (PostgreSQL)** database schema for *whatcha-do.in*. It
 is designed to help developers understand the data models, relationships, and security policies that power the
 application.
 

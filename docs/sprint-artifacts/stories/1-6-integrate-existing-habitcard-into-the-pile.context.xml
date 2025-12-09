@@ -52,7 +52,7 @@
     <docs>
       <artifact>
         <path>docs/PRD.md</path>
-        <title>whatcha-doin - Product Requirements Document</title>
+        <title>whatcha-do.in - Product Requirements Document</title>
         <section>Product Scope, Functional Requirements</section>
         <snippet>
           The core "Habits" System involves a three-column layout ("Today", "Yesterday", "The Pile").
@@ -72,7 +72,7 @@
       </artifact>
       <artifact>
         <path>docs/ux-design-specification.md</path>
-        <title>whatcha-doin UX Design Specification</title>
+        <title>whatcha-do.in UX Design Specification</title>
         <section>Design System Foundation, Overall Page Structure, Main Board Layout & Interaction, Critical User Paths, Component Library</section>
         <snippet>
           The primary design system is `shadcn/ui`.
@@ -82,7 +82,7 @@
       </artifact>
       <artifact>
         <path>docs/epics.md</path>
-        <title>whatcha-doin - Epic Breakdown</title>
+        <title>whatcha-do.in - Epic Breakdown</title>
         <section>Epic 1: Core Application Foundation & Authenticated Root View, Story 1.6</section>
         <snippet>
           Epic 1 establishes the foundational infrastructure and the authenticated root view at `/[username]`.
