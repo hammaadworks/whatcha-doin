@@ -115,7 +115,7 @@ export function HeroVisuals({ className }: { className?: string }) {
                         setFocusedActionId={() => {}}
                         flattenedActions={[]}
                         // Pass no-op handlers to prevent interaction but allow rendering
-                        onActionToggled={() => {}}
+                        onActionToggled={async () => undefined}
                     />
                 </div>
               ))}

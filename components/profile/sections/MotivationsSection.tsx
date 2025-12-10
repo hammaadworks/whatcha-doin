@@ -36,7 +36,7 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading}) => {
             <div className="relative max-w-4xl">
                  {/* Decorative large quote mark */}
                 <span className={cn(
-                    "absolute -top-10 -left-12 text-9xl font-serif leading-none select-none pointer-events-none transition-all duration-700",
+                    "absolute -top-6 -left-2 text-6xl md:-top-10 md:-left-12 md:text-9xl font-serif leading-none select-none pointer-events-none transition-all duration-700",
                     "text-primary/30 translate-y-0 opacity-100", // Muted color as requested
                     isInteracting ? "scale-110 text-primary/40" : "scale-100"
                 )}>

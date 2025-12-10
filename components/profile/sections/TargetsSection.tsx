@@ -110,8 +110,13 @@ export default function TargetsSection({
                     if (addTargetFormRef.current.isInputFocused()) {
                         addTargetFormRef.current.blurInput();
                         const flattened = flattenActionTree(buckets[activeTab]);
-                        if (flattened.length > 0) {
-                            setFocusedActionId(flattened[0].id);
+                        const activeItems = flattened.filter(a => !a.completed);
+                        
+                        if (activeItems.length > 0) {
+                            setFocusedActionId(activeItems[0].id);
+                        } else if (flattened.length > 0) {
+                            // Only completed items exist, focus Yay button
+                            setFocusedActionId('yay-toggle-root');
                         }
                     } else {
                         setFocusedActionId(null);
@@ -124,8 +129,13 @@ export default function TargetsSection({
                 event.preventDefault();
                 addTargetFormRef.current.blurInput();
                 const flattened = flattenActionTree(buckets[activeTab]);
-                if (flattened.length > 0) {
-                    setFocusedActionId(flattened[flattened.length - 1].id);
+                const activeItems = flattened.filter(a => !a.completed);
+
+                if (activeItems.length > 0) {
+                    setFocusedActionId(activeItems[activeItems.length - 1].id);
+                } else if (flattened.length > 0) {
+                     // Only completed items exist, focus Yay button
+                     setFocusedActionId('yay-toggle-root');
                 }
             }
             if (event.key === 'Escape') {
@@ -290,24 +300,29 @@ export default function TargetsSection({
             <ActionsList
                 actions={actions}
                 onActionToggled={canEdit ? async (id) => {
-                    await toggleTarget(bucket, id);
+                    const toggledNode = await toggleTarget(bucket, id); // AWAIT HERE
                     onActivityLogged?.();
+                    return toggledNode;
                 } : undefined}
-                onActionAdded={canEdit ? (desc, parentId) => addTarget(bucket, desc, parentId) : undefined}
+                onActionAdded={canEdit ? async (desc, parentId) => { // Make async
+                    await addTarget(bucket, desc, parentId); // AWAIT HERE
+                } : undefined}
                 onActionUpdated={canEdit ? (id, text) => updateTargetText(bucket, id, text) : undefined}
                 onActionDeleted={canEdit ? (id) => handleDeleteTarget(bucket, id) : undefined} // Use local handler
-                onActionIndented={canEdit ? (id) => indentTarget(bucket, id) : undefined}
+                onActionIndented={canEdit ? async (id) => { // Make async
+                    await indentTarget(bucket, id); // AWAIT HERE
+                } : undefined}
                 onActionOutdented={canEdit ? (id) => outdentTarget(bucket, id) : undefined}
                 onActionMovedUp={canEdit ? (id) => moveTargetUp(bucket, id) : undefined}
                 onActionMovedDown={canEdit ? (id) => moveTargetDown(bucket, id) : undefined}
                 onActionPrivacyToggled={canEdit ? (id) => toggleTargetPrivacy(bucket, id) : undefined} // Enable privacy toggle
-                onActionAddedAfter={canEdit ? (afterId, description, isPublic) => {
-                    const newActionId = addTargetAfter(bucket, afterId, description, isPublic);
+                onActionAddedAfter={canEdit ? async (afterId, description, isPublic) => { // Make async
+                    const newActionId = await addTargetAfter(bucket, afterId, description, isPublic); // AWAIT HERE
                     setNewlyAddedActionId(newActionId);
                     setFocusedActionId(newActionId);
                     return newActionId;
                 } : undefined} // New
-                flattenedActions={flattened}
+                flattenedActions={flattened.filter(a => !a.completed)}
                 focusedActionId={focusedActionId} // Pass focusedActionId
                 setFocusedActionId={setFocusedActionId} // Pass setFocusedActionId
                 onConfettiTrigger={handleConfettiTrigger} // Pass handler
@@ -318,7 +333,9 @@ export default function TargetsSection({
             {canEdit && (<div className="mt-4">
                 <AddActionForm
                     ref={addTargetFormRef}
-                    onSave={(desc) => addTarget(bucket, desc)}
+                    onSave={async (desc) => { // Make async
+                        await addTarget(bucket, desc); // AWAIT HERE
+                    }}
                     onCancel={() => {
                         addTargetFormRef.current?.clearInput();
                         const currentFlattened = flattenActionTree(buckets[activeTab]); // Get fresh flattened list

@@ -101,7 +101,7 @@ const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
 const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading, isCollapsible = false, isFolded, toggleFold}) => {
     const {user} = useAuth();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [activeTab, setActiveTab] = useState<'private' | 'public'>(isOwner ? 'private' : 'public');
+    const [activeTab, setActiveTab] = useState<'private' | 'public'>('public'); // Default to public
     const [entryContent, setEntryContent] = useState('');
     const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
     const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'processing' | 'saving' | 'saved' | 'error'>('saved');
@@ -244,33 +244,11 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                                 <TooltipTrigger asChild>
                                     <button
                                         type="button"
-                                        onClick={() => setActiveTab('private')}
-                                        disabled={!isOwner}
-                                        className={cn(
-                                            "flex-1 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center transition-colors",
-                                            activeTab === 'private'
-                                                ? "bg-primary text-primary-foreground shadow-sm"
-                                                : "hover:bg-accent/50 text-muted-foreground"
-                                        )}
-                                    >
-                                        <Lock className="h-4 w-4 mr-2"/>
-                                        <span>Private Journal</span>
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Private Journal</p>
-                                </TooltipContent>
-                            </Tooltip>
-
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        type="button"
                                         onClick={() => setActiveTab('public')}
                                         className={cn(
-                                            "flex-1 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center transition-colors",
+                                            "flex-1 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center transition-all",
                                             activeTab === 'public'
-                                                ? "bg-primary text-primary-foreground shadow-sm"
+                                                ? "bg-blue-600 text-white shadow-sm" // Blue active state
                                                 : "hover:bg-accent/50 text-muted-foreground"
                                         )}
                                     >
@@ -280,6 +258,28 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>Public Journal</p>
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('private')}
+                                        disabled={!isOwner}
+                                        className={cn(
+                                            "flex-1 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap flex items-center justify-center transition-all",
+                                            activeTab === 'private'
+                                                ? "bg-card text-foreground border border-border/50 shadow-sm" // Match editor scheme
+                                                : "hover:bg-accent/50 text-muted-foreground"
+                                        )}
+                                    >
+                                        <Lock className="h-4 w-4 mr-2"/>
+                                        <span>Private Journal</span>
+                                    </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Private Journal</p>
                                 </TooltipContent>
                             </Tooltip>
                         </div>

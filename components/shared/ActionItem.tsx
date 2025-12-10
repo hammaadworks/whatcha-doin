@@ -14,16 +14,18 @@ import { areAllChildrenCompleted } from '@/lib/utils/actionTreeUtils';
 
 interface ActionItemProps {
   action: ActionNode;
-  onActionToggled?: (id: string) => void;
-  onActionAdded?: (description: string, parentId?: string, isPublic?: boolean) => void;
+  onActionToggled?: (id: string) => Promise<ActionNode | undefined>;
+  onActionAdded?: (description: string, parentId?: string, isPublic?: boolean) => Promise<void>;
   onActionUpdated?: (id: string, newText: string) => void;
   onActionDeleted?: (id: string) => void;
-  onActionIndented?: (id: string) => void;
+  onActionIndented?: (id: string) => Promise<void>;
   onActionOutdented?: (id: string) => void;
   onActionMovedUp?: (id: string) => void;
   onActionMovedDown?: (id: string) => void;
   onActionPrivacyToggled?: (id: string) => void;
-  onActionAddedAfter?: (afterId: string, description: string, isPublic?: boolean) => string; // New prop, returns new action ID
+  onActionAddedAfter?: (afterId: string, description: string, isPublic?: boolean) => Promise<string>;
+  onNavigateNext?: () => void; // New prop
+  onNavigatePrev?: () => void; // New prop
   justCompletedId?: string | null;
   level: number;
   focusedActionId: string | null;
@@ -64,6 +66,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
   onActionMovedDown,
   onActionPrivacyToggled,
   onActionAddedAfter, // Destructure new prop
+  onNavigateNext, // Destructure new prop
+  onNavigatePrev, // Destructure new prop
   justCompletedId,
   level,
   focusedActionId,
@@ -140,7 +144,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
     }, 0);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLDivElement>) => { // Made async
     if (isEditing) return;
 
     if (
@@ -157,11 +161,11 @@ export const ActionItem: React.FC<ActionItemProps> = ({
                  // Add Below (Edit) - Shift + Enter
                  if (onActionAddedAfter) {
                      setIsAddingSubItem(false); // Close existing sub-item form if open
-                     const newActionId = onActionAddedAfter(action.id, "", isPublic); // Add empty item after
+                     const newActionId = await onActionAddedAfter(action.id, "", isPublic); // AWAIT HERE
                      setFocusedActionId(newActionId); // Focus the newly created action
                  }
             } else {
-                onActionToggled?.(action.id);
+                await onActionToggled?.(action.id); // AWAIT HERE
             }
             break;
         case ' ':
@@ -175,7 +179,7 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             if (e.shiftKey) {
                 onActionOutdented?.(action.id);
             } else {
-                onActionIndented?.(action.id);
+                await onActionIndented?.(action.id); // AWAIT HERE
             }
             break;
         case 'ArrowUp':
@@ -185,6 +189,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
                 const currentIndex = flattenedActions.findIndex(a => a.id === action.id);
                 if (currentIndex > 0) {
                     setFocusedActionId?.(flattenedActions[currentIndex - 1].id);
+                } else if (onNavigatePrev) {
+                    onNavigatePrev();
                 }
             }
             break;
@@ -192,9 +198,18 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             if (e.shiftKey) {
                 onActionMovedDown?.(action.id);
             } else {
-                const currentIndex = flattenedActions.findIndex(a => a.id === action.id);
-                if (currentIndex < flattenedActions.length - 1) {
-                    setFocusedActionId?.(flattenedActions[currentIndex + 1].id);
+                // If expanded and has children, down means go to first child.
+                // The flattened list puts children immediately after parent.
+                if (hasChildren && isExpanded) {
+                    const currentIndex = flattenedActions.findIndex(a => a.id === action.id);
+                    if (currentIndex < flattenedActions.length - 1 && currentIndex !== -1) {
+                        setFocusedActionId?.(flattenedActions[currentIndex + 1].id);
+                    }
+                } else {
+                    // If collapsed or no children, down means go to next sibling (or parent exit).
+                    if (onNavigateNext) {
+                        onNavigateNext();
+                    }
                 }
             }
             break;
@@ -233,15 +248,10 @@ export const ActionItem: React.FC<ActionItemProps> = ({
         <Checkbox
           id={action.id}
           checked={action.completed}
-          onCheckedChange={() => {
+          onCheckedChange={async () => { // Make async
               if (onActionToggled) {
                   // Confetti logic: only if becoming completed
                   if (!action.completed && onConfettiTrigger) { // If it's about to be checked
-                      // We need the actual checkbox DOM element to get its rect
-                      // Since we have the ID, we can get it.
-                      // Or better, we can use a ref on the Checkbox if possible, but ID is fine here.
-                      // Note: shadcn Checkbox might not spread id to the button trigger directly, but usually does.
-                      // Let's try getting the element.
                       const checkboxElement = document.getElementById(action.id);
                       if (checkboxElement) {
                           const rect = checkboxElement.getBoundingClientRect();
@@ -249,7 +259,8 @@ export const ActionItem: React.FC<ActionItemProps> = ({
                           onConfettiTrigger(rect, !!isParentItem);
                       }
                   }
-                  onActionToggled(action.id); // Toggle the action
+                  const toggledNode = await onActionToggled(action.id); // AWAIT HERE and capture return
+                  // Now you can use toggledNode if needed, e.g., to trigger specific UI updates
               }
           }}
           disabled={isDisabledForCompletion && !action.completed}
@@ -391,6 +402,9 @@ export const ActionItem: React.FC<ActionItemProps> = ({
             setFocusedActionId={setFocusedActionId}
             flattenedActions={flattenedActions}
             onConfettiTrigger={onConfettiTrigger} // Pass recursive prop
+            parentId={action.id}
+            onNavigatePrev={() => setFocusedActionId(action.id)}
+            onNavigateNext={onNavigateNext}
           />
         </div>
       )}

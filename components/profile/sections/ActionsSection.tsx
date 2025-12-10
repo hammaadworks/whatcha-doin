@@ -49,17 +49,17 @@ interface ActionsSectionProps {
     isReadOnly?: boolean; // Add isReadOnly prop
     actions: ActionNode[]; // Now required prop
     loading: boolean; // Now required prop
-    onActionToggled?: (id: string) => void;
-    onActionAdded?: (description: string, parentId?: string, isPublic?: boolean) => void; // Updated signature
+    onActionToggled?: (id: string) => Promise<ActionNode | undefined>;
+    onActionAdded?: (description: string, parentId?: string, isPublic?: boolean) => Promise<void>;
     onActionUpdated?: (id: string, newText: string) => void;
-    onActionDeleted?: (id: string) => Promise<DeletedNodeContext | null>; // Updated to return Promise
-    undoDeleteAction?: () => void; // Add undo function prop
-    onActionIndented?: (id: string) => void;
+    onActionDeleted?: (id: string) => Promise<DeletedNodeContext | null>;
+    undoDeleteAction?: () => void;
+    onActionIndented?: (id: string) => Promise<void>;
     onActionOutdented?: (id: string) => void;
     onActionMovedUp?: (id: string) => void;
     onActionMovedDown?: (id: string) => void;
-    onActionPrivacyToggled?: (id: string) => void; // New prop
-    onActionAddedAfter?: (afterId: string, description: string, isPublic?: boolean) => string; // New prop, returns new action ID
+    onActionPrivacyToggled?: (id: string) => void;
+    onActionAddedAfter?: (afterId: string, description: string, isPublic?: boolean) => Promise<string>;
     newlyAddedActionId?: string | null; // New prop for focusing and editing a newly added item
     onNewlyAddedActionProcessed?: (id: string) => void; // New prop
     justCompletedId?: string | null;
@@ -167,8 +167,13 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                         // If form is focused, blur it and focus the first action item
                         addActionFormRef.current.blurInput();
                         const flattened = flattenActionTree(itemsToRender);
-                        if (flattened.length > 0) {
-                            setFocusedActionId(flattened[0].id); // Focus the first action item
+                        const activeItems = flattened.filter(a => !a.completed);
+
+                        if (activeItems.length > 0) {
+                            setFocusedActionId(activeItems[0].id); // Focus the first active action item
+                        } else if (flattened.length > 0) {
+                            // Only completed items exist, focus Yay button
+                            setFocusedActionId('yay-toggle-root');
                         }
                     } else {
                         // Otherwise, focus the form
@@ -182,8 +187,13 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 event.preventDefault();
                 addActionFormRef.current.blurInput();
                 const flattened = flattenActionTree(itemsToRender);
-                if (flattened.length > 0) {
-                    setFocusedActionId(flattened[flattened.length - 1].id); // Focus the last action item
+                const activeItems = flattened.filter(a => !a.completed);
+
+                if (activeItems.length > 0) {
+                    setFocusedActionId(activeItems[activeItems.length - 1].id); // Focus the last active action item
+                } else if (flattened.length > 0) {
+                     // Only completed items exist, focus Yay button
+                     setFocusedActionId('yay-toggle-root');
                 }
             }
             if (event.key === 'Escape') {
@@ -316,35 +326,26 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             className="pointer-events-none fixed inset-0 z-[100] w-full h-full"
             manualstart={true}
         />
-        <ActionsList
-            actions={itemsToRender}
-            onActionToggled={isOwner && !isReadOnly ? onActionToggled : undefined}
-            onActionAdded={isOwner && !isReadOnly ? onActionAdded : undefined}
-            onActionUpdated={isOwner && !isReadOnly ? onActionUpdated : undefined}
-            onActionDeleted={isOwner && !isReadOnly ? handleDeleteAction : undefined}
-            onActionIndented={isOwner && !isReadOnly ? onActionIndented : undefined}
-            onActionOutdented={isOwner && !isReadOnly ? onActionOutdented : undefined}
-            onActionMovedUp={isOwner && !isReadOnly ? onActionMovedUp : undefined}
-            onActionMovedDown={isOwner && !isReadOnly ? onActionMovedDown : undefined}
-            onActionPrivacyToggled={isOwner && !isReadOnly ? onActionPrivacyToggled : undefined}
-            onActionAddedAfter={(afterId, description, isPublic) => {
-                if (onActionAddedAfter) {
-                    const newActionId = onActionAddedAfter(afterId, description, isPublic);
-                    setNewlyAddedActionId(newActionId);
-                    setFocusedActionId(newActionId);
-                    return newActionId;
-                }
-                return ''; // Should not happen
-            }}
-            justCompletedId={justCompletedId}
-            focusedActionId={focusedActionId}
-            setFocusedActionId={setFocusedActionId}
-            flattenedActions={flattenActionTree(itemsToRender)}
-            onConfettiTrigger={handleConfettiTrigger} // Pass handler
-            newlyAddedActionId={newlyAddedActionId} // Pass new prop
-            onNewlyAddedActionProcessed={handleNewlyAddedActionProcessed} // Pass new prop
-        />
-
+                    <ActionsList
+                        actions={itemsToRender}
+                        onActionToggled={isOwner && !isReadOnly ? onActionToggled : undefined}
+                        onActionAdded={isOwner && !isReadOnly ? onActionAdded : undefined}
+                        onActionUpdated={isOwner && !isReadOnly ? onActionUpdated : undefined}
+                        onActionDeleted={isOwner && !isReadOnly ? handleDeleteAction : undefined}
+                        onActionIndented={isOwner && !isReadOnly ? onActionIndented : undefined}
+                        onActionOutdented={isOwner && !isReadOnly ? onActionOutdented : undefined}
+                        onActionMovedUp={isOwner && !isReadOnly ? onActionMovedUp : undefined}
+                        onActionMovedDown={isOwner && !isReadOnly ? onActionMovedDown : undefined}
+                        onActionPrivacyToggled={isOwner && !isReadOnly ? onActionPrivacyToggled : undefined}
+                        onActionAddedAfter={isOwner && !isReadOnly ? onActionAddedAfter : undefined}
+                        justCompletedId={justCompletedId}
+                        focusedActionId={focusedActionId}
+                        setFocusedActionId={setFocusedActionId}
+                        flattenedActions={flattenActionTree(itemsToRender).filter(a => !a.completed)}
+                        onConfettiTrigger={handleConfettiTrigger} // Pass handler
+                        newlyAddedActionId={newlyAddedActionId} // Pass new prop
+                        onNewlyAddedActionProcessed={handleNewlyAddedActionProcessed} // Pass new prop
+                    />
         {!isOwner && privateCount > 0 && (
             <div className="mt-6 text-center text-muted-foreground italic text-sm animate-pulse">
                 Pssst... he's working on {privateCount} more actions privately! 🤫
@@ -354,8 +355,8 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
             <div className="mt-4">
                 <AddActionForm
                     ref={addActionFormRef}
-                    onSave={(desc) => {
-                        onActionAdded?.(desc, undefined, true); // Pass true for isPublic
+                    onSave={async (desc) => {
+                        await onActionAdded?.(desc, undefined, true); // Now awaited
                         addActionFormRef.current?.clearInput();
                         addActionFormRef.current?.focusInput();
                     }}

@@ -58,6 +58,44 @@ export function areAllChildrenCompleted(node: ActionNode): boolean {
   return node.children.every(child => child.completed && areAllChildrenCompleted(child));
 }
 
+/**
+ * Recalculates the completion status of parents based on their children.
+ * If a parent is completed but has uncompleted children (or children that became uncompleted),
+ * the parent will be marked as uncompleted.
+ * @param currentTree The current action tree.
+ * @returns An object containing the new tree and a list of IDs of nodes that transitioned from completed to uncompleted.
+ */
+export function recalculateCompletionStatus(currentTree: ActionNode[]): { newTree: ActionNode[], uncompletedFromCompleted: { id: string, completed_at: string | undefined, is_public: boolean }[] } {
+    const uncompletedFromCompleted: { id: string, completed_at: string | undefined, is_public: boolean }[] = [];
+
+    const recalculateRecursive = (nodes: ActionNode[]): ActionNode[] => {
+        return nodes.map(node => {
+            let newNode = { ...node };
+
+            // Recursively process children first
+            if (newNode.children && newNode.children.length > 0) {
+                newNode.children = recalculateRecursive(newNode.children);
+
+                // Check if any child is now uncompleted
+                const anyChildUncompleted = newNode.children.some(child => !child.completed);
+
+                // If this node was completed but now has an uncompleted child, unmark it
+                if (anyChildUncompleted && newNode.completed) {
+                    newNode.completed = false;
+                    const oldCompletedAt = newNode.completed_at; // Capture old completed_at
+                    const oldIsPublic = newNode.is_public ?? true; // Capture original is_public
+                    newNode.completed_at = undefined; // Clear completion timestamp
+                    uncompletedFromCompleted.push({ id: newNode.id, completed_at: oldCompletedAt, is_public: oldIsPublic }); // Record with old completed_at and is_public
+                }
+            }
+            return newNode;
+        });
+    };
+
+    const newTree = recalculateRecursive(deepCopyActions(currentTree));
+    return { newTree, uncompletedFromCompleted };
+}
+
 
 /**
  * Adds a new action to the tree.
@@ -86,7 +124,7 @@ export function addActionToTree(currentTree: ActionNode[], description: string, 
 
         return nodes.map(node => {
             if (node.id === parentId) {
-                // Found the parent. 
+                // Found the parent.
                 // Check parent's privacy. If parent is private, child MUST be private.
                 const parentIsPublic = node.is_public ?? true;
                 const effectiveIsPublic = parentIsPublic ? isPublic : false;
@@ -195,6 +233,50 @@ export function toggleActionInTree(currentTree: ActionNode[], id: string): Actio
       });
     };
     return toggleRecursive(newTree);
+}
+
+/**
+ * Adds an existing action node (preserving ID, children, and properties) to the tree.
+ * @param currentTree The current action tree.
+ * @param node The ActionNode to add.
+ * @param parentId Optional ID of the parent action to add the node as a child.
+ * @returns A new action tree with the added node.
+ */
+export function addExistingActionToTree(currentTree: ActionNode[], node: ActionNode, parentId?: string): ActionNode[] {
+    const addRecursive = (nodes: ActionNode[]): ActionNode[] => {
+        // If parentId is not provided, add to this level (root)
+        if (!parentId) {
+            return [...nodes, node];
+        }
+
+        return nodes.map(n => {
+            if (n.id === parentId) {
+                // Found the parent.
+                // Enforce privacy: if parent is private, child must be private.
+                // We will modify the node (and its subtree) if necessary to comply.
+                let nodeToAdd = { ...node };
+                
+                if (n.is_public === false && nodeToAdd.is_public !== false) {
+                     // Parent is private, but node is public (or undefined). Force private.
+                     const setPrivateRecursive = (target: ActionNode): ActionNode => ({
+                         ...target,
+                         is_public: false,
+                         children: target.children ? target.children.map(setPrivateRecursive) : []
+                     });
+                     nodeToAdd = setPrivateRecursive(nodeToAdd);
+                }
+
+                return {
+                    ...n,
+                    children: [...(n.children || []), nodeToAdd]
+                };
+            } else if (n.children && n.children.length > 0) {
+                return { ...n, children: addRecursive(n.children) };
+            }
+            return n;
+        });
+    };
+    return addRecursive(deepCopyActions(currentTree));
 }
 
 /**
