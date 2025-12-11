@@ -23,15 +23,17 @@ interface CustomQuotesModalProps {
     onAddQuote?: (text: string) => void;
     onDeleteQuote?: (id: string) => void;
     onEditQuote?: (id: string, newText: string) => void;
+    onSelectQuote?: (text: string) => void; // New prop for selecting a quote
 }
 
 const CustomQuotesModal: React.FC<CustomQuotesModalProps> = ({
     isOpen,
     onClose,
-    initialQuotes = [], // Default to empty if not provided
+    initialQuotes = [], 
     onAddQuote,
     onDeleteQuote,
-    onEditQuote
+    onEditQuote,
+    onSelectQuote
 }) => {
     // Local state for the list (simulating DB for UI demo)
     // In production, this would be synced with props or a query hook
@@ -110,7 +112,7 @@ const CustomQuotesModal: React.FC<CustomQuotesModalProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             title="Craft Your Vibe"
-            description="Add personal mantras or favorite quotes to keep your fire burning."
+            description="Add personal manifestions or favorite quotes to keep your fire burning."
             className="sm:max-w-xl" // Slightly wider
         >
             <div className="space-y-6 pb-6">
@@ -160,14 +162,27 @@ const CustomQuotesModal: React.FC<CustomQuotesModalProps> = ({
                                         <Quote className="w-3 h-3 fill-current" />
                                     </div>
 
-                                    {/* Content Area */}
-                                    <div className="flex-grow min-w-0">
+                                    {/* Content Area - Clickable to Select */}
+                                    <div 
+                                        className={cn(
+                                            "flex-grow min-w-0 transition-colors",
+                                            !editingId && "cursor-pointer hover:text-primary"
+                                        )}
+                                        onClick={() => {
+                                            if (!editingId) {
+                                                onSelectQuote?.(quote.text);
+                                                onClose();
+                                                toast.success("Vibe set!");
+                                            }
+                                        }}
+                                    >
                                         {editingId === quote.id ? (
                                             <Input 
                                                 value={editValue}
                                                 onChange={(e) => setEditValue(e.target.value)}
                                                 className="h-8 text-sm bg-transparent border-none shadow-none focus-visible:ring-0 p-0"
                                                 autoFocus
+                                                onClick={(e) => e.stopPropagation()} // Prevent select on input click
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') saveEdit();
                                                     if (e.key === 'Escape') cancelEdit();

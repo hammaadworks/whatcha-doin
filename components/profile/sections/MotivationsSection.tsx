@@ -22,6 +22,7 @@ interface MotivationsSectionProps {
 const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading, onShuffle, isOwner}) => {
     const [isInteracting, setIsInteracting] = useState(false);
     const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+    const [currentQuote, setCurrentQuote] = useState("Work on your dreams as if your life depends on it. Because it does."); // Local state for quote
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleInteraction = useCallback(() => {
@@ -63,7 +64,7 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading, onShuff
                         sparklesCount={12}
                         active={isInteracting}
                     >
-                        Work on your dreams as if your life depends on it. Because it does.
+                        {currentQuote}
                     </SparklesText>
 
                     <div className="h-10 mt-6 overflow-hidden relative w-full flex justify-center items-center">
@@ -74,12 +75,12 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading, onShuff
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
                                     transition={{ duration: 0.4, ease: "easeOut" }}
-                                    className="flex items-center gap-4"
+                                    className="flex items-center gap-6"
                                 >
                                     <Button 
                                         variant="outline" 
                                         size="sm" 
-                                        className="h-9 px-5 text-sm font-medium rounded-full border-primary/20 bg-background/50 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-300 backdrop-blur-sm shadow-sm gap-2"
+                                        className="h-9 px-5 text-sm font-medium rounded-full border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all duration-300 backdrop-blur-sm shadow-sm gap-2"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onShuffle?.();
@@ -94,7 +95,7 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading, onShuff
                                         <Button 
                                             variant="outline" 
                                             size="sm" 
-                                            className="h-9 px-5 text-sm font-medium rounded-full border-primary/20 bg-background/50 hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all duration-300 backdrop-blur-sm shadow-sm gap-2"
+                                            className="h-9 px-5 text-sm font-medium rounded-full border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all duration-300 backdrop-blur-sm shadow-sm gap-2"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsCustomModalOpen(true);
@@ -114,7 +115,11 @@ const MotivationsSection: React.FC<MotivationsSectionProps> = ({loading, onShuff
             <CustomQuotesModal 
                 isOpen={isCustomModalOpen}
                 onClose={() => setIsCustomModalOpen(false)}
-                onAddQuote={(text) => console.log("Add quote:", text)}
+                onAddQuote={(text) => {
+                    console.log("Add quote:", text);
+                    setCurrentQuote(text); // Auto-select newly added quote? Optional, but nice.
+                }}
+                onSelectQuote={(text) => setCurrentQuote(text)}
                 onDeleteQuote={(id) => console.log("Delete quote:", id)}
                 onEditQuote={(id, text) => console.log("Edit quote:", id, text)}
                 initialQuotes={[
