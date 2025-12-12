@@ -28,6 +28,7 @@ import {useAuth} from '@/hooks/useAuth';
 import {ShineBorder} from "@/components/ui/shine-border";
 import {useDebounce} from '@/hooks/useDebounce';
 import {CollapsibleSectionWrapper} from '@/components/ui/collapsible-section-wrapper';
+import { useSystemTime } from '@/components/providers/SystemTimeProvider';
 
 interface JournalSectionProps {
     isOwner: boolean;
@@ -100,7 +101,8 @@ const ActivityItem = ({ entry }: { entry: ActivityLogEntry }) => {
 
 const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = false, journalEntries, loading, isCollapsible = false, isFolded, toggleFold}) => {
     const {user} = useAuth();
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const { simulatedDate } = useSystemTime();
+    const [selectedDate, setSelectedDate] = useState<Date>(simulatedDate || new Date());
     const [activeTab, setActiveTab] = useState<'private' | 'public'>('public'); // Default to public
     const [entryContent, setEntryContent] = useState('');
     const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
@@ -111,12 +113,20 @@ const JournalSection: React.FC<JournalSectionProps> = ({isOwner, isReadOnly = fa
     const mainDatePickerButtonRef = useRef<HTMLButtonElement>(null);
     const [isMainDatePickerOpen, setIsMainDatePickerOpen] = useState(false);
 
+    // Update selectedDate when simulatedDate changes
+    useEffect(() => {
+        if (simulatedDate) {
+            setSelectedDate(simulatedDate);
+        }
+    }, [simulatedDate]);
+
     // Helper to find entry for selected date and tab
     const getCurrentEntry = useCallback(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         const isPublic = activeTab === 'public';
         return journalEntries.find(e => e.entry_date === dateStr && e.is_public === isPublic);
     }, [selectedDate, activeTab, journalEntries]);
+
 
     // Matcher for days with entries
     const hasEntryMatcher = (date: Date) => {

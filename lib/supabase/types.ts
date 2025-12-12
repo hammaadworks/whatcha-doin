@@ -54,14 +54,26 @@ export interface Database {
         Insert: Omit<JournalEntry, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<JournalEntry, 'id' | 'created_at'>>;
       };
+      users: { // Add users table definition
+        Row: User;
+        Insert: Partial<User>;
+        Update: Partial<User>;
+      };
       // Add other tables as needed for Supabase types to be correct
       // For now, this minimal definition helps JournalActivityService compile
     };
-    Views: {};
-    Functions: {};
-    Enums: {};
-    CompositeTypes: {};
+    Views: Record<string, unknown>;
+    Functions: Record<string, unknown>;
+    Enums: Record<string, unknown>;
+    CompositeTypes: Record<string, unknown>;
   };
+}
+
+
+export interface QuoteItem {
+    id: string;
+    text: string;
+    author?: string; // Optional author
 }
 
 export interface PublicUserDisplay {
@@ -69,6 +81,7 @@ export interface PublicUserDisplay {
     username?: string;
     bio?: string; // Made optional
     timezone?: string; // Added timezone
+    motivations?: QuoteItem[]; // Added motivations
 }
 
 export interface PublicProfile extends PublicUserDisplay {
@@ -77,6 +90,12 @@ export interface PublicProfile extends PublicUserDisplay {
     todos: Todo[];
     journal_entries: JournalEntry[];
 }
+
+export interface User extends PublicUserDisplay {
+    email?: string;
+    motivations?: QuoteItem[];
+}
+
 
 export interface ActionNode {
     id: string;

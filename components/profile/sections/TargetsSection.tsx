@@ -201,7 +201,7 @@ export default function TargetsSection({
     const isCurrentMonthAllComplete = currentMonthTotal > 0 && currentMonthCompleted === currentMonthTotal;
 
     useEffect(() => {
-        if (activeTab === 'current' && isCurrentMonthAllComplete && confettiRef.current) {
+        if (activeTab === 'current' && isCurrentMonthAllComplete && confettiRef.current && isOwner && !isReadOnly) { // Disable confetti for guests
             // Side Cannons (left)
             setTimeout(() => { // Add 2-second delay
                 if (confettiRef.current) { // Add null check
@@ -255,10 +255,10 @@ export default function TargetsSection({
                 }
             }, 2000); // 2-second delay
         }
-    }, [activeTab, isCurrentMonthAllComplete, colors]);
+    }, [activeTab, isCurrentMonthAllComplete, colors.join(','), isOwner, isReadOnly]); // Added isOwner and isReadOnly dependencies
 
     const handleConfettiTrigger = (rect: DOMRect, isParent: boolean) => {
-        if (confettiRef.current) {
+        if (confettiRef.current && isOwner && !isReadOnly) { // Disable confetti for guests
             confettiRef.current.fire({
                 particleCount: isParent ? 80 : 40, // High density for parent, low for child
                 startVelocity: 25,

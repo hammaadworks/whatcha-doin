@@ -31,6 +31,7 @@ import {SortableContext, rectSortingStrategy} from '@dnd-kit/sortable';
 import {SortableHabit} from '@/components/habits/SortableHabit';
 
 import {useAuth} from '@/hooks/useAuth';
+import { useSystemTime } from '@/components/providers/SystemTimeProvider';
 
 interface HabitsSectionProps {
     isOwner: boolean;
@@ -57,6 +58,7 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({
                                                          onActivityLogged
                                                      }) => {
     const {user} = useAuth();
+    const { simulatedDate } = useSystemTime();
     // Initialize local state for habits to handle optimistic UI updates during DnD
     const [optimisticHabits, setOptimisticHabits] = useState<Habit[] | null>(null);
     const [prevPropHabits, setPrevPropHabits] = useState(propHabits);
@@ -199,7 +201,7 @@ const HabitsSection: React.FC<HabitsSectionProps> = ({
 
     const handleHabitComplete = async (habitId: string, data: CompletionData) => {
         try {
-            await completeHabit(habitId, data);
+            await completeHabit(habitId, data, simulatedDate || new Date());
             toast.success('Habit completed! 🔥');
             onActivityLogged?.(); // Trigger journal refresh
         } catch (error) {

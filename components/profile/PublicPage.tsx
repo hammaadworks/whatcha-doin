@@ -10,6 +10,8 @@ import IdentitySection from '@/components/profile/sections/IdentitySection'; // 
 import TargetsSection from '@/components/profile/sections/TargetsSection'; // Import
 import BioSection from '@/components/profile/sections/BioSection';
 
+import {GuestLayoutSelector} from '@/components/profile/GuestLayoutSelector'; // Import GuestLayoutSelector
+
 type PublicProfileViewProps = {
     user: PublicUserDisplay; publicActions: ActionNode[]; publicHabits: Habit[]; publicJournalEntries: JournalEntry[]; // Add publicJournalEntries
     publicIdentities: (Identity & { backingCount: number })[]; // Add
@@ -26,7 +28,12 @@ export function PublicPage({
                                publicTargets,
                                privateCount = 0
                            }: Readonly<PublicProfileViewProps>) {
-    return (<ProfileLayout
+    return (
+        <div className="relative pt-8 lg:pt-4 w-full max-w-6xl">
+            <div className="flex justify-center mb-6">
+                <GuestLayoutSelector />
+            </div>
+            <ProfileLayout
             username={user.username || ''}
             isOwner={false}
             timezone={user.timezone} // Pass timezone
@@ -83,5 +90,7 @@ export function PublicPage({
                 isOwner={false} // Always false for public page sections
                 loading={false} // Always false for public page sections
             />
-        </ProfileLayout>);
+        </ProfileLayout>
+        </div>
+    );
 }

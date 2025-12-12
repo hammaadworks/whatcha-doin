@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { JournalEntry, ActivityLogEntry } from '@/lib/supabase/types'; // Import JournalEntry and ActivityLogEntry
+import { useSystemTime } from '@/components/providers/SystemTimeProvider';
 
 
 
@@ -42,7 +43,8 @@ const formatActivityLogEntry = (entry: ActivityLogEntry): string => {
 
 
 export function JournalPageContent({ profileUserId, isOwner }: JournalPageContentProps) {
-  const [date, setDate] = useState<Date>(new Date());
+  const { simulatedDate } = useSystemTime();
+  const [date, setDate] = useState<Date>(simulatedDate || new Date());
   const [activeTab, setActiveTab] = useState<'public' | 'private'>('public'); // Default to public
   const [content, setContent] = useState('');
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]); // New state for activity log
@@ -51,6 +53,14 @@ export function JournalPageContent({ profileUserId, isOwner }: JournalPageConten
   const lastSavedContentRef = useRef('');
   
   const debouncedContent = useDebounce(content, 1000); // Debounce content for 1 second
+
+  // Update date when simulatedDate changes (e.g. time travel)
+  useEffect(() => {
+    if (simulatedDate) {
+      setDate(simulatedDate);
+    }
+  }, [simulatedDate]);
+
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);

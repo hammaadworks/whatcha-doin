@@ -22,3 +22,6 @@ favicons.io [https://favicon.io/favicon-converter/] to create awesome favicons
 19. refine epics and make wikis, you are good to go with adhoc dev/ course corrections
 20. ask your model to read wikis while implementing
 21. ask to model to always give you a summary of "I have successfully completed all tasks:" so you can keep track and also use it as a git commit message.
+22. always implement skeletons and iterate with examples/screenshots
+23. Ask if ambigious, do not assume
+24. 

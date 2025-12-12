@@ -163,11 +163,11 @@ const HabitDebugPanel: React.FC<HabitDebugPanelProps> = ({ habits, onHabitUpdate
 
             {selectedHabit && (
                 <div className="mt-8 pt-4 border-t border-red-500/30">
-                    <h4 className="text-lg font-bold mb-2 text-red-400">Time Travel: Backdate Completion</h4>
+                    <h4 className="text-lg font-bold mb-2 text-red-400">Time Travel: Simulate Completion</h4>
                     <div className="flex flex-col md:flex-row gap-2 items-end">
                         <div className="flex-grow">
                             <Label htmlFor="backdate-completion-date" className="block text-sm font-medium text-gray-300 mb-1">
-                                Date to Mark as Completed:
+                                Completion Date:
                             </Label>
                             <Input
                                 id="backdate-completion-date"

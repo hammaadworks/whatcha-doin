@@ -23,6 +23,7 @@ import {
 import { getMillisecondsUntilNextDay } from '@/lib/date';
 import { createClient } from '@/lib/supabase/client';
 import { JournalActivityService } from '@/lib/logic/JournalActivityService';
+import { useSystemTime } from '@/components/providers/SystemTimeProvider';
 
 interface TreeStructureProps {
   fetchData: (userId: string, timezone: string, dateContext?: string | null) => Promise<ActionNode[]>;
@@ -50,6 +51,7 @@ export const useTreeStructure = ({
   ownerId // Destructure ownerId
 }: TreeStructureProps) => {
   const { user } = useAuth();
+  const { simulatedDate } = useSystemTime();
   const [tree, setTree] = useState<ActionNode[]>(initialData || []);
   const [loading, setLoading] = useState(!initialData && isOwner);
   const [lastDeletedContext, setLastDeletedContext] = useState<DeletedNodeContext | null>(null);
@@ -172,9 +174,10 @@ export const useTreeStructure = ({
       return;
     }
 
-    const treeAfterToggle = toggleActionInTree(tree, id);
+    const treeAfterToggle = toggleActionInTree(tree, id, simulatedDate || new Date());
     const { newTree, uncompletedFromCompleted } = recalculateCompletionStatus(treeAfterToggle);
     const newNode = findNodeAndContext(newTree, id)?.node;
+
 
     if (!newNode) {
       toast.error(`${toastPrefix} not found after toggle processing.`);

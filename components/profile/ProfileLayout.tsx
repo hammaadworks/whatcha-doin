@@ -1,5 +1,3 @@
-'use client';
-
 import {useRef, useEffect, useCallback} from 'react';
 import {useMediaQuery} from '@/hooks/useMediaQuery'; // Import useMediaQuery
 import {MovingBorder} from '@/components/ui/moving-border';
@@ -7,7 +5,6 @@ import {UserClock} from './UserClock';
 import {useAuth} from '@/hooks/useAuth';
 import {useUiStore} from '@/lib/store/uiStore'; // Import the Zustand store
 import {toast} from 'sonner'; // Import toast for user feedback
-import { GuestLayoutSelector } from './GuestLayoutSelector';
 import { SectionViewLayout } from './SectionViewLayout';
 import { cn } from '@/lib/utils';
 
@@ -160,24 +157,6 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({
                 {/* Main card content with its own padding and z-index */}
 
                 <div className={cn("relative z-10", isCardMode ? "p-6 pt-12 sm:p-8 md:p-10 lg:p-12" : "p-0")}>
-
-                    
-
-                    {/* Guest Layout Selector (Center Top) */}
-
-                    {!isOwner && (
-
-                        <div className={cn("flex justify-center z-40 relative", isCardMode ? "mb-4" : "fixed top-4 left-0 right-0 pointer-events-none")}>
-
-                            <div className="pointer-events-auto">
-
-                                <GuestLayoutSelector />
-
-                            </div>
-
-                        </div>
-
-                    )}
 
     
 

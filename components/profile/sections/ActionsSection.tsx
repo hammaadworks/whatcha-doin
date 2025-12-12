@@ -134,7 +134,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     };
 
     const handleConfettiTrigger = (rect: DOMRect, isParent: boolean) => {
-        if (confettiRef.current) {
+        if (confettiRef.current && isOwner && !isReadOnly) { // Disable confetti for guests
             confettiRef.current.fire({
                 particleCount: isParent ? 80 : 40, // High density for parent, low for child
                 startVelocity: 25,
@@ -255,7 +255,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
     const isAllComplete = overallTotal > 0 && overallCompleted === overallTotal;
 
     useEffect(() => {
-        if (isAllComplete && confettiRef.current) {
+        if (isAllComplete && confettiRef.current && isOwner && !isReadOnly) { // Disable confetti for guests
             // Left cannon
             setTimeout(() => { // Add 2-second delay
                 if (confettiRef.current) { // Add null check
@@ -289,7 +289,7 @@ const ActionsSection: React.FC<ActionsSectionProps> = ({
                 }
             }, 2000); // 2-second delay
         }
-    }, [isAllComplete, colors]); // Trigger when completion status changes
+    }, [isAllComplete, colors.join(','), isOwner, isReadOnly]); // Trigger when completion status changes
 
     if (loading && isOwner && !isReadOnly) { // Use loading from prop
         return (<div className="p-4 space-y-3">

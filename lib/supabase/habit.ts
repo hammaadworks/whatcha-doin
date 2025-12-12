@@ -15,7 +15,7 @@ export const createHabit = async (habit: Partial<Habit>): Promise<{ data: Habit 
     return {data, error};
 };
 
-export async function completeHabit(habitId: string, data: CompletionData): Promise<{ data: { id: string } | null; error: PostgrestError | null }> {
+export async function completeHabit(habitId: string, data: CompletionData, date: Date = new Date()): Promise<{ data: { id: string } | null; error: PostgrestError | null }> {
     const supabase = createClient();
     const journalActivityService = new JournalActivityService(supabase);
 
@@ -48,7 +48,7 @@ export async function completeHabit(habitId: string, data: CompletionData): Prom
             duration_value: data.duration_value,
             duration_unit: data.duration_unit,
             notes: data.notes,
-            completed_at: new Date().toISOString(), // Explicitly set completion time
+            completed_at: date.toISOString(), // Explicitly set completion time
             goal_at_completion: habit.goal_value // Record what the goal was at this time
         })
         .select('id') // Select 'id' to return it
@@ -85,7 +85,7 @@ export async function completeHabit(habitId: string, data: CompletionData): Prom
     if (newCompletion?.id) {
         await journalActivityService.logActivity(
             habit.user_id, // Use user_id from fetched habit
-            new Date(), // Log for today
+            date, // Log for today
             {
                 id: newCompletion.id, // Use habit_completion ID as the unique ID for this log entry
                 type: 'habit',

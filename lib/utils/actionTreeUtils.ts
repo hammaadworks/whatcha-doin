@@ -197,9 +197,10 @@ export function addActionAfterId(currentTree: ActionNode[], afterId: string, des
  * Toggles the completed status of an action in the tree.
  * @param currentTree The current action tree.
  * @param id The ID of the action to toggle.
+ * @param date The date to use for the completion timestamp. Defaults to now.
  * @returns A new action tree with the toggled action, or the original tree if completion is prevented.
  */
-export function toggleActionInTree(currentTree: ActionNode[], id: string): ActionNode[] {
+export function toggleActionInTree(currentTree: ActionNode[], id: string, date: Date = new Date()): ActionNode[] {
     const newTree = deepCopyActions(currentTree);
     const targetContext = findNodeAndContext(newTree, id);
 
@@ -224,7 +225,7 @@ export function toggleActionInTree(currentTree: ActionNode[], id: string): Actio
           return {
             ...node,
             completed: newCompleted,
-            completed_at: newCompleted ? new Date().toISOString() : undefined
+            completed_at: newCompleted ? date.toISOString() : undefined
           };
         } else if (node.children && node.children.length > 0) {
           return { ...node, children: toggleRecursive(node.children) };

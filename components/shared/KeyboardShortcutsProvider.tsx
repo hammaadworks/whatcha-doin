@@ -137,7 +137,9 @@ export const KeyboardShortcutsProvider: React.FC<{ children: React.ReactNode }> 
                 }
               } else if (isModifierPressed && isSPressed) { // Handle Alt + S for Settings
                 event.preventDefault();
-                setSettingsOpen((prev) => !prev);
+                if (user?.username) { // Only open if user is logged in
+                    setSettingsOpen((prev) => !prev);
+                }
               } else if (isModifierPressed && isCPressed) { // Handle Alt + C for Theme Toggle
                 event.preventDefault();
                 themeTogglerRef.current?.toggle();
